@@ -2,6 +2,10 @@ import numpy as np
 from willard.const import state, gate
 
 
+def qucrumb():
+    return qreg(2)
+
+
 class qucrumb:
     def __init__(self):
         self.state = state.ket_00
