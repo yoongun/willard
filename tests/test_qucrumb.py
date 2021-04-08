@@ -7,8 +7,8 @@ from willard.const import state
 def test_init_qucrumb():
     q = qucrumb()
     got = q.state
-    wanted = state.ket('00')
-    assert(np.array_equal(got, wanted))
+    want = state.ket('00')
+    assert(np.array_equal(got, want))
 
 
 def test_x_gate():

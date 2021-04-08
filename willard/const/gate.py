@@ -2,7 +2,7 @@ import numpy as np
 from willard.const import state
 
 
-class _Gate:
+class GateType:
     @property
     def x(self):
         return np.array([[0., 1.], [1., 0.]])
@@ -41,9 +41,7 @@ class _Gate:
         return np.array([[1, 0.], [0., np.exp(1.j * rad)]])
 
     def phase_dg(self, deg):
-        deg = -deg
-        rad = deg / 180 * np.pi
-        return np.array([[1, 0.], [0., np.exp(1.j * rad)]])
+        return self.phase(-deg)
 
     @property
     def i(self):
@@ -58,7 +56,7 @@ class _Gate:
         return np.kron(state.ket_1.transpose(), state.ket_1)
 
 
-gate = _Gate()
+gate = GateType()
 
 
 class GateBuilder:
@@ -152,7 +150,7 @@ class GateBuilder:
             result = np.kron(gate.i, result)
         return result
 
-    def cu(self, *, c, d, u: _Gate):
+    def cu(self, *, c, d, u: GateType):
         """
         c: index of the condition qubit
         d: index of the destination qubit

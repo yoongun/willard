@@ -1,7 +1,7 @@
 import numpy as np
 
 
-class State:
+class StateType:
     def ket(self, bit_array: str):
         state = np.array([[1.]])
         for bit in bit_array:
@@ -27,4 +27,4 @@ class State:
         return np.array([[1.], [0.], [0.], [0.]])
 
 
-state = State()
+state = StateType()
