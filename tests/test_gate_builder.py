@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from willard.const.gate import GateBuilder
+from willard.const import GateBuilder
 
 
 @pytest.fixture
