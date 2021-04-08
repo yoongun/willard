@@ -53,7 +53,7 @@ class qreg:
 
     def measure(self, idx=0):
         self._check_idx(idx)
-        prob_0 = self.state.transpose().dot(self.gb.measure_0(idx).dot(self.state))
+        prob_0 = self.state.conj().T.dot(self.gb.measure_0(idx).dot(self.state))
         if prob_0 >= np.random.rand():
             self.state = self.gb.measure_0(idx).dot(
                 self.state) / np.sqrt(prob_0)

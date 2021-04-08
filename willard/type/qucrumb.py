@@ -68,8 +68,8 @@ def qucrumb():
 #         c: index of the condition qubit
 #         d: index of the destination qubit
 #         """
-#         subspace_0 = np.kron(state.ket_0.transpose(), state.ket_0)
-#         subspace_1 = np.kron(state.ket_1.transpose(), state.ket_1)
+#         subspace_0 = np.kron(state.ket_0.conj().T, state.ket_0)
+#         subspace_1 = np.kron(state.ket_1.conj().T, state.ket_1)
 #         if c == 0 and d == 1:
 #             cnot_0 = np.kron(gate.i, subspace_0)
 #             cnot_1 = np.kron(gate.x, subspace_1)
