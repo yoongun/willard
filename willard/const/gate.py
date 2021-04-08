@@ -157,19 +157,27 @@ class GateBuilder:
         c: index of the condition qubit
         d: index of the destination qubit
         """
-        if c == 0 and d == 1:
-            cnot_0 = np.kron(gate.i, subspace_0)
-            cnot_1 = np.kron(gate.x, subspace_1)
-            cnot = cnot_0 + cnot_1
-            self.state = cnot.dot(self.state)
-        elif c == 1 and d == 0:
-            cnot_0 = np.kron(subspace_0, gate.i)
-            cnot_1 = np.kron(subspace_1, gate.x)
-            cnot = cnot_0 + cnot_1
-            self.state = cnot.dot(self.state)
-        else:
-            raise IndexError('Index ({c},{d}) is not valid')
-        return self
+        self._check_idx(c)
+        self._check_idx(d)
+        if c == d:
+            raise IndexError(f'Index ({c},{d}) is not valid')
+        cnot_0 = [[1]]
+        cnot_1 = [[1]]
+        for i in range(self.num_bits):
+            if i == c:
+                cnot_0 = np.kron(gate.subspace_0, cnot_0)
+                cnot_1 = np.kron(gate.subspace_1, cnot_1)
+            elif i == d:
+                cnot_0 = np.kron(gate.i, cnot_0)
+                cnot_1 = np.kron(gate.x, cnot_1)
+            else:
+                cnot_0 = np.kron(gate.i, cnot_0)
+                cnot_1 = np.kron(gate.i, cnot_1)
+        return cnot_0 + cnot_1
 
     def swap(self):
         self.cnot(c=0, d=1).cnot(c=1, d=0).cnot(c=0, d=1)
+
+    def _check_idx(self, idx):
+        if idx < 0 or idx >= self.num_bits:
+            raise IndexError(f'Index {idx} is out of the range')
