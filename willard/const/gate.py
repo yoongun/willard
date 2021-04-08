@@ -1,4 +1,5 @@
 import numpy as np
+from willard.const import state
 
 
 class _Gate:
@@ -21,21 +22,40 @@ class _Gate:
 
     @property
     def s(self):
-        # return self.phase(90)
-        return np.array([[1, 0.], [0., 1.j]])
+        return self.phase(90)
+
+    @property
+    def s_dg(self):
+        return self.phase(-90)
 
     @property
     def t(self):
-        # return self.phase(45)
-        return np.array([[1, 0.], [0., np.exp(1.j * np.pi / 4)]])
+        return self.phase(45)
+
+    @property
+    def t_dg(self):
+        return self.phase(-45)
 
     def phase(self, deg):
+        rad = deg / 180 * np.pi
+        return np.array([[1, 0.], [0., np.exp(1.j * rad)]])
+
+    def phase_dg(self, deg):
+        deg = -deg
         rad = deg / 180 * np.pi
         return np.array([[1, 0.], [0., np.exp(1.j * rad)]])
 
     @property
     def i(self):
         return np.eye(2)
+
+    @property
+    def subspace_0(self):
+        return np.kron(state.ket_0.transpose(), state.ket_0)
+
+    @property
+    def subspace_1(self):
+        return np.kron(state.ket_1.transpose(), state.ket_1)
 
 
 gate = _Gate()
@@ -99,11 +119,29 @@ class GateBuilder:
                 result = np.kron(gate.i, result)
         return result
 
-    def phase(self, idx, deg):
+    def phase(self, deg, idx):
         result = [[1]]
         for i in range(self.num_bits):
             if i == idx:
                 result = np.kron(gate.phase(deg), result)
+            else:
+                result = np.kron(gate.i, result)
+        return result
+
+    def measure_0(self, idx):
+        result = [[1]]
+        for i in range(self.num_bits):
+            if i == idx:
+                result = np.kron(gate.subspace_0, result)
+            else:
+                result = np.kron(gate.i, result)
+        return result
+
+    def measure_1(self, idx):
+        result = [[1]]
+        for i in range(self.num_bits):
+            if i == idx:
+                result = np.kron(gate.subspace_1, result)
             else:
                 result = np.kron(gate.i, result)
         return result
@@ -119,8 +157,6 @@ class GateBuilder:
         c: index of the condition qubit
         d: index of the destination qubit
         """
-        subspace_0 = np.kron(state.ket_0.transpose(), state.ket_0)
-        subspace_1 = np.kron(state.ket_1.transpose(), state.ket_1)
         if c == 0 and d == 1:
             cnot_0 = np.kron(gate.i, subspace_0)
             cnot_1 = np.kron(gate.x, subspace_1)

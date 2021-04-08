@@ -78,6 +78,8 @@ def test_s_gate():
     q.x().s()
     got = q.state
     wanted = np.array([[0.], [1.j]])
+    print(got)
+    print(wanted)
     assert(np.allclose(got, wanted))
 
 
@@ -94,6 +96,8 @@ def test_t_gate():
     q.x().t()
     got = q.state
     wanted = np.array([[0.], [np.exp(1.j * np.pi / 4)]])
+    print(got)
+    print(wanted)
     assert(np.array_equal(got, wanted))
 
 

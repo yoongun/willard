@@ -32,32 +32,33 @@ class qreg:
         return self
 
     def s(self, idx=0):
-        self._check_idx(idx)
-        self.state = self.gb.s(idx).dot(self.state)
-        return self
+        return self.phase(90, idx)
 
     def s_dg(self, idx=0):
-        self._check_idx(idx)
-        self.state = self.gb.s(idx).dot(self.state)
-        return self
+        return self.phase_dg(90, idx)
 
     def t(self, idx=0):
-        self._check_idx(idx)
-        self.state = self.gb.t(idx).dot(self.state)
-        return self
+        return self.phase(45, idx)
 
     def t_dg(self, idx=0):
-        self._check_idx(idx)
-        self.state = self.gb.t(idx).dot(self.state)
-        return self
+        return self.phase_dg(45, idx)
 
     def phase(self, deg, idx=0):
         self._check_idx(idx)
-        self.state = self.gb.phase(idx, deg).dot(self.state)
+        self.state = self.gb.phase(deg, idx).dot(self.state)
         return self
 
-    def phase_dg(self, deg):
-        return self.phase(-deg)
+    def phase_dg(self, deg, idx=0):
+        return self.phase(-deg, idx)
+
+    def measure(self, idx=0):
+        self._check_idx(idx)
+        prob_0 = self.state.transpose().dot(self.gb.measure_0(idx).dot(self.state))
+        if prob_0 >= np.random.rand():
+            self.state = self.gb.measure_0(idx).dot(self.state) / prob_0
+            return 0
+        self.state = self.gb.measure_1(idx).dot(self.state) / (1. - prob_0)
+        return 1
 
     def cnot(self, *, c, d):
         """
