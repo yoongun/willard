@@ -152,7 +152,7 @@ class GateBuilder:
             result = np.kron(gate.i, result)
         return result
 
-    def cnot(self, *, c, d):
+    def cu(self, *, c, d, u: _Gate):
         """
         c: index of the condition qubit
         d: index of the destination qubit
@@ -161,19 +161,26 @@ class GateBuilder:
         self._check_idx(d)
         if c == d:
             raise IndexError(f'Index ({c},{d}) is not valid')
-        cnot_0 = [[1]]
-        cnot_1 = [[1]]
+        cu_0 = [[1]]
+        cu_1 = [[1]]
         for i in range(self.num_bits):
             if i == c:
-                cnot_0 = np.kron(gate.subspace_0, cnot_0)
-                cnot_1 = np.kron(gate.subspace_1, cnot_1)
+                cu_0 = np.kron(gate.subspace_0, cu_0)
+                cu_1 = np.kron(gate.subspace_1, cu_1)
             elif i == d:
-                cnot_0 = np.kron(gate.i, cnot_0)
-                cnot_1 = np.kron(gate.x, cnot_1)
+                cu_0 = np.kron(gate.i, cu_0)
+                cu_1 = np.kron(u, cu_1)
             else:
-                cnot_0 = np.kron(gate.i, cnot_0)
-                cnot_1 = np.kron(gate.i, cnot_1)
-        return cnot_0 + cnot_1
+                cu_0 = np.kron(gate.i, cu_0)
+                cu_1 = np.kron(u, cu_1)
+        return cu_0 + cu_1
+
+    def cnot(self, *, c, d):
+        """
+        c: index of the condition qubit
+        d: index of the destination qubit
+        """
+        return self.cu(c=c, d=d, u=gate.x)
 
     def swap(self):
         self.cnot(c=0, d=1).cnot(c=1, d=0).cnot(c=0, d=1)

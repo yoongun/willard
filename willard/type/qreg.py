@@ -63,10 +63,6 @@ class qreg:
         return 1
 
     def cu(self, *, c, d, u):
-        if c == d or not self._check_idx(c) or not self._check_idx(d):
-            raise IndexError(f'Index ({c},{d}) is not valid')
-
-    def cnot(self, *, c, d):
         """
         c: index of the condition qubit
         d: index of the destination qubit
@@ -75,23 +71,15 @@ class qreg:
         self._check_idx(d)
         if c == d:
             raise IndexError(f'Index ({c},{d}) is not valid')
-        self.state = self.gb.cnot(c=c, d=d).dot(self.state)
+        self.state = self.gb.cu(c=c, d=d, u=u).dot(self.state)
         return self
-        # subspace_0 = np.kron(state.ket_0.transpose(), state.ket_0)
-        # subspace_1 = np.kron(state.ket_1.transpose(), state.ket_1)
-        # if c == 0 and d == 1:
-        #     cnot_0 = np.kron(gate.i, subspace_0)
-        #     cnot_1 = np.kron(gate.x, subspace_1)
-        #     cnot = cnot_0 + cnot_1
-        #     self.state = cnot.dot(self.state)
-        # elif c == 1 and d == 0:
-        #     cnot_0 = np.kron(subspace_0, gate.i)
-        #     cnot_1 = np.kron(subspace_1, gate.x)
-        #     cnot = cnot_0 + cnot_1
-        #     self.state = cnot.dot(self.state)
-        # else:
-        #     raise IndexError('Index ({c},{d}) is not valid')
-        # return self
+
+    def cnot(self, *, c, d):
+        """
+        c: index of the condition qubit
+        d: index of the destination qubit
+        """
+        return self.cu(c=c, d=d, u=gate.x)
 
     def swap(self, *, c, d):
         self.cnot(c=c, d=d).cnot(c=d, d=c).cnot(c=c, d=d)
