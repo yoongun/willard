@@ -49,11 +49,11 @@ class GateType:
 
     @property
     def subspace_0(self):
-        return np.kron(state.ket_0.conj().T, state.ket_0)
+        return np.kron(state.ket('0').conj().T, state.ket('0'))
 
     @property
     def subspace_1(self):
-        return np.kron(state.ket_1.conj().T, state.ket_1)
+        return np.kron(state.ket('1').conj().T, state.ket('1'))
 
 
 gate = GateType()
