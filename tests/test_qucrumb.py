@@ -117,16 +117,16 @@ def test_t_gate():
 def test_phase_gate():
     # Test case 1 (pi/2, S gate)
     q = qucrumb()
-    q.x().phase(90)
+    q.x(0).phase(90, 0)
     got = q.state
-    wanted = np.array([[0.], [1.j]])
+    wanted = np.array([[0.], [1.j], [0.], [0.]])
     assert(np.allclose(got, wanted))
 
     # Test case 2 (pi/4, T gate)
     q = qucrumb()
-    q.x().phase(45)
+    q.x(1).phase(45, 1)
     got = q.state
-    wanted = np.array([[0.], [np.exp(1.j * np.pi / 4)]])
+    wanted = np.array([[0.], [0.], [np.exp(1.j * np.pi / 4)], [0.]])
     assert(np.array_equal(got, wanted))
 
 
@@ -135,21 +135,21 @@ def test_dagger_gates():
     q = qucrumb()
     q.s().s_dg()
     got = q.state
-    wanted = np.array([[1.], [0.]])
+    wanted = np.array([[1.], [0.], [0.], [0.]])
     assert(np.array_equal(got, wanted))
 
     # Test case 2 (t dagger)
     q = qucrumb()
-    q.t().t_dg()
+    q.t(1).t_dg(1)
     got = q.state
-    wanted = np.array([[1.], [0.]])
+    wanted = np.array([[1.], [0.], [0.], [0.]])
     assert(np.array_equal(got, wanted))
 
     # Test case 3 (phase dagger)
     q = qucrumb()
     q.phase(30).phase_dg(30)
     got = q.state
-    wanted = np.array([[1.], [0.]])
+    wanted = np.array([[1.], [0.], [0.], [0.]])
     assert(np.array_equal(got, wanted))
 
 
@@ -175,12 +175,16 @@ def test_cnot():
 def test_swap():
     # Case 1: From qubit0 to qubit1
     q = qucrumb()
-    q.x(0).swap()
+    q.x(0).swap(c=0, d=1)
     assert(np.array_equal(q.state, np.array(
         [[0.], [0.], [1.], [0.]])))
 
     # Case 1: From qubit1 to qubit0
     q = qucrumb()
-    q.x(1).swap()
+    q.x(1).swap(c=0, d=1)
     assert(np.array_equal(q.state, np.array(
         [[0.], [1.], [0.], [0.]])))
+
+
+def test_epr():
+    pytest.fail()

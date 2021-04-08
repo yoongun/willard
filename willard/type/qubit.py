@@ -1,6 +1,4 @@
-# import numpy as np
-from .qreg import qreg
-# from willard.const import state, gate
+from willard.type import qreg
 
 
 def qubit():

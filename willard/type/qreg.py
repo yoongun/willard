@@ -55,9 +55,11 @@ class qreg:
         self._check_idx(idx)
         prob_0 = self.state.transpose().dot(self.gb.measure_0(idx).dot(self.state))
         if prob_0 >= np.random.rand():
-            self.state = self.gb.measure_0(idx).dot(self.state) / prob_0
+            self.state = self.gb.measure_0(idx).dot(
+                self.state) / np.sqrt(prob_0)
             return 0
-        self.state = self.gb.measure_1(idx).dot(self.state) / (1. - prob_0)
+        self.state = self.gb.measure_1(idx).dot(
+            self.state) / np.sqrt(1. - prob_0)
         return 1
 
     def cnot(self, *, c, d):
