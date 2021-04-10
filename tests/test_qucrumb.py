@@ -32,6 +32,20 @@ def test_x_gate():
         q.x(2)
 
 
+def test_rnot_gate():
+    q = qucrumb()
+    q.rnot(0).rnot(0)
+    got = q.state
+    want = state.ket('01')
+    assert(np.array_equal(got, want))
+
+    q = qucrumb()
+    q.rnot(1).rnot(1)
+    got = q.state
+    want = state.ket('10')
+    assert(np.array_equal(got, want))
+
+
 def test_y_gate():
     # Case 1: Apply Y gate on the first qubit
     q = qucrumb()
@@ -140,14 +154,14 @@ def test_t_gate():
 def test_phase_gate():
     # Test case 1 (pi/2, S gate)
     q = qucrumb()
-    q.x(0).phase(90, 0)
+    q.x(0).phase(deg=90, idx=0)
     got = q.state
     want = np.array([[0.], [1.j], [0.], [0.]])
     assert(np.allclose(got, want))
 
     # Test case 2 (pi/4, T gate)
     q = qucrumb()
-    q.x(1).phase(45, 1)
+    q.x(1).phase(deg=45, idx=1)
     got = q.state
     want = np.array([[0.], [0.], [np.exp(1.j * np.pi / 4)], [0.]])
     assert(np.array_equal(got, want))
@@ -156,7 +170,7 @@ def test_phase_gate():
 def test_dagger_gates():
     # Test case 1 (s dagger)
     q = qucrumb()
-    q.s().s_dg()
+    q.s(0).s_dg(0)
     got = q.state
     want = state.ket('00')
     assert(np.array_equal(got, want))
@@ -170,7 +184,7 @@ def test_dagger_gates():
 
     # Test case 3 (phase dagger)
     q = qucrumb()
-    q.phase(30).phase_dg(30)
+    q.phase(deg=30, idx=0).phase_dg(deg=30, idx=0)
     got = q.state
     want = state.ket('00')
     assert(np.array_equal(got, want))
