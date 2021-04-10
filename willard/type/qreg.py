@@ -11,47 +11,47 @@ class qreg:
         self.gb = GateBuilder(num_bits)
         self.state = state.ket('0' * num_bits)
 
-    def x(self, idx=0):
+    def x(self, idx):
         self._check_idx(idx)
         self.state = self.gb.x(idx).dot(self.state)
         return self
 
-    def y(self, idx=0):
+    def y(self, idx):
         self._check_idx(idx)
         self.state = self.gb.y(idx).dot(self.state)
         return self
 
-    def z(self, idx=0):
+    def z(self, idx):
         self._check_idx(idx)
         self.state = self.gb.z(idx).dot(self.state)
         return self
 
-    def h(self, idx=0):
+    def h(self, idx):
         self._check_idx(idx)
         self.state = self.gb.h(idx).dot(self.state)
         return self
 
-    def s(self, idx=0):
-        return self.phase(90, idx)
+    def s(self, idx):
+        return self.phase(deg=90, idx=idx)
 
-    def s_dg(self, idx=0):
-        return self.phase_dg(90, idx)
+    def s_dg(self, idx):
+        return self.phase_dg(deg=90, idx=idx)
 
-    def t(self, idx=0):
-        return self.phase(45, idx)
+    def t(self, idx):
+        return self.phase(deg=45, idx=idx)
 
-    def t_dg(self, idx=0):
-        return self.phase_dg(45, idx)
+    def t_dg(self, idx):
+        return self.phase_dg(deg=45, idx=idx)
 
-    def phase(self, deg, idx=0):
+    def phase(self, *, deg, idx):
         self._check_idx(idx)
         self.state = self.gb.phase(deg, idx).dot(self.state)
         return self
 
-    def phase_dg(self, deg, idx=0):
-        return self.phase(-deg, idx)
+    def phase_dg(self, *, deg, idx):
+        return self.phase(deg=-deg, idx=idx)
 
-    def measure(self, idx=0):
+    def measure(self, idx):
         self._check_idx(idx)
         prob_0 = self.state.conj().T.dot(self.gb.measure_0(idx).dot(self.state))
         if prob_0 >= np.random.rand():
