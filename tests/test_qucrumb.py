@@ -215,13 +215,13 @@ def test_swap():
 
 def test_epr():
     q = qucrumb()
-    want = q.h(0).cnot(c=0, d=1).measure()
+    want = q.h(0).cnot(c=0, d=1).measure(0)
     for _ in range(100):
-        got = q.measure()
+        got = q.measure(1)
         assert(got == want)
 
     q = qucrumb()
-    want = q.h(1).cnot(c=1, d=0).measure()
+    want = q.h(1).cnot(c=1, d=0).measure(1)
     for _ in range(100):
-        got = q.measure()
+        got = q.measure(0)
         assert(got == want)
