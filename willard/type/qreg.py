@@ -16,6 +16,11 @@ class qreg:
         self.state = self.gb.x(idx).dot(self.state)
         return self
 
+    def rnot(self, idx):
+        self._check_idx(idx)
+        self.state = self.gb.rnot(idx).dot(self.state)
+        return self
+
     def y(self, idx):
         self._check_idx(idx)
         self.state = self.gb.y(idx).dot(self.state)

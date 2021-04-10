@@ -25,6 +25,10 @@ def test_build_x(gb2):
     assert(np.array_equal(got, wanted))
 
 
+def test_build_rnot():
+    pass
+
+
 def test_build_y(gb2):
     got = gb2.y(0)
     wanted = np.array([[0.+0.j, 0.-1.j, 0.+0.j, 0.-0.j],

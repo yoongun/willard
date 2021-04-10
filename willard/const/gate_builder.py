@@ -15,6 +15,15 @@ class GateBuilder:
                 result = np.kron(gate.i, result)
         return result
 
+    def rnot(self, idx):
+        result = [[1]]
+        for i in range(self.num_bits):
+            if i == idx:
+                result = np.kron(gate.rnot, result)
+            else:
+                result = np.kron(gate.i, result)
+        return result
+
     def y(self, idx):
         result = [[1]]
         for i in range(self.num_bits):

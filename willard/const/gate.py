@@ -8,6 +8,10 @@ class GateType:
         return np.array([[0., 1.], [1., 0.]])
 
     @property
+    def rnot(self):
+        return np.array([[0.5 + 0.5j, 0.5 - 0.5j], [0.5 - 0.5j, 0.5 + 0.5j]])
+
+    @property
     def y(self):
         return np.array([[0., -1.j], [1.j, 0.]])
 
