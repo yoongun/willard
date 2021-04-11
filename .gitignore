@@ -1,5 +1,16 @@
+# Python
 __pycache__/
+
+# pytest
 .pytest_cache/
+
+# pytest-cov
+.coverage
+
+# IDE (VS Code)
 .vscode
+
+# setup tools
 MANIFEST
 dist/
+
