@@ -10,3 +10,7 @@ def test_spy_detector():
         q.x(0).h(0)
         return q
     assert(detect_spy(spy))
+
+    def no_spy(q):
+        return q
+    assert(not detect_spy(no_spy))
