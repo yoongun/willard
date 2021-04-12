@@ -11,6 +11,14 @@ def test_init_qucrumb():
     assert(np.array_equal(got, want))
 
 
+def test_reset():
+    q = qucrumb()
+    q.x(0).x(1).reset()
+    got = q.state
+    want = state.ket('00')
+    assert(np.array_equal(got, want))
+
+
 def test_x_gate():
     # Case 1: Apply X gate on the first qubit
     q = qucrumb()

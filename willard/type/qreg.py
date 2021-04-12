@@ -11,6 +11,10 @@ class qreg:
         self.gb = GateBuilder(num_bits)
         self.state = state.ket('0' * num_bits)
 
+    def reset(self):
+        self.state = state.ket('0' * self.num_bits)
+        return self
+
     def x(self, idx):
         self._check_idx(idx)
         self.state = self.gb.x(idx).dot(self.state)

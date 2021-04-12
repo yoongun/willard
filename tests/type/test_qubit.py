@@ -1,11 +1,20 @@
 import numpy as np
 from willard.type import qubit
+from willard.const import state
 
 
 def test_init_qubit():
     q = qubit()
     got = q.state
-    want = np.array([[1.], [0.]])
+    want = state.ket('0')
+    assert(np.array_equal(got, want))
+
+
+def test_reset():
+    q = qubit()
+    q.x(0).reset()
+    got = q.state
+    want = state.ket('0')
     assert(np.array_equal(got, want))
 
 
