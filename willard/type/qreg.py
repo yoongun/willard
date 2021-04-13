@@ -125,6 +125,27 @@ class qreg:
         self.x(output)
         return self
 
+    def teleport(self, *, a: int, b: int, ch: int):
+        """
+        a: Alice
+        b: Bob
+        ch: Channel
+        """
+        self._check_idx(a)
+        self._check_idx(b)
+        self._check_idx(ch)
+        if 3 > len(set([a, b, ch])):
+            raise IndexError(f'Index ({a},{ch},{b}) is not valid')
+        self.h(ch).cnot(c=ch, d=b)
+        self.cnot(c=a, d=ch).h(a)
+        a_result = self.measure(a)
+        ch_result = self.measure(ch)
+        if ch_result:
+            self.x(b)
+        if a_result:
+            self.phase(deg=180, idx=b)
+        return self
+
     def _check_idx(self, idx):
         if idx < 0 or idx >= self.num_bits:
             raise IndexError(f'Index {idx} is out of the range')
