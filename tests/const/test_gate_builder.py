@@ -77,9 +77,17 @@ def test_build_phase():
     pass
 
 
+def test_build_cu():
+    pass
+
+
 def test_build_cnot():
     pass
 
 
 def test_build_swap():
+    pass
+
+
+def test_build_toffoli():
     pass

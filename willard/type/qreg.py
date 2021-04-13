@@ -93,6 +93,16 @@ class qreg:
     def swap(self, *, c, d):
         self.cnot(c=c, d=d).cnot(c=d, d=c).cnot(c=c, d=d)
 
+    def toffoli(self, *, c1, c2, d):
+        self._check_idx(c1)
+        self._check_idx(c2)
+        self._check_idx(d)
+        if 3 > len(set([c1, c2, d])):
+            raise IndexError(f'Index ({c1},{c2},{d}) is not valid')
+
+        self.state = self.gb.toffoli(c1=c1, c2=c2, d=d).dot(self.state)
+        return self
+
     def _check_idx(self, idx):
         if idx < 0 or idx >= self.num_bits:
             raise IndexError(f'Index {idx} is out of the range')

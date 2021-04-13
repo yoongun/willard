@@ -122,7 +122,7 @@ class GateBuilder:
                 cu_1 = np.kron(u, cu_1)
             else:
                 cu_0 = np.kron(gate.i, cu_0)
-                cu_1 = np.kron(u, cu_1)
+                cu_1 = np.kron(gate.i, cu_1)
         return cu_0 + cu_1
 
     def cnot(self, *, c, d):
@@ -134,6 +134,42 @@ class GateBuilder:
 
     def swap(self):
         self.cnot(c=0, d=1).cnot(c=1, d=0).cnot(c=0, d=1)
+
+    def toffoli(self, *, c1, c2, d):
+        self._check_idx(c1)
+        self._check_idx(c2)
+        self._check_idx(d)
+        if 3 > len(set([c1, c2, d])):
+            raise IndexError(f'Index ({c1},{c2},{d}) is not valid')
+        t00 = [[1]]
+        t01 = [[1]]
+        t10 = [[1]]
+        t11 = [[1]]
+        for i in range(self.num_bits):
+            if i == c1:
+                t00 = np.kron(gate.subspace_0, t00)
+                t01 = np.kron(gate.subspace_1, t01)
+                t10 = np.kron(gate.subspace_0, t10)
+                t11 = np.kron(gate.subspace_1, t11)
+            elif i == c2:
+                t00 = np.kron(gate.subspace_0, t00)
+                t01 = np.kron(gate.subspace_0, t01)
+                t10 = np.kron(gate.subspace_1, t10)
+                t11 = np.kron(gate.subspace_1, t11)
+            elif i == d:
+                t00 = np.kron(gate.i, t00)
+                t01 = np.kron(gate.i, t01)
+                t10 = np.kron(gate.i, t10)
+                t11 = np.kron(gate.x, t11)
+            else:
+                t00 = np.kron(gate.i, t00)
+                t01 = np.kron(gate.i, t01)
+                t10 = np.kron(gate.i, t10)
+                t11 = np.kron(gate.i, t11)
+        return t00 + t01 + t10 + t11
+
+    def cswap(self):
+        pass
 
     def _check_idx(self, idx):
         if idx < 0 or idx >= self.num_bits:

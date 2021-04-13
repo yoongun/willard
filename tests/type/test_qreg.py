@@ -32,7 +32,7 @@ def test_toffoli_gate():
     q.x(2)
     q.toffoli(c1=2, c2=1, d=0)
     got = q.state
-    want = state.ket('001')
+    want = state.ket('100')
     assert(np.array_equal(got, want))
 
     q = qreg(3)
@@ -48,3 +48,6 @@ def test_toffoli_gate():
     got = q.state
     want = state.ket('111')
     assert(np.array_equal(got, want))
+
+    with pytest.raises(IndexError):
+        q.toffoli(c1=0, c2=0, d=1)
