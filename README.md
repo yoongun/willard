@@ -1,3 +1,12 @@
 # :smiley_cat: Willard
 
-양자 컴퓨터 시뮬레이터를 내장한 라이브러리
+Quantum programming library includes quantum computer simulator.
+
+## pip
+
+https://pypi.org/project/willard/
+
+```bash
+pip install --upgrade willard
+```
+
