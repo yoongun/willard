@@ -132,8 +132,8 @@ class GateBuilder:
         """
         return self.cu(c=c, d=d, u=gate.x)
 
-    def swap(self):
-        self.cnot(c=0, d=1).cnot(c=1, d=0).cnot(c=0, d=1)
+    def swap(self, *, d1, d2):
+        return self.cnot(c=d1, d=d2).cnot(c=d1, d=d2).cnot(c=d1, d=d2)
 
     def toffoli(self, *, c1, c2, d):
         self._check_idx(c1)
@@ -168,8 +168,8 @@ class GateBuilder:
                 t11 = np.kron(gate.i, t11)
         return t00 + t01 + t10 + t11
 
-    def cswap(self):
-        pass
+    def cswap(self, *, c, d1, d2):
+        return self.toffoli(c1=c, c2=d1, d=d2).toffoli(c1=c, c2=d2, d=d1).toffoli(c1=c, c2=d1, d=d2)
 
     def _check_idx(self, idx):
         if idx < 0 or idx >= self.num_bits:

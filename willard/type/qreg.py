@@ -103,6 +103,9 @@ class qreg:
         self.state = self.gb.toffoli(c1=c1, c2=c2, d=d).dot(self.state)
         return self
 
+    def cswap(self, *, c, d1, d2):
+        return self.toffoli(c1=c, c2=d1, d=d2).toffoli(c1=c, c2=d2, d=d1).toffoli(c1=c, c2=d1, d=d2)
+
     def _check_idx(self, idx):
         if idx < 0 or idx >= self.num_bits:
             raise IndexError(f'Index {idx} is out of the range')
