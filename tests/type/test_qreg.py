@@ -51,3 +51,17 @@ def test_toffoli_gate():
 
     with pytest.raises(IndexError):
         q.toffoli(c1=0, c2=0, d=1)
+
+
+def test_cphase_commutativity():
+    q1 = qreg(3)
+    q1.h(0).x(2).cphase(c=0, d=2, deg=90)
+    q2 = qreg(3)
+    q2.h(0).x(2).cphase(c=2, d=0, deg=90)
+    assert(np.allclose(q1.state, q2.state))
+
+    q1 = qreg(3)
+    q1.h(1).x(2).cphase(c=1, d=2, deg=33)
+    q2 = qreg(3)
+    q2.h(1).x(2).cphase(c=2, d=1, deg=33)
+    assert(np.allclose(q1.state, q2.state))
