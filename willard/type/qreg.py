@@ -90,6 +90,13 @@ class qreg:
         """
         return self.cu(c=c, d=d, u=gate.x)
 
+    def cphase(self, *, c, d, deg):
+        """
+        c: index of the condition qubit
+        d: index of the destination qubit
+        """
+        return self.cu(c=c, d=d, u=gate.phase(deg))
+
     def swap(self, *, c, d):
         self.cnot(c=c, d=d).cnot(c=d, d=c).cnot(c=c, d=d)
 

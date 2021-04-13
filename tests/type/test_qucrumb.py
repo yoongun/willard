@@ -219,6 +219,27 @@ def test_cnot():
         q.cnot(c=2, d=2)
 
 
+def test_cphase():
+    # Case 1: Test on the first qubit
+    q = qucrumb()
+    q.h(0).x(1).cphase(c=0, d=1, deg=90)
+    got = q.state
+    want = np.array([[0.], [0.], [1. / np.sqrt(2)], [1.j / np.sqrt(2)]])
+    assert(np.allclose(got, want))
+
+    # Case 2: Test on the second qubit
+    q = qucrumb()
+    q.h(1).x(0).cphase(c=1, d=0, deg=45)
+    got = q.state
+    want = np.array([[0.], [1. / np.sqrt(2)], [0.], [0.5 + 0.5j]])
+    assert(np.allclose(got, want))
+
+    # Checks whether the code checks index range
+    q = qucrumb()
+    with pytest.raises(IndexError):
+        q.cphase(c=2, d=2, deg=180)
+
+
 def test_swap():
     # Case 1: From qubit0 to qubit1
     q = qucrumb()
