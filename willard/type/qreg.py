@@ -11,12 +11,12 @@ class qreg:
         self.size = size
         self.gb = GateBuilder(size)
         self.state = state.ket('0' * size)
-        self.offset = 0
+        self._offset = 0
 
     def int(self, size, init_value) -> qint:
-        q = qint(self, size, self.offset, init_value)
-        self.offset += size
-        if self.offset > self.size:
+        q = qint(self, size, self._offset, init_value)
+        self._offset += size
+        if self._offset > self.size:
             raise ValueError(
                 "This register is already full. Please try creating another register with larger size")
         return q

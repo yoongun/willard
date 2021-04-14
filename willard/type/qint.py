@@ -124,6 +124,9 @@ class qint:
         self.x(output)
         return self
 
+    def inc(self):
+        pass
+
     def _check_idx(self, idx):
         if idx < 0 or idx >= self.size:
             raise IndexError(f'Index {idx} is out of the range')

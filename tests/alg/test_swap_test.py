@@ -10,9 +10,10 @@ def test_swap_test():
     swap_test(qr, input1, input2, output)
     assert(output.measure(0) == 1)
 
-    qr = qreg(3)
-    input1 = qr.int(1, 1)
-    input2 = qr.int(1, 0)
-    output = qr.int(1, 0)
-    swap_test(qr, input1, input2, output)
-    assert(output.measure(0) == 1)
+    # Test probability??
+    # qr = qreg(3)
+    # input1 = qr.int(1, 1)
+    # input2 = qr.int(1, 0)
+    # output = qr.int(1, 0)
+    # swap_test(qr, input1, input2, output)
+    # assert(output.measure(0) == 0)
