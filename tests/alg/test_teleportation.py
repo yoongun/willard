@@ -1,4 +1,5 @@
 from willard.type import qreg
+from willard.alg.teleport import teleport
 
 
 # def test_teleportation():
@@ -19,31 +20,16 @@ from willard.type import qreg
 #     got = q.measure(0)
 #     want = 1
 #     assert(got == want)
+
+
 def test_teleportation():
     qr = qreg(3)
-    alice = qr.int(1)
-    channel = qr.int(1)
-    bob = qr.int(1)
+    alice = qr.int(1, 1)
+    channel = qr.int(1, 0)
+    bob = qr.int(1, 0)
 
-    # Preparing payload
-    alice.x(0).h(0).phase(45, 0).h(0)
+    teleport(alice, channel, bob)
 
-    # Send
-    channel.h(0)
-    qr.cx(channel[0], bob[0])
-    qr.cx(alice[0], channel[0])
-    alice.h(0)
-    a_result = alice.measure(0)
-    ch_result = channel.measure(0)
-
-    # Resolve
-    if ch_result:
-        bob.x(0)
-    if a_result:
-        bob.phase(180, 0)
-
-    # Verify
-    bob.h(0).phase(-45, 0).h(0)
     result = bob.measure(0)
 
     assert(result == 1)

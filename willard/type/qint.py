@@ -1,53 +1,36 @@
-import numpy as np
-from willard.const import state, gate, GateBuilder
-from willard.type import qint
-
-
-class qreg:
-    def __init__(self, size) -> None:
-        if size < 1:
-            raise ValueError(
-                f"size should be bigger than 0. Got {size}")
+class qint:
+    def __init__(self, qreg, size, offset, init_value):
+        self.qreg = qreg
         self.size = size
-        self.gb = GateBuilder(size)
-        self.state = state.ket('0' * size)
-        self.offset = 0
+        self.offset = offset
 
-    def int(self, size, init_value) -> qint:
-        q = qint(self, size, self.offset, init_value)
-        self.offset += size
-        if self.offset > self.size:
-            raise ValueError(
-                "This register is already full. Please try creating another register with larger size")
-        return q
-
-    def reset(self):
-        self.state = state.ket('0' * self.size)
-        return self
+    def __getitem__(self, idx):
+        self._check_idx(idx)
+        return self.offset + idx
 
     def x(self, idx):
         self._check_idx(idx)
-        self.state = self.gb.x(idx).dot(self.state)
+        self.qreg.x(self.offset + idx)
         return self
 
     def rnot(self, idx):
         self._check_idx(idx)
-        self.state = self.gb.rnot(idx).dot(self.state)
+        self.qreg.rnot(self.offset + idx)
         return self
 
     def y(self, idx):
         self._check_idx(idx)
-        self.state = self.gb.y(idx).dot(self.state)
+        self.qreg.y(self.offset + idx)
         return self
 
     def z(self, idx):
         self._check_idx(idx)
-        self.state = self.gb.z(idx).dot(self.state)
+        self.qreg.z(self.offset + idx)
         return self
 
     def h(self, idx):
         self._check_idx(idx)
-        self.state = self.gb.h(idx).dot(self.state)
+        self.qreg.h(self.offset + idx)
         return self
 
     def s(self, idx):
@@ -64,7 +47,7 @@ class qreg:
 
     def phase(self, deg, idx):
         self._check_idx(idx)
-        self.state = self.gb.phase(deg, idx).dot(self.state)
+        self.qreg.phase(deg, self.offset + idx)
         return self
 
     def phase_dg(self, *, deg, idx):
@@ -72,14 +55,13 @@ class qreg:
 
     def measure(self, idx):
         self._check_idx(idx)
-        prob_0 = self.state.conj().T.dot(self.gb.measure_0(idx).dot(self.state))
-        if prob_0 >= np.random.rand():
-            self.state = self.gb.measure_0(idx).dot(
-                self.state) / np.sqrt(prob_0)
-            return 0
-        self.state = self.gb.measure_1(idx).dot(
-            self.state) / np.sqrt(1. - prob_0)
-        return 1
+        return self.qreg.measure(self.offset + idx)
+
+    def measure_all(self):
+        result = ''
+        for i in range(self.size):
+            result.insert(0, self.qreg.measure(self.offset + i))
+        return int(result, 2)
 
     def cu(self, *, c, d, u):
         """
@@ -90,7 +72,7 @@ class qreg:
         self._check_idx(d)
         if c == d:
             raise IndexError(f'Index ({c},{d}) is not valid')
-        self.state = self.gb.cu(c=c, d=d, u=u).dot(self.state)
+        self.qreg.cu(c=self.offset + c, d=self.offset + d, u=u)
         return self
 
     def cx(self, c, d):
@@ -100,7 +82,7 @@ class qreg:
         """
         return self.cu(c=c, d=d, u=gate.x)
 
-    def cphase(self, *, c, d, deg):
+    def cphase(self, deg, c, d):
         """
         c: index of the condition qubit
         d: index of the destination qubit
@@ -116,8 +98,8 @@ class qreg:
         self._check_idx(d)
         if 3 > len(set([c1, c2, d])):
             raise IndexError(f'Index ({c1},{c2},{d}) is not valid')
-
-        self.state = self.gb.toffoli(c1=c1, c2=c2, d=d).dot(self.state)
+        self.qreg.toffoli(c1=self.offset + c1,
+                          c2=self.offset + c2, d=self.offset + d)
         return self
 
     def cswap(self, *, c, d1, d2):
