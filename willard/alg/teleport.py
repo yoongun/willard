@@ -2,6 +2,9 @@ from willard.type import qint, qreg
 
 
 def teleport(qr: qreg, alice: qint, channel: qint, bob: qint):
+    if qr != alice.qreg or qr != channel.qreg or qr != bob.qreg:
+        raise ValueError(
+            "alice, channel, bob should be in the qreg passed with.")
     # Preparing payload
     alice.h(0).phase(45, 0).h(0)
 

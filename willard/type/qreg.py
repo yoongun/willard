@@ -123,18 +123,6 @@ class qreg:
     def cswap(self, *, c, d1, d2):
         return self.toffoli(c1=c, c2=d1, d=d2).toffoli(c1=c, c2=d2, d=d1).toffoli(c1=c, c2=d1, d=d2)
 
-    def swap_test(self, *, input1: int, input2: int, output: int):
-        """
-        0 if input1 != input2
-        1 if input1 == input2
-        1 or 0 when input1 and input2 resembles
-        """
-        self.h(output)
-        self.cswap(c=output, d1=input1, d2=input2)
-        self.h(output)
-        self.x(output)
-        return self
-
     def _check_idx(self, idx):
         if idx < 0 or idx >= self.size:
             raise IndexError(f'Index {idx} is out of the range')

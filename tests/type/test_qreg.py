@@ -323,24 +323,3 @@ def test_cphase_commutativity():
     q2 = qreg(3)
     q2.h(1).x(2).cphase(c=2, d=1, deg=33)
     assert(np.allclose(q1.state, q2.state))
-
-
-def test_swap_test():
-    q = qreg(3)
-    q.swap_test(input1=0, input2=1, output=2)
-    assert(q.measure(2) == 1)
-
-    q = qreg(3)
-    q.x(0)
-    q.swap_test(input1=0, input2=1, output=2)
-    assert(q.measure(2) == 0)
-
-    q = qreg(3)
-    q.h(0).h(1)
-    q.swap_test(input1=0, input2=1, output=2)
-    assert(q.measure(2) == 1)
-
-    # q = qreg(3)
-    # q.x(0).h(1)
-    # swap_test(q, input1=0, input2=1, output=2)
-    # assert(q.measure(2) == 0)
