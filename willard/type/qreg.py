@@ -70,7 +70,7 @@ class qint:
         self._check_idx(d)
         if c == d:
             raise IndexError(f'Index ({c},{d}) is not valid')
-        self.state = self.gb.cu(c=c, d=d, u=u).dot(self.state)
+        self.qreg.cu(c=self.offset + c, d=self.offset + d, u=u)
         return self
 
     def cx(self, c, d):
@@ -78,12 +78,7 @@ class qint:
         c: index of the condition qubit
         d: index of the destination qubit
         """
-        self._check_idx(c)
-        self._check_idx(d)
-        if c == d:
-            raise IndexError(f'Index ({c},{d}) is not valid')
-        self.qreg.cx(self.offset + c, self.offset + d)
-        return self
+        return self.cu(c=c, d=d, u=gate.x)
 
     def cphase(self, deg, c, d):
         """
@@ -92,8 +87,8 @@ class qint:
         """
         return self.cu(c=c, d=d, u=gate.phase(deg))
 
-    def swap(self, *, c, d):
-        self.cnot(c=c, d=d).cnot(c=d, d=c).cnot(c=c, d=d)
+    def swap(self, c, d):
+        self.cx(c, d).cx(d, c).cx(c, d)
 
     def toffoli(self, *, c1, c2, d):
         self._check_idx(c1)
@@ -101,8 +96,8 @@ class qint:
         self._check_idx(d)
         if 3 > len(set([c1, c2, d])):
             raise IndexError(f'Index ({c1},{c2},{d}) is not valid')
-
-        self.state = self.gb.toffoli(c1=c1, c2=c2, d=d).dot(self.state)
+        self.qreg.toffoli(c1=self.offset + c1,
+                          c2=self.offset + c2, d=self.offset + d)
         return self
 
     def cswap(self, *, c, d1, d2):
@@ -129,7 +124,7 @@ class qreg:
     def __init__(self, size) -> None:
         if size < 1:
             raise ValueError(
-                f"num_bits should be bigger than 0. Got {size}")
+                f"size should be bigger than 0. Got {size}")
         self.size = size
         self.gb = GateBuilder(size)
         self.state = state.ket('0' * size)
@@ -138,6 +133,9 @@ class qreg:
     def int(self, size) -> qint:
         q = qint(self, size, self.offset)
         self.offset += size
+        if self.offset > self.size:
+            raise ValueError(
+                "This register is already full. Please try creating another register with larger size")
         return q
 
     def reset(self):
