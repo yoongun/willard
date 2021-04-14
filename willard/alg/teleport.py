@@ -4,9 +4,6 @@ from willard.type import qint, qreg
 def teleport(qr: qreg, alice: qint, channel: qint, bob: qint):
     # Preparing payload
     alice.h(0).phase(45, 0).h(0)
-    print(alice[0])
-    print(channel[0])
-    print(bob[0])
 
     # Send
     channel.h(0)
@@ -24,13 +21,3 @@ def teleport(qr: qreg, alice: qint, channel: qint, bob: qint):
 
     # Verify
     bob.h(0).phase(-45, 0).h(0)
-    channel.h(0)
-    qr.cx(c=channel[0], d=bob[0])
-    qr.cx(c=alice[0], d=channel[0])
-    alice.h(0)
-    a_result = alice.measure(0)
-    ch_result = channel.measure(0)
-    if ch_result:
-        bob.x(0)
-    if a_result:
-        bob.phase(180, 0)

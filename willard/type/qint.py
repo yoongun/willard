@@ -1,8 +1,15 @@
 class qint:
-    def __init__(self, qreg, size, offset, init_value):
+    def __init__(self, qreg, size: int, offset: int, init_value: int) -> None:
         self.qreg = qreg
         self.size = size
         self.offset = offset
+        b = format(init_value, 'b')
+        if len(b) > size:
+            raise ValueError("init_value is bigger than the size of qint.")
+        b_rev = b[::-1]
+        for i, elem in enumerate(b_rev):
+            if elem == '1':
+                self.x(i)
 
     def __getitem__(self, idx):
         self._check_idx(idx)
