@@ -1,14 +1,17 @@
-from willard.type import qint
+from willard.type import qint, qreg
 
 
-def teleport(self, alice: qint, channel: qint, bob: qint):
+def teleport(qr: qreg, alice: qint, channel: qint, bob: qint):
     # Preparing payload
     alice.h(0).phase(45, 0).h(0)
+    print(alice[0])
+    print(channel[0])
+    print(bob[0])
 
     # Send
     channel.h(0)
-    self.cx(channel[0], bob[0])
-    self.cx(alice[0], channel[0])
+    qr.cx(channel[0], bob[0])
+    qr.cx(alice[0], channel[0])
     alice.h(0)
     a_result = alice.measure(0)
     ch_result = channel.measure(0)
@@ -21,12 +24,13 @@ def teleport(self, alice: qint, channel: qint, bob: qint):
 
     # Verify
     bob.h(0).phase(-45, 0).h(0)
-    self.h(channel).cx(c=channel, d=bob)
-    self.cx(c=alice, d=channel).h(alice)
-    a_result = self.measure(alice)
-    ch_result = self.measure(channel)
+    channel.h(0)
+    qr.cx(c=channel[0], d=bob[0])
+    qr.cx(c=alice[0], d=channel[0])
+    alice.h(0)
+    a_result = alice.measure(0)
+    ch_result = channel.measure(0)
     if ch_result:
-        self.x(bob)
+        bob.x(0)
     if a_result:
-        self.phase(deg=180, idx=bob)
-    return self
+        bob.phase(180, 0)
