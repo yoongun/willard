@@ -141,7 +141,7 @@ class qreg:
         return q
 
     def reset(self):
-        self.state = state.ket('0' * self.num_bits)
+        self.state = state.ket('0' * self.size)
         return self
 
     def x(self, idx):
@@ -226,8 +226,8 @@ class qreg:
         """
         return self.cu(c=c, d=d, u=gate.phase(deg))
 
-    def swap(self, *, c, d):
-        self.cnot(c=c, d=d).cnot(c=d, d=c).cnot(c=c, d=d)
+    def swap(self, c, d):
+        self.cx(c, d).cx(d, c).cx(c, d)
 
     def toffoli(self, *, c1, c2, d):
         self._check_idx(c1)
