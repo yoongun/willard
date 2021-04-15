@@ -67,7 +67,7 @@ class qint:
     def measure_all(self):
         result = ''
         for i in range(self.size):
-            result.insert(0, self.qreg.measure(self.offset + i))
+            result = str(self.qreg.measure(self.offset + i)) + result
         return int(result, 2)
 
     def cu(self, *, c, d, u):
