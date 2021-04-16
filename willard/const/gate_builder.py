@@ -125,6 +125,13 @@ class GateBuilder:
                 cu_1 = np.kron(gate.i, cu_1)
         return cu_0 + cu_1
 
+    def ncu(self, cs: list, d: int, u: GateType):
+        for c in cs:
+            self._check_idx(c)
+        self._check_idx(d)
+        if len(cs) + 1 > len(set([].append(cs).append(d))):
+            raise IndexError(f'Index ({cs},{d}) is not valid')
+
     def cnot(self, *, c, d):
         """
         c: index of the condition qubit

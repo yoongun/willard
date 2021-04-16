@@ -93,6 +93,10 @@ class qreg:
         self.state = self.gb.cu(c=c, d=d, u=u).dot(self.state)
         return self
 
+    def ncu(self, c: list, d: int, u):
+
+        pass
+
     def cx(self, c, d):
         """
         c: index of the condition qubit
