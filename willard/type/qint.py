@@ -137,6 +137,15 @@ class qint:
             for j in reversed(range(i)):
                 cs.append(j)
             self.ncu(cs=cs, d=i, u=gate.x)
+        return self
+
+    def dec(self):
+        for i in range(self.size):
+            cs = []
+            for j in range(i):
+                cs.append(j)
+            self.ncu(cs=cs, d=i, u=gate.x)
+        return self
 
     def _check_idx(self, idx):
         if idx < 0 or idx >= self.size:
