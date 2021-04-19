@@ -32,5 +32,19 @@ def test_dec():
     assert(got == want)
 
 
-def test_add():
-    pytest.failure()
+# def test_add():
+#     qr = qreg(6)
+#     q1 = qr.int(3, 3)
+#     q2 = qr.int(3, 4)
+#     q1.add(q2)
+#     got = q1.measure_all()
+#     want = 7
+#     assert(got == want)
+
+#     qr = qreg(6)
+#     q1 = qr.int(3, 4)
+#     q2 = qr.int(3, 1)
+#     q1.add(q2)
+#     got = q1.measure_all()
+#     want = 5
+#     assert(got == want)
