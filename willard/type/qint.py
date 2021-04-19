@@ -1,3 +1,6 @@
+from willard.const import gate
+
+
 class qint:
     def __init__(self, qreg, size: int, offset: int, init_value: int) -> None:
         self.qreg = qreg
@@ -82,6 +85,10 @@ class qint:
         self.qreg.cu(c=self.offset + c, d=self.offset + d, u=u)
         return self
 
+    def ncu(self, cs: list, d: int, u):
+        self.qreg.ncu(cs=[self.offset + c for c in cs], d=self.offset + d, u=u)
+        return self
+
     def cx(self, c, d):
         """
         c: index of the condition qubit
@@ -125,7 +132,11 @@ class qint:
         return self
 
     def inc(self):
-        pass
+        for i in reversed(range(self.size)):
+            cs = []
+            for j in reversed(range(i)):
+                cs.append(j)
+            self.ncu(cs=cs, d=i, u=gate.x)
 
     def _check_idx(self, idx):
         if idx < 0 or idx >= self.size:

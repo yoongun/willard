@@ -93,9 +93,14 @@ class qreg:
         self.state = self.gb.cu(c=c, d=d, u=u).dot(self.state)
         return self
 
-    def ncu(self, c: list, d: int, u):
-
-        pass
+    def ncu(self, cs: list, d: int, u):
+        for c in cs:
+            self._check_idx(c)
+        self._check_idx(d)
+        if len(cs) + 1 > len([*cs, d]):
+            raise IndexError(f'Index ({cs},{d}) is not valid')
+        self.state = self.gb.ncu(cs=cs, d=d, u=u).dot(self.state)
+        return self
 
     def cx(self, c, d):
         """
