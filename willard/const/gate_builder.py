@@ -134,34 +134,26 @@ class GateBuilder:
             raise IndexError(f'Index ({cs},{d}) is not valid')
 
         temp = []
-        for _ in range(2 ** self.num_bits):
+        for _ in range(2 ** len(cs)):
             temp.append([[1]])
-        values = set(range(2 ** self.num_bits))
+        values = set(range(2 ** len(cs)))
         for i in range(self.num_bits):
             if i in cs:
-                targets = set([x | 2 ** i for x in values])
+                targets = set([x | 2 ** cs.index(i) for x in values])
                 nontargets = values - targets
-                print(targets)
-                print(nontargets)
                 for t in targets:
                     temp[t] = np.kron(gate.subspace_1, temp[t])
                 for nt in nontargets:
                     temp[nt] = np.kron(gate.subspace_0, temp[nt])
             elif i == d:
-                idx = (2 ** self.num_bits - 1) - (2 ** i)
-                print(idx)
-                temp[idx] = np.kron(u, temp[idx])
-                for j in range(2 ** self.num_bits):
-                    if j == idx:
-                        continue
+                temp[-1] = np.kron(u, temp[-1])
+                for j in range(2 ** len(cs) - 1):
                     temp[j] = np.kron(gate.i, temp[j])
             else:
-                for j in range(2 ** self.num_bits):
+                for j in range(2 ** len(cs)):
                     temp[j] = np.kron(gate.i, temp[j])
-        print(temp)
-        print(sum(temp))
         return sum(temp)
-        
+
     def cnot(self, *, c, d):
         """
         c: index of the condition qubit
