@@ -1,28 +1,31 @@
+import torch
 import numpy as np
+import math
 from willard.const import state
 
 
 class GateType:
     @property
     def x(self):
-        return np.array([[0., 1.], [1., 0.]])
+        return torch.tensor([[0., 1.], [1., 0.]], dtype=torch.cfloat)
 
     @property
     def rnot(self):
-        return np.array([[0.5 + 0.5j, 0.5 - 0.5j], [0.5 - 0.5j, 0.5 + 0.5j]])
+        return torch.tensor([[0.5 + 0.5j, 0.5 - 0.5j],
+                             [0.5 - 0.5j, 0.5 + 0.5j]], dtype=torch.cfloat)
 
     @property
     def y(self):
-        return np.array([[0., -1.j], [1.j, 0.]])
+        return torch.tensor([[0., -1.j], [1.j, 0.]], dtype=torch.cfloat)
 
     @property
     def z(self):
-        return np.array([[1., 0.], [0., -1.]])
+        return torch.tensor([[1., 0.], [0., -1.]], dtype=torch.cfloat)
 
     @property
     def h(self):
-        return np.array([[1. / np.sqrt(2), 1. / np.sqrt(2)],
-                         [1. / np.sqrt(2), -1. / np.sqrt(2)]])
+        return torch.tensor([[1. / np.sqrt(2), 1. / np.sqrt(2)],
+                             [1. / np.sqrt(2), -1. / np.sqrt(2)]], dtype=torch.cfloat)
 
     @property
     def s(self):
@@ -42,22 +45,22 @@ class GateType:
 
     def phase(self, deg):
         rad = deg / 180 * np.pi
-        return np.array([[1, 0.], [0., np.exp(1.j * rad)]])
+        return torch.tensor([[1, 0.], [0., np.exp(1.j * rad)]], dtype=torch.cfloat)
 
     def phase_dg(self, deg):
         return self.phase(-deg)
 
     @property
     def i(self):
-        return np.eye(2)
+        return torch.eye(2)
 
     @property
     def subspace_0(self):
-        return np.kron(state.ket('0').conj().T, state.ket('0'))
+        return torch.kron(state.ket('0').conj().T, state.ket('0'))
 
     @property
     def subspace_1(self):
-        return np.kron(state.ket('1').conj().T, state.ket('1'))
+        return torch.kron(state.ket('1').conj().T, state.ket('1'))
 
 
 gate = GateType()

@@ -1,3 +1,4 @@
+import torch
 import numpy as np
 from willard.const import state, gate, GateBuilder
 from willard.type import qint
@@ -27,27 +28,27 @@ class qreg:
 
     def x(self, idx):
         self._check_idx(idx)
-        self.state = self.gb.x(idx).dot(self.state)
+        self.state = self.gb.x(idx).mm(self.state)
         return self
 
     def rnot(self, idx):
         self._check_idx(idx)
-        self.state = self.gb.rnot(idx).dot(self.state)
+        self.state = self.gb.rnot(idx).mm(self.state)
         return self
 
     def y(self, idx):
         self._check_idx(idx)
-        self.state = self.gb.y(idx).dot(self.state)
+        self.state = self.gb.y(idx).mm(self.state)
         return self
 
     def z(self, idx):
         self._check_idx(idx)
-        self.state = self.gb.z(idx).dot(self.state)
+        self.state = self.gb.z(idx).mm(self.state)
         return self
 
     def h(self, idx):
         self._check_idx(idx)
-        self.state = self.gb.h(idx).dot(self.state)
+        self.state = self.gb.h(idx).mm(self.state)
         return self
 
     def s(self, idx):
@@ -64,7 +65,7 @@ class qreg:
 
     def phase(self, deg, idx):
         self._check_idx(idx)
-        self.state = self.gb.phase(deg, idx).dot(self.state)
+        self.state = self.gb.phase(deg, idx).mm(self.state)
         return self
 
     def phase_dg(self, *, deg, idx):
@@ -72,12 +73,13 @@ class qreg:
 
     def measure(self, idx):
         self._check_idx(idx)
-        prob_0 = self.state.conj().T.dot(self.gb.measure_0(idx).dot(self.state))
+        prob_0 = self.state.conj().T.mm(
+            self.gb.measure_0(idx).mm(self.state)).abs().item()
         if prob_0 >= np.random.rand():
-            self.state = self.gb.measure_0(idx).dot(
+            self.state = self.gb.measure_0(idx).mm(
                 self.state) / np.sqrt(prob_0)
             return 0
-        self.state = self.gb.measure_1(idx).dot(
+        self.state = self.gb.measure_1(idx).mm(
             self.state) / np.sqrt(1. - prob_0)
         return 1
 
@@ -90,7 +92,7 @@ class qreg:
         self._check_idx(d)
         if c == d:
             raise IndexError(f'Index ({c},{d}) is not valid')
-        self.state = self.gb.cu(c=c, d=d, u=u).dot(self.state)
+        self.state = self.gb.cu(c=c, d=d, u=u).mm(self.state)
         return self
 
     def ncu(self, cs: list, d: int, u):
@@ -99,7 +101,7 @@ class qreg:
         self._check_idx(d)
         if len(cs) + 1 > len([*cs, d]):
             raise IndexError(f'Index ({cs},{d}) is not valid')
-        self.state = self.gb.ncu(cs=cs, d=d, u=u).dot(self.state)
+        self.state = self.gb.ncu(cs=cs, d=d, u=u).mm(self.state)
         return self
 
     def cx(self, c, d):
@@ -126,7 +128,7 @@ class qreg:
         if 3 > len(set([c1, c2, d])):
             raise IndexError(f'Index ({c1},{c2},{d}) is not valid')
 
-        self.state = self.gb.toffoli(c1=c1, c2=c2, d=d).dot(self.state)
+        self.state = self.gb.toffoli(c1=c1, c2=c2, d=d).mm(self.state)
         return self
 
     def cswap(self, *, c, d1, d2):

@@ -11,55 +11,55 @@ def qucrumb():
 
 #     def x(self, idx):
 #         if idx == 0:
-#             self.state = np.kron(gate.i, gate.x).dot(self.state)
+#             self.state = torch.kron(gate.i, gate.x).mm(self.state)
 #             return self
 #         elif idx == 1:
-#             self.state = np.kron(gate.x, gate.i).dot(self.state)
+#             self.state = torch.kron(gate.x, gate.i).mm(self.state)
 #             return self
 #         raise IndexError('Index {idx} is out of the range')
 
 #     def y(self, idx):
 #         if idx == 0:
-#             self.state = np.kron(gate.i, gate.y).dot(self.state)
+#             self.state = torch.kron(gate.i, gate.y).mm(self.state)
 #             return self
 #         elif idx == 1:
-#             self.state = np.kron(gate.y, gate.i).dot(self.state)
+#             self.state = torch.kron(gate.y, gate.i).mm(self.state)
 #             return self
 #         raise IndexError('Index {idx} is out of the range')
 
 #     def z(self, idx):
 #         if idx == 0:
-#             self.state = np.kron(gate.i, gate.z).dot(self.state)
+#             self.state = torch.kron(gate.i, gate.z).mm(self.state)
 #             return self
 #         elif idx == 1:
-#             self.state = np.kron(gate.z, gate.i).dot(self.state)
+#             self.state = torch.kron(gate.z, gate.i).mm(self.state)
 #             return self
 #         raise IndexError('Index {idx} is out of the range')
 
 #     def h(self, idx):
 #         if idx == 0:
-#             self.state = np.kron(gate.i, gate.h).dot(self.state)
+#             self.state = torch.kron(gate.i, gate.h).mm(self.state)
 #             return self
 #         elif idx == 1:
-#             self.state = np.kron(gate.h, gate.i).dot(self.state)
+#             self.state = torch.kron(gate.h, gate.i).mm(self.state)
 #             return self
 #         raise IndexError('Index {idx} is out of the range')
 
 #     def s(self, idx):
 #         if idx == 0:
-#             self.state = np.kron(gate.i, gate.s).dot(self.state)
+#             self.state = torch.kron(gate.i, gate.s).mm(self.state)
 #             return self
 #         elif idx == 1:
-#             self.state = np.kron(gate.s, gate.i).dot(self.state)
+#             self.state = torch.kron(gate.s, gate.i).mm(self.state)
 #             return self
 #         raise IndexError('Index {idx} is out of the range')
 
 #     def t(self, idx):
 #         if idx == 0:
-#             self.state = np.kron(gate.i, gate.t).dot(self.state)
+#             self.state = torch.kron(gate.i, gate.t).mm(self.state)
 #             return self
 #         elif idx == 1:
-#             self.state = np.kron(gate.t, gate.i).dot(self.state)
+#             self.state = torch.kron(gate.t, gate.i).mm(self.state)
 #             return self
 #         raise IndexError('Index {idx} is out of the range')
 
@@ -68,18 +68,18 @@ def qucrumb():
 #         c: index of the condition qubit
 #         d: index of the destination qubit
 #         """
-#         subspace_0 = np.kron(state.ket_0.conj().T, state.ket_0)
-#         subspace_1 = np.kron(state.ket_1.conj().T, state.ket_1)
+#         subspace_0 = torch.kron(state.ket_0.conj().T, state.ket_0)
+#         subspace_1 = torch.kron(state.ket_1.conj().T, state.ket_1)
 #         if c == 0 and d == 1:
-#             cnot_0 = np.kron(gate.i, subspace_0)
-#             cnot_1 = np.kron(gate.x, subspace_1)
+#             cnot_0 = torch.kron(gate.i, subspace_0)
+#             cnot_1 = torch.kron(gate.x, subspace_1)
 #             cnot = cnot_0 + cnot_1
-#             self.state = cnot.dot(self.state)
+#             self.state = cnot.mm(self.state)
 #         elif c == 1 and d == 0:
-#             cnot_0 = np.kron(subspace_0, gate.i)
-#             cnot_1 = np.kron(subspace_1, gate.x)
+#             cnot_0 = torch.kron(subspace_0, gate.i)
+#             cnot_1 = torch.kron(subspace_1, gate.x)
 #             cnot = cnot_0 + cnot_1
-#             self.state = cnot.dot(self.state)
+#             self.state = cnot.mm(self.state)
 #         else:
 #             raise IndexError('Index ({c},{d}) is not valid')
 #         return self

@@ -1,6 +1,5 @@
-import numpy as np
 from willard.const import gate, GateType
-import itertools
+import torch
 
 
 class GateBuilder:
@@ -8,151 +7,160 @@ class GateBuilder:
         self.num_bits = num_bits
 
     def x(self, idx):
-        result = [[1]]
+        result = torch.tensor([[1]], dtype=torch.cfloat)
         for i in range(self.num_bits):
             if i == idx:
-                result = np.kron(gate.x, result)
+                result = torch.kron(gate.x, result)
             else:
-                result = np.kron(gate.i, result)
+                result = torch.kron(gate.i, result)
         return result
 
     def rnot(self, idx):
-        result = [[1]]
+        result = torch.tensor([[1]], dtype=torch.cfloat)
         for i in range(self.num_bits):
             if i == idx:
-                result = np.kron(gate.rnot, result)
+                result = torch.kron(gate.rnot, result)
             else:
-                result = np.kron(gate.i, result)
+                result = torch.kron(gate.i, result)
         return result
 
     def y(self, idx):
-        result = [[1]]
+        result = torch.tensor([[1]], dtype=torch.cfloat)
         for i in range(self.num_bits):
             if i == idx:
-                result = np.kron(gate.y, result)
+                result = torch.kron(gate.y, result)
             else:
-                result = np.kron(gate.i, result)
+                result = torch.kron(gate.i, result)
         return result
 
     def z(self, idx):
-        result = [[1]]
+        result = torch.tensor([[1]], dtype=torch.cfloat)
         for i in range(self.num_bits):
             if i == idx:
-                result = np.kron(gate.z, result)
+                result = torch.kron(gate.z, result)
             else:
-                result = np.kron(gate.i, result)
+                result = torch.kron(gate.i, result)
         return result
 
     def h(self, idx):
-        result = [[1]]
+        result = torch.tensor([[1]], dtype=torch.cfloat)
         for i in range(self.num_bits):
             if i == idx:
-                result = np.kron(gate.h, result)
+                result = torch.kron(gate.h, result)
             else:
-                result = np.kron(gate.i, result)
+                result = torch.kron(gate.i, result)
         return result
 
     def s(self, idx):
-        result = [[1]]
+        result = torch.tensor([[1]], dtype=torch.cfloat)
         for i in range(self.num_bits):
             if i == idx:
-                result = np.kron(gate.s, result)
+                result = torch.kron(gate.s, result)
             else:
-                result = np.kron(gate.i, result)
+                result = torch.kron(gate.i, result)
         return result
 
     def t(self, idx):
-        result = [[1]]
+        result = torch.tensor([[1]], dtype=torch.cfloat)
         for i in range(self.num_bits):
             if i == idx:
-                result = np.kron(gate.t, result)
+                result = torch.kron(gate.t, result)
             else:
-                result = np.kron(gate.i, result)
+                result = torch.kron(gate.i, result)
         return result
 
     def phase(self, deg, idx):
-        result = [[1]]
+        result = torch.tensor([[1]], dtype=torch.cfloat)
         for i in range(self.num_bits):
             if i == idx:
-                result = np.kron(gate.phase(deg), result)
+                result = torch.kron(gate.phase(deg), result)
             else:
-                result = np.kron(gate.i, result)
+                result = torch.kron(gate.i, result)
         return result
 
     def measure_0(self, idx):
-        result = [[1]]
+        result = torch.tensor([[1]], dtype=torch.cfloat)
         for i in range(self.num_bits):
             if i == idx:
-                result = np.kron(gate.subspace_0, result)
+                result = torch.kron(gate.subspace_0, result)
             else:
-                result = np.kron(gate.i, result)
+                result = torch.kron(gate.i, result)
         return result
 
     def measure_1(self, idx):
-        result = [[1]]
+        result = torch.tensor([[1]], dtype=torch.cfloat)
         for i in range(self.num_bits):
             if i == idx:
-                result = np.kron(gate.subspace_1, result)
+                result = torch.kron(gate.subspace_1, result)
             else:
-                result = np.kron(gate.i, result)
+                result = torch.kron(gate.i, result)
         return result
 
     def i(self):
-        result = [[1]]
+        result = torch.tensor([[1]], dtype=torch.cfloat)
         for _ in range(self.num_bits):
-            result = np.kron(gate.i, result)
+            result = torch.kron(gate.i, result)
         return result
 
     def cu(self, *, c, d, u: GateType):
         """
         c: index of the condition qubit
         d: index of the destination qubit
+        u: gate to apply on destination qubit
         """
         self._check_idx(c)
         self._check_idx(d)
         if c == d:
             raise IndexError(f'Index ({c},{d}) is not valid')
-        cu_0 = [[1]]
-        cu_1 = [[1]]
+        cu_0 = torch.tensor([[1]])
+        cu_1 = torch.tensor([[1]])
         for i in range(self.num_bits):
             if i == c:
-                cu_0 = np.kron(gate.subspace_0, cu_0)
-                cu_1 = np.kron(gate.subspace_1, cu_1)
+                cu_0 = torch.kron(gate.subspace_0, cu_0)
+                cu_1 = torch.kron(gate.subspace_1, cu_1)
             elif i == d:
-                cu_0 = np.kron(gate.i, cu_0)
-                cu_1 = np.kron(u, cu_1)
+                cu_0 = torch.kron(gate.i, cu_0)
+                cu_1 = torch.kron(u, cu_1)
             else:
-                cu_0 = np.kron(gate.i, cu_0)
-                cu_1 = np.kron(gate.i, cu_1)
+                cu_0 = torch.kron(gate.i, cu_0)
+                cu_1 = torch.kron(gate.i, cu_1)
         return cu_0 + cu_1
 
     def ncu(self, cs: list, d: int, u: GateType):
+        """
+        cs: list of index of control qubits
+        d: index of destination qubit
+        u: gate to apply on destination qubit
+        """
         for c in cs:
             self._check_idx(c)
         self._check_idx(d)
         if len(cs) + 1 > len([*cs, d]):
             raise IndexError(f'Index ({cs},{d}) is not valid')
 
-        temp = []
+        submatrices = []
         for _ in range(2 ** len(cs)):
-            temp.append([[1]])
+            submatrices.append(torch.tensor([[1]], dtype=torch.cfloat))
         values = set(range(2 ** len(cs)))
+
         for i in range(self.num_bits):
             if i in cs:
                 targets = set([x | 2 ** cs.index(i) for x in values])
                 nontargets = values - targets
                 for t in targets:
-                    temp[t] = np.kron(gate.subspace_1, temp[t])
+                    submatrices[t] = torch.kron(
+                        gate.subspace_1, submatrices[t])
                 for nt in nontargets:
-                    temp[nt] = np.kron(gate.subspace_0, temp[nt])
+                    submatrices[nt] = torch.kron(
+                        gate.subspace_0, submatrices[nt])
             elif i == d:
-                temp[-1] = np.kron(u, temp[-1])
+                submatrices[-1] = torch.kron(u, submatrices[-1])
                 for j in range(2 ** len(cs) - 1):
-                    temp[j] = np.kron(gate.i, temp[j])
+                    submatrices[j] = torch.kron(gate.i, submatrices[j])
             else:
                 for j in range(2 ** len(cs)):
-                    temp[j] = np.kron(gate.i, temp[j])
-        return sum(temp)
+                    submatrices[j] = torch.kron(gate.i, submatrices[j])
+        return sum(submatrices)
 
     def cnot(self, *, c, d):
         """
@@ -162,7 +170,7 @@ class GateBuilder:
         return self.cu(c=c, d=d, u=gate.x)
 
     def swap(self, *, d1, d2):
-        return self.cnot(c=d1, d=d2).dot(self.cnot(c=d1, d=d2)).dot(self.cnot(c=d1, d=d2))
+        return self.cnot(c=d1, d=d2).mm(self.cnot(c=d1, d=d2)).mm(self.cnot(c=d1, d=d2))
 
     def toffoli(self, *, c1, c2, d):
         return self.ncu([c1, c2], d, gate.x)
@@ -177,29 +185,29 @@ class GateBuilder:
         # t11 = [[1]]
         # for i in range(self.num_bits):
         #     if i == c1:
-        #         t00 = np.kron(gate.subspace_0, t00)
-        #         t01 = np.kron(gate.subspace_1, t01)
-        #         t10 = np.kron(gate.subspace_0, t10)
-        #         t11 = np.kron(gate.subspace_1, t11)
+        #         t00 = torch.kron(gate.subspace_0, t00)
+        #         t01 = torch.kron(gate.subspace_1, t01)
+        #         t10 = torch.kron(gate.subspace_0, t10)
+        #         t11 = torch.kron(gate.subspace_1, t11)
         #     elif i == c2:
-        #         t00 = np.kron(gate.subspace_0, t00)
-        #         t01 = np.kron(gate.subspace_0, t01)
-        #         t10 = np.kron(gate.subspace_1, t10)
-        #         t11 = np.kron(gate.subspace_1, t11)
+        #         t00 = torch.kron(gate.subspace_0, t00)
+        #         t01 = torch.kron(gate.subspace_0, t01)
+        #         t10 = torch.kron(gate.subspace_1, t10)
+        #         t11 = torch.kron(gate.subspace_1, t11)
         #     elif i == d:
-        #         t00 = np.kron(gate.i, t00)
-        #         t01 = np.kron(gate.i, t01)
-        #         t10 = np.kron(gate.i, t10)
-        #         t11 = np.kron(gate.x, t11)
+        #         t00 = torch.kron(gate.i, t00)
+        #         t01 = torch.kron(gate.i, t01)
+        #         t10 = torch.kron(gate.i, t10)
+        #         t11 = torch.kron(gate.x, t11)
         #     else:
-        #         t00 = np.kron(gate.i, t00)
-        #         t01 = np.kron(gate.i, t01)
-        #         t10 = np.kron(gate.i, t10)
-        #         t11 = np.kron(gate.i, t11)
+        #         t00 = torch.kron(gate.i, t00)
+        #         t01 = torch.kron(gate.i, t01)
+        #         t10 = torch.kron(gate.i, t10)
+        #         t11 = torch.kron(gate.i, t11)
         # return t00 + t01 + t10 + t11
 
     def cswap(self, *, c, d1, d2):
-        return self.toffoli(c1=c, c2=d1, d=d2).dot(self.toffoli(c1=c, c2=d2, d=d1)).dot(self.toffoli(c1=c, c2=d1, d=d2))
+        return self.toffoli(c1=c, c2=d1, d=d2).mm(self.toffoli(c1=c, c2=d2, d=d1)).mm(self.toffoli(c1=c, c2=d1, d=d2))
 
     def _check_idx(self, idx):
         if idx < 0 or idx >= self.num_bits:

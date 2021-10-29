@@ -9,19 +9,19 @@ def qubit():
 #         self.state = state.ket_0
 
 #     def x(self):
-#         self.state = gate.x.dot(self.state)
+#         self.state = gate.x.mm(self.state)
 #         return self
 
 #     def y(self):
-#         self.state = gate.y.dot(self.state)
+#         self.state = gate.y.mm(self.state)
 #         return self
 
 #     def z(self):
-#         self.state = gate.z.dot(self.state)
+#         self.state = gate.z.mm(self.state)
 #         return self
 
 #     def h(self):
-#         self.state = gate.h.dot(self.state)
+#         self.state = gate.h.mm(self.state)
 #         return self
 
 #     def s(self):
@@ -41,9 +41,9 @@ def qubit():
 #         return self
 
 #     def phase(self, deg):
-#         rad = deg / 180 * np.pi
-#         phase = np.array([[1, 0.], [0., np.exp(1.j * rad)]])
-#         self.state = phase.dot(self.state)
+#         rad = deg / 180 * torch.pi
+#         phase = torch.tensor([[1, 0.], [0., torch.exp(1.j * rad)]])
+#         self.state = phase.mm(self.state)
 #         return self
 
 #     def phase_dg(self, deg):
@@ -51,7 +51,7 @@ def qubit():
 
 #     def measure(self):
 #         prob_0 = self.state[0] ** 2
-#         if prob_0 >= np.random.rand():
+#         if prob_0 >= torch.random.rand():
 #             self.state = state.ket_0
 #             return 0
 #         self.state = state.ket_1
