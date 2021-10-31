@@ -4,7 +4,7 @@ from willard.type import qreg
 
 def test_inc():
     qr = qreg(3)
-    q = qr.int(3, 0)
+    q = qr.uint(3, 0)
     q.inc()
     got = q.measure_all()
     want = 1
@@ -19,7 +19,7 @@ def test_inc():
 
 def test_dec():
     qr = qreg(3)
-    q = qr.int(3, 7)
+    q = qr.uint(3, 7)
     q.dec()
     got = q.measure_all()
     want = 6

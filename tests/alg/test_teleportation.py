@@ -24,9 +24,9 @@ from willard.alg.teleport import teleport
 
 def test_teleportation():
     qr = qreg(3)
-    alice = qr.int(1, 1)
-    channel = qr.int(1, 0)
-    bob = qr.int(1, 0)
+    alice = qr.uint(1, 1)
+    channel = qr.uint(1, 0)
+    bob = qr.uint(1, 0)
 
     teleport(qr, alice, channel, bob)
 

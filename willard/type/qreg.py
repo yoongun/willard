@@ -13,7 +13,7 @@ class qreg:
         self.state = dirac.ket('0' * size)
         self._offset = 0
 
-    def int(self, size, init_value) -> quint:
+    def uint(self, size, init_value) -> quint:
         q = quint(self, size, self._offset, init_value)
         if self._offset + size > self.size:
             raise ValueError(
@@ -94,7 +94,7 @@ class qreg:
         self.state = self.gb.cu(c=c, d=d, u=u).mm(self.state)
         return self
 
-    def ncu(self, cs: list, d: int, u):
+    def ncu(self, cs: list, d: uint, u):
         for c in cs:
             self._check_idx(c)
         self._check_idx(d)
