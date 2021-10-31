@@ -333,3 +333,7 @@ def test_cphase_commutativity():
     q2 = qreg(3)
     q2.h(1).x(2).cphase(c=2, d=1, deg=33)
     assert(torch.allclose(q1.state, q2.state))
+
+
+def test_measure():
+    pytest.fail()
