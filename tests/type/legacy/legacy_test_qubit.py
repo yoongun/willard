@@ -1,12 +1,12 @@
 import torch
 from willard.type import qubit
-from willard.const import state
+from willard.const import dirac
 
 
 def test_init_qubit():
     q = qubit()
     got = q.state
-    want = state.ket('0')
+    want = dirac.ket('0')
     assert(torch.equal(got, want))
 
 
@@ -14,7 +14,7 @@ def test_reset():
     q = qubit()
     q.x(0).reset()
     got = q.state
-    want = state.ket('0')
+    want = dirac.ket('0')
     assert(torch.equal(got, want))
 
 

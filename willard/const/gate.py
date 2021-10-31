@@ -1,6 +1,6 @@
 import torch
 import numpy as np
-from willard.const import state
+from willard.const import dirac
 
 
 class GateType:
@@ -55,11 +55,11 @@ class GateType:
 
     @property
     def subspace_0(self):
-        return torch.kron(state.ket('0').conj().T, state.ket('0'))
+        return torch.kron(dirac.ket('0').conj().T, dirac.ket('0'))
 
     @property
     def subspace_1(self):
-        return torch.kron(state.ket('1').conj().T, state.ket('1'))
+        return torch.kron(dirac.ket('1').conj().T, dirac.ket('1'))
 
 
 gate = GateType()

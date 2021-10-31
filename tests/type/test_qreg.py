@@ -2,16 +2,16 @@ import pytest
 import torch
 import numpy as np
 from willard.type import qreg
-from willard.const import state
+from willard.const import dirac
 
 
 def test_init_qreg():
     got = qreg(1).state
-    want = state.ket('0')
+    want = dirac.ket('0')
     assert(torch.equal(got, want))
 
     got = qreg(2).state
-    want = state.ket('00')
+    want = dirac.ket('00')
     assert(torch.equal(got, want))
 
     with pytest.raises(ValueError):
@@ -25,7 +25,7 @@ def test_reset():
     q = qreg(2)
     q.x(0).x(1).reset()
     got = q.state
-    want = state.ket('00')
+    want = dirac.ket('00')
     assert(torch.equal(got, want))
 
 
@@ -34,14 +34,14 @@ def test_x_gate():
     q = qreg(2)
     q.x(0)
     got = q.state
-    want = state.ket('01')
+    want = dirac.ket('01')
     assert(torch.equal(got, want))
 
     # Case 2: Apply X gate on the second qubit
     q = qreg(2)
     q.x(1)
     got = q.state
-    want = state.ket('10')
+    want = dirac.ket('10')
     assert(torch.equal(q.state, torch.tensor(
         [[0.], [0.], [1.], [0.]], dtype=torch.cfloat)))
 
@@ -55,13 +55,13 @@ def test_rnot_gate():
     q = qreg(2)
     q.rnot(0).rnot(0)
     got = q.state
-    want = state.ket('01')
+    want = dirac.ket('01')
     assert(torch.equal(got, want))
 
     q = qreg(2)
     q.rnot(1).rnot(1)
     got = q.state
-    want = state.ket('10')
+    want = dirac.ket('10')
     assert(torch.equal(got, want))
 
 
@@ -91,14 +91,14 @@ def test_z_gate():
     q = qreg(2)
     q.z(0)
     got = q.state
-    want = state.ket('00')
+    want = dirac.ket('00')
     assert(torch.equal(got, want))
 
     # Case 2: Apply Z gate on the second qubit
     q = qreg(2)
     q.z(1)
     got = q.state
-    want = state.ket('00')
+    want = dirac.ket('00')
     assert(torch.equal(got, want))
 
     # Checks whether the code checks index range
@@ -135,14 +135,14 @@ def test_s_gate():
     q = qreg(2)
     q.s(0)
     got = q.state
-    want = state.ket('00')
+    want = dirac.ket('00')
     assert(torch.equal(got, want))
 
     # Case 2: Apply S gate on the second qubit
     q = qreg(2)
     q.s(1)
     got = q.state
-    want = state.ket('00')
+    want = dirac.ket('00')
     assert(torch.equal(q.state, torch.tensor(
         [[1.], [0.], [0.], [0.]], dtype=torch.cfloat)))
 
@@ -157,14 +157,14 @@ def test_t_gate():
     q = qreg(2)
     q.t(0)
     got = q.state
-    want = state.ket('00')
+    want = dirac.ket('00')
     assert(torch.equal(got, want))
 
     # Case 2: Apply S gate on the second qubit
     q = qreg(2)
     q.t(1)
     got = q.state
-    want = state.ket('00')
+    want = dirac.ket('00')
     assert(torch.equal(got, want))
 
     # Checks whether the code checks index range
@@ -195,21 +195,21 @@ def test_dagger_gates():
     q = qreg(2)
     q.s(0).s_dg(0)
     got = q.state
-    want = state.ket('00')
+    want = dirac.ket('00')
     assert(torch.equal(got, want))
 
     # Test case 2 (t dagger)
     q = qreg(2)
     q.t(1).t_dg(1)
     got = q.state
-    want = state.ket('00')
+    want = dirac.ket('00')
     assert(torch.equal(got, want))
 
     # Test case 3 (phase dagger)
     q = qreg(2)
     q.phase(deg=30, idx=0).phase_dg(deg=30, idx=0)
     got = q.state
-    want = state.ket('00')
+    want = dirac.ket('00')
     assert(torch.equal(got, want))
 
 
@@ -264,14 +264,14 @@ def test_swap():
     q = qreg(2)
     q.x(0).swap(c=0, d=1)
     got = q.state
-    want = state.ket('10')
+    want = dirac.ket('10')
     assert(torch.equal(got, want))
 
     # Case 1: From qubit1 to qubit0
     q = qreg(2)
     q.x(1).swap(c=0, d=1)
     got = q.state
-    want = state.ket('01')
+    want = dirac.ket('01')
     assert(torch.equal(got, want))
 
 
@@ -293,28 +293,28 @@ def test_toffoli_gate():
     q = qreg(3)
     q.toffoli(c1=0, c2=1, d=2)
     got = q.state
-    want = state.ket('000')
+    want = dirac.ket('000')
     assert(torch.equal(got, want))
 
     q = qreg(3)
     q.x(2)
     q.toffoli(c1=2, c2=1, d=0)
     got = q.state
-    want = state.ket('100')
+    want = dirac.ket('100')
     assert(torch.equal(got, want))
 
     q = qreg(3)
     q.x(1)
     q.toffoli(c1=2, c2=1, d=0)
     got = q.state
-    want = state.ket('010')
+    want = dirac.ket('010')
     assert(torch.equal(got, want))
 
     q = qreg(3)
     q.x(0).x(2)
     q.toffoli(c1=0, c2=2, d=1)
     got = q.state
-    want = state.ket('111')
+    want = dirac.ket('111')
     assert(torch.equal(got, want))
 
     with pytest.raises(IndexError):

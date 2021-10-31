@@ -17,4 +17,4 @@ class StateType:
         return state
 
 
-state = StateType()
+dirac = StateType()

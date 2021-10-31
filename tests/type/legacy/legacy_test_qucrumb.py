@@ -1,13 +1,13 @@
 import pytest
 import torch
 from willard.type import qucrumb
-from willard.const import state
+from willard.const import dirac
 
 
 def test_init_qucrumb():
     q = qucrumb()
     got = q.state
-    want = state.ket('00')
+    want = dirac.ket('00')
     assert(torch.equal(got, want))
 
 
@@ -15,7 +15,7 @@ def test_reset():
     q = qucrumb()
     q.x(0).x(1).reset()
     got = q.state
-    want = state.ket('00')
+    want = dirac.ket('00')
     assert(torch.equal(got, want))
 
 
@@ -24,14 +24,14 @@ def test_x_gate():
     q = qucrumb()
     q.x(0)
     got = q.state
-    want = state.ket('01')
+    want = dirac.ket('01')
     assert(torch.equal(got, want))
 
     # Case 2: Apply X gate on the second qubit
     q = qucrumb()
     q.x(1)
     got = q.state
-    want = state.ket('10')
+    want = dirac.ket('10')
     assert(torch.equal(q.state, torch.tensor([[0.], [0.], [1.], [0.]])))
 
     # Checks whether the code checks index range
@@ -44,13 +44,13 @@ def test_rnot_gate():
     q = qucrumb()
     q.rnot(0).rnot(0)
     got = q.state
-    want = state.ket('01')
+    want = dirac.ket('01')
     assert(torch.equal(got, want))
 
     q = qucrumb()
     q.rnot(1).rnot(1)
     got = q.state
-    want = state.ket('10')
+    want = dirac.ket('10')
     assert(torch.equal(got, want))
 
 
@@ -80,14 +80,14 @@ def test_z_gate():
     q = qucrumb()
     q.z(0)
     got = q.state
-    want = state.ket('00')
+    want = dirac.ket('00')
     assert(torch.equal(got, want))
 
     # Case 2: Apply Z gate on the second qubit
     q = qucrumb()
     q.z(1)
     got = q.state
-    want = state.ket('00')
+    want = dirac.ket('00')
     assert(torch.equal(got, want))
 
     # Checks whether the code checks index range
@@ -124,14 +124,14 @@ def test_s_gate():
     q = qucrumb()
     q.s(0)
     got = q.state
-    want = state.ket('00')
+    want = dirac.ket('00')
     assert(torch.equal(got, want))
 
     # Case 2: Apply S gate on the second qubit
     q = qucrumb()
     q.s(1)
     got = q.state
-    want = state.ket('00')
+    want = dirac.ket('00')
     assert(torch.equal(q.state, torch.tensor([[1.], [0.], [0.], [0.]])))
 
     # Checks whether the code checks index range
@@ -145,14 +145,14 @@ def test_t_gate():
     q = qucrumb()
     q.t(0)
     got = q.state
-    want = state.ket('00')
+    want = dirac.ket('00')
     assert(torch.equal(got, want))
 
     # Case 2: Apply S gate on the second qubit
     q = qucrumb()
     q.t(1)
     got = q.state
-    want = state.ket('00')
+    want = dirac.ket('00')
     assert(torch.equal(got, want))
 
     # Checks whether the code checks index range
@@ -182,21 +182,21 @@ def test_dagger_gates():
     q = qucrumb()
     q.s(0).s_dg(0)
     got = q.state
-    want = state.ket('00')
+    want = dirac.ket('00')
     assert(torch.equal(got, want))
 
     # Test case 2 (t dagger)
     q = qucrumb()
     q.t(1).t_dg(1)
     got = q.state
-    want = state.ket('00')
+    want = dirac.ket('00')
     assert(torch.equal(got, want))
 
     # Test case 3 (phase dagger)
     q = qucrumb()
     q.phase(deg=30, idx=0).phase_dg(deg=30, idx=0)
     got = q.state
-    want = state.ket('00')
+    want = dirac.ket('00')
     assert(torch.equal(got, want))
 
 
@@ -250,14 +250,14 @@ def test_swap():
     q = qucrumb()
     q.x(0).swap(c=0, d=1)
     got = q.state
-    want = state.ket('10')
+    want = dirac.ket('10')
     assert(torch.equal(got, want))
 
     # Case 1: From qubit1 to qubit0
     q = qucrumb()
     q.x(1).swap(c=0, d=1)
     got = q.state
-    want = state.ket('01')
+    want = dirac.ket('01')
     assert(torch.equal(got, want))
 
 
