@@ -1,7 +1,7 @@
 from willard.const import gate
 
 
-class qint:
+class quint:
     def __init__(self, qreg, size: int, offset: int, init_value: int) -> None:
         self.qreg = qreg
         self.size = size

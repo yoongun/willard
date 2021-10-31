@@ -1,4 +1,4 @@
-from willard.type import qreg, qint
+from willard.type import qreg, quint
 from willard.alg.swap_test import swap_test
 
 

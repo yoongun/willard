@@ -1,2 +1,2 @@
-from .qint import qint
+from .qint import quint
 from .qreg import qreg

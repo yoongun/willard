@@ -1,7 +1,7 @@
-from willard.type import qint, qreg
+from willard.type import quint, qreg
 
 
-def teleport(qr: qreg, alice: qint, channel: qint, bob: qint):
+def teleport(qr: qreg, alice: quint, channel: quint, bob: quint):
     if qr != alice.qreg or qr != channel.qreg or qr != bob.qreg:
         raise ValueError(
             "alice, channel, bob should be in the qreg passed with.")

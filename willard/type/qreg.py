@@ -1,6 +1,6 @@
 import numpy as np
-from willard.const import state, gate, GateBuilder
-from willard.type import qint
+from willard.const import dirac, gate, GateBuilder
+from willard.type import quint
 
 
 class qreg:
@@ -10,11 +10,11 @@ class qreg:
                 f"size should be bigger than 0. Got {size}")
         self.size = size
         self.gb = GateBuilder(size)
-        self.state = state.ket('0' * size)
+        self.state = dirac.ket('0' * size)
         self._offset = 0
 
-    def int(self, size, init_value) -> qint:
-        q = qint(self, size, self._offset, init_value)
+    def int(self, size, init_value) -> quint:
+        q = quint(self, size, self._offset, init_value)
         if self._offset + size > self.size:
             raise ValueError(
                 "This register is already full. Please try creating another register with larger size")
@@ -22,7 +22,7 @@ class qreg:
         return q
 
     def reset(self):
-        self.state = state.ket('0' * self.size)
+        self.state = dirac.ket('0' * self.size)
         return self
 
     def x(self, idx):
