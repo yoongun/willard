@@ -160,7 +160,7 @@ def test_measure():
     want = 0
     assert(got == want)
 
-    # Test case 2 (on state [1, 0])
+    # Test case 2 (on state [0, 1])
     q = qubit()
     got = q.x(0).measure(0)
     want = 1
