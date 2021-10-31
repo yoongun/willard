@@ -1,4 +1,3 @@
-import torch
 import numpy as np
 from willard.const import state, gate, GateBuilder
 from willard.type import qint
@@ -16,10 +15,10 @@ class qreg:
 
     def int(self, size, init_value) -> qint:
         q = qint(self, size, self._offset, init_value)
-        self._offset += size
-        if self._offset > self.size:
+        if self._offset + size > self.size:
             raise ValueError(
                 "This register is already full. Please try creating another register with larger size")
+        self._offset += size
         return q
 
     def reset(self):
