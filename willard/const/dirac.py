@@ -1,7 +1,7 @@
 import torch
 
 
-class StateType:
+class DiracType:
     def ket(self, bit_array: str):
         state = torch.tensor([[1.]], dtype=torch.cfloat)
         for bit in bit_array:
@@ -17,4 +17,4 @@ class StateType:
         return state
 
 
-dirac = StateType()
+dirac = DiracType()
