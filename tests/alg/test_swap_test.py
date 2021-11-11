@@ -7,8 +7,8 @@ def test_swap_test():
     input1 = qr.uint(1, 0)
     input2 = qr.uint(1, 0)
     output = qr.uint(1, 0)
-    swap_test(qr, input1, input2, output)
-    assert(output.measure(0) == 1)
+    swap_test(input1, input2, output)
+    assert(output[0].measure() == 1)
 
     # Test probability??
     # qr = qreg(3)

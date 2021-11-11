@@ -1,6 +1,5 @@
-import numpy as np
-from willard.const import dirac, gate, GateBuilder
-from willard.type import quint
+from willard.const import dirac
+from willard.type import quint, qbit, qbits
 
 
 class qreg:
@@ -9,9 +8,33 @@ class qreg:
             raise ValueError(
                 f"size should be bigger than 0. Got {size}")
         self.size = size
-        self.gb = GateBuilder(size)
         self.state = dirac.ket('0' * size)
         self._offset = 0
+
+    def __getitem__(self, idx):
+        if type(idx) == int:
+            self._check_idx(idx)
+            return qbit(self, idx)
+        elif type(idx) == slice:
+            indices = set(range(idx.start, idx.stop, idx.step))
+            for i in indices:
+                self._check_idx(i)
+            return qbits(self, indices)
+        elif type(idx) == tuple or type(idx) == list:
+            indices = set()
+            for i in idx:
+                if type(i) == slice:
+                    indices = indices | set(
+                        range(idx.start, idx.stop, idx.step))
+                    for i_ in indices:
+                        self._check_idx(i_)
+                elif type(i) == int:
+                    self._check_idx(i)
+                    indices.add(i)
+            return qbits(self, indices)
+
+    def __len__(self) -> int:
+        return self.size
 
     def uint(self, size, init_value) -> quint:
         q = quint(self, size, self._offset, init_value)
@@ -24,114 +47,6 @@ class qreg:
     def reset(self):
         self.state = dirac.ket('0' * self.size)
         return self
-
-    def x(self, idx):
-        self._check_idx(idx)
-        self.state = self.gb.x(idx).mm(self.state)
-        return self
-
-    def rnot(self, idx):
-        self._check_idx(idx)
-        self.state = self.gb.rnot(idx).mm(self.state)
-        return self
-
-    def y(self, idx):
-        self._check_idx(idx)
-        self.state = self.gb.y(idx).mm(self.state)
-        return self
-
-    def z(self, idx):
-        self._check_idx(idx)
-        self.state = self.gb.z(idx).mm(self.state)
-        return self
-
-    def h(self, idx):
-        self._check_idx(idx)
-        self.state = self.gb.h(idx).mm(self.state)
-        return self
-
-    def s(self, idx):
-        return self.phase(deg=90, idx=idx)
-
-    def s_dg(self, idx):
-        return self.phase_dg(deg=90, idx=idx)
-
-    def t(self, idx):
-        return self.phase(deg=45, idx=idx)
-
-    def t_dg(self, idx):
-        return self.phase_dg(deg=45, idx=idx)
-
-    def phase(self, deg, idx):
-        self._check_idx(idx)
-        self.state = self.gb.phase(deg, idx).mm(self.state)
-        return self
-
-    def phase_dg(self, *, deg, idx):
-        return self.phase(deg=-deg, idx=idx)
-
-    def measure(self, idx):
-        self._check_idx(idx)
-        prob_0 = self.state.conj().T.mm(
-            self.gb.measure_0(idx).mm(self.state)).abs().item()
-        if prob_0 >= np.random.rand():
-            self.state = self.gb.measure_0(idx).mm(
-                self.state) / np.sqrt(prob_0)
-            return 0
-        self.state = self.gb.measure_1(idx).mm(
-            self.state) / np.sqrt(1. - prob_0)
-        return 1
-
-    def cu(self, *, c, d, u):
-        """
-        c: index of the condition qubit
-        d: index of the destination qubit
-        """
-        self._check_idx(c)
-        self._check_idx(d)
-        if c == d:
-            raise IndexError(f'Index ({c},{d}) is not valid')
-        self.state = self.gb.cu(c=c, d=d, u=u).mm(self.state)
-        return self
-
-    def ncu(self, cs: list, d: uint, u):
-        for c in cs:
-            self._check_idx(c)
-        self._check_idx(d)
-        if len(cs) + 1 > len([*cs, d]):
-            raise IndexError(f'Index ({cs},{d}) is not valid')
-        self.state = self.gb.ncu(cs=cs, d=d, u=u).mm(self.state)
-        return self
-
-    def cx(self, c, d):
-        """
-        c: index of the condition qubit
-        d: index of the destination qubit
-        """
-        return self.cu(c=c, d=d, u=gate.x)
-
-    def cphase(self, *, c, d, deg):
-        """
-        c: index of the condition qubit
-        d: index of the destination qubit
-        """
-        return self.cu(c=c, d=d, u=gate.phase(deg))
-
-    def swap(self, c, d):
-        self.cx(c, d).cx(d, c).cx(c, d)
-
-    def toffoli(self, *, c1, c2, d):
-        self._check_idx(c1)
-        self._check_idx(c2)
-        self._check_idx(d)
-        if 3 > len(set([c1, c2, d])):
-            raise IndexError(f'Index ({c1},{c2},{d}) is not valid')
-
-        self.state = self.gb.toffoli(c1=c1, c2=c2, d=d).mm(self.state)
-        return self
-
-    def cswap(self, *, c, d1, d2):
-        return self.toffoli(c1=c, c2=d1, d=d2).toffoli(c1=c, c2=d2, d=d1).toffoli(c1=c, c2=d1, d=d2)
 
     def _check_idx(self, idx):
         if idx < 0 or idx >= self.size:

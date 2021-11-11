@@ -6,13 +6,13 @@ def test_inc():
     qr = qreg(3)
     q = qr.uint(3, 0)
     q.inc()
-    got = q.measure_all()
+    got = q.measure()
     want = 1
     assert(got == want)
 
     q.inc()
     q.inc()
-    got = q.measure_all()
+    got = q.measure()
     want = 3
     assert(got == want)
 
@@ -21,13 +21,13 @@ def test_dec():
     qr = qreg(3)
     q = qr.uint(3, 7)
     q.dec()
-    got = q.measure_all()
+    got = q.measure()
     want = 6
     assert(got == want)
 
     q.dec()
     q.dec()
-    got = q.measure_all()
+    got = q.measure()
     want = 4
     assert(got == want)
 

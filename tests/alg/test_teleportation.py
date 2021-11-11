@@ -28,8 +28,8 @@ def test_teleportation():
     channel = qr.uint(1, 0)
     bob = qr.uint(1, 0)
 
-    teleport(qr, alice, channel, bob)
+    teleport(alice, channel, bob)
 
-    result = bob.measure(0)
+    result = bob[0].measure()
 
     assert(result == 1)

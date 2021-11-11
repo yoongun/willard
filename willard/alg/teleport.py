@@ -1,26 +1,22 @@
 from willard.type import quint, qreg
 
 
-def teleport(qr: qreg, alice: quint, channel: quint, bob: quint):
-    if qr != alice.qreg or qr != channel.qreg or qr != bob.qreg:
-        raise ValueError(
-            "alice, channel, bob should be in the qreg passed with.")
+def teleport(alice: quint, channel: quint, bob: quint):
     # Preparing payload
-    alice.h(0).phase(45, 0).h(0)
+    alice[0].h().phase(45).h()
 
     # Send
-    channel.h(0)
-    qr.cx(channel[0], bob[0])
-    qr.cx(alice[0], channel[0])
-    alice.h(0)
-    a_result = alice.measure(0)
-    ch_result = channel.measure(0)
+    channel[0].h().cx(bob[0])
+    alice[0].cx(channel[0])
+    alice[0].h()
+    a_result = alice[0].measure()
+    ch_result = channel[0].measure()
 
     # Resolve
     if ch_result:
-        bob.x(0)
+        bob[0].x()
     if a_result:
-        bob.phase(180, 0)
+        bob[0].phase(180)
 
     # Verify
-    bob.h(0).phase(-45, 0).h(0)
+    bob[0].h().phase(-45).h()

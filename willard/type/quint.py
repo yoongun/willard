@@ -1,9 +1,10 @@
 from willard.const import gate
+from willard.type import qbit, qbits
 
 
 class quint:
-    def __init__(self, qreg, size: int, offset: int, init_value: int) -> None:
-        self.qreg = qreg
+    def __init__(self, qr, size: int, offset: int, init_value: int) -> None:
+        self.qr = qr
         self.size = size
         self.offset = offset
         b = format(init_value, 'b')
@@ -12,112 +13,37 @@ class quint:
         b_rev = b[::-1]
         for i, elem in enumerate(b_rev):
             if elem == '1':
-                self.x(i)
+                self[i].x()
 
     def __getitem__(self, idx):
-        self._check_idx(idx)
-        return self.offset + idx
+        if type(idx) == int:
+            self._check_idx(idx)
+            return qbit(self.qr, self.offset + idx)
+        elif type(idx) == slice:
+            indices = set(range(idx.start, idx.stop, idx.step))
+            for i in indices:
+                self._check_idx(i)
+            indices = set([i + self.offset for i in indices])
+            return qbits(self.qr, indices)
+        elif type(idx) == tuple or type(idx) == list:
+            indices = set()
+            for i in idx:
+                if type(i) == slice:
+                    indices = indices | set(
+                        range(idx.start, idx.stop, idx.step))
+                    for i_ in indices:
+                        self._check_idx(i_)
+                elif type(i) == int:
+                    self._check_idx(i)
+                    indices.add(i)
+            indices = set([i + self.offset for i in indices])
+            return qbits(self.qr, indices)
 
-    def x(self, idx):
-        self._check_idx(idx)
-        self.qreg.x(self.offset + idx)
-        return self
-
-    def rnot(self, idx):
-        self._check_idx(idx)
-        self.qreg.rnot(self.offset + idx)
-        return self
-
-    def y(self, idx):
-        self._check_idx(idx)
-        self.qreg.y(self.offset + idx)
-        return self
-
-    def z(self, idx):
-        self._check_idx(idx)
-        self.qreg.z(self.offset + idx)
-        return self
-
-    def h(self, idx):
-        self._check_idx(idx)
-        self.qreg.h(self.offset + idx)
-        return self
-
-    def s(self, idx):
-        return self.phase(deg=90, idx=idx)
-
-    def s_dg(self, idx):
-        return self.phase_dg(deg=90, idx=idx)
-
-    def t(self, idx):
-        return self.phase(deg=45, idx=idx)
-
-    def t_dg(self, idx):
-        return self.phase_dg(deg=45, idx=idx)
-
-    def phase(self, deg, idx):
-        self._check_idx(idx)
-        self.qreg.phase(deg, self.offset + idx)
-        return self
-
-    def phase_dg(self, *, deg, idx):
-        return self.phase(deg=-deg, idx=idx)
-
-    def measure(self, idx):
-        self._check_idx(idx)
-        return self.qreg.measure(self.offset + idx)
-
-    def measure_all(self):
+    def measure(self):
         result = ''
         for i in range(self.size):
-            result = str(self.qreg.measure(self.offset + i)) + result
+            result = str(self[i].measure()) + result
         return int(result, 2)
-
-    def cu(self, *, c, d, u):
-        """
-        c: index of the condition qubit
-        d: index of the destination qubit
-        """
-        self._check_idx(c)
-        self._check_idx(d)
-        if c == d:
-            raise IndexError(f'Index ({c},{d}) is not valid')
-        self.qreg.cu(c=self.offset + c, d=self.offset + d, u=u)
-        return self
-
-    def ncu(self, cs: list, d: int, u):
-        self.qreg.ncu(cs=[self.offset + c for c in cs], d=self.offset + d, u=u)
-        return self
-
-    def cx(self, c, d):
-        """
-        c: index of the condition qubit
-        d: index of the destination qubit
-        """
-        return self.cu(c=c, d=d, u=gate.x)
-
-    def cphase(self, deg, c, d):
-        """
-        c: index of the condition qubit
-        d: index of the destination qubit
-        """
-        return self.cu(c=c, d=d, u=gate.phase(deg))
-
-    def swap(self, c, d):
-        self.cx(c, d).cx(d, c).cx(c, d)
-
-    def toffoli(self, *, c1, c2, d):
-        self._check_idx(c1)
-        self._check_idx(c2)
-        self._check_idx(d)
-        if 3 > len(set([c1, c2, d])):
-            raise IndexError(f'Index ({c1},{c2},{d}) is not valid')
-        self.qreg.toffoli(c1=self.offset + c1,
-                          c2=self.offset + c2, d=self.offset + d)
-        return self
-
-    def cswap(self, *, c, d1, d2):
-        return self.toffoli(c1=c, c2=d1, d=d2).toffoli(c1=c, c2=d2, d=d1).toffoli(c1=c, c2=d1, d=d2)
 
     def swap_test(self, *, input1: int, input2: int, output: int):
         """
@@ -136,7 +62,7 @@ class quint:
             cs = []
             for j in reversed(range(i)):
                 cs.append(j)
-            self.ncu(cs=cs, d=i, u=gate.x)
+            self[cs].cu(self[i], gate.x)
         return self
 
     def dec(self):
@@ -144,7 +70,7 @@ class quint:
             cs = []
             for j in range(i):
                 cs.append(j)
-            self.ncu(cs=cs, d=i, u=gate.x)
+            self[cs].cu(self[i], gate.x)
         return self
 
     def _check_idx(self, idx):

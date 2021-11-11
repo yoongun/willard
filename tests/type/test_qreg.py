@@ -23,7 +23,9 @@ def test_init_qreg():
 
 def test_reset():
     q = qreg(2)
-    q.x(0).x(1).reset()
+    q[0].x()
+    q[1].x()
+    q.reset()
     got = q.state
     want = dirac.ket('00')
     assert(torch.equal(got, want))
@@ -32,14 +34,14 @@ def test_reset():
 def test_x_gate():
     # Case 1: Apply X gate on the first qubit
     q = qreg(2)
-    q.x(0)
+    q[0].x()
     got = q.state
     want = dirac.ket('01')
     assert(torch.equal(got, want))
 
     # Case 2: Apply X gate on the second qubit
     q = qreg(2)
-    q.x(1)
+    q[1].x()
     got = q.state
     want = dirac.ket('10')
     assert(torch.equal(q.state, torch.tensor(
@@ -48,18 +50,18 @@ def test_x_gate():
     # Checks whether the code checks index range
     q = qreg(2)
     with pytest.raises(IndexError):
-        q.x(2)
+        q[2].x()
 
 
 def test_rnot_gate():
     q = qreg(2)
-    q.rnot(0).rnot(0)
+    q[0].rnot().rnot()
     got = q.state
     want = dirac.ket('01')
     assert(torch.equal(got, want))
 
     q = qreg(2)
-    q.rnot(1).rnot(1)
+    q[1].rnot().rnot()
     got = q.state
     want = dirac.ket('10')
     assert(torch.equal(got, want))
@@ -68,14 +70,14 @@ def test_rnot_gate():
 def test_y_gate():
     # Case 1: Apply Y gate on the first qubit
     q = qreg(2)
-    q.y(0)
+    q[0].y()
     got = q.state
     want = torch.tensor([[0.], [1.j], [0.], [0.]], dtype=torch.cfloat)
     assert(torch.equal(got, want))
 
     # Case 2: Apply Y gate on the second qubit
     q = qreg(2)
-    q.y(1)
+    q[1].y()
     got = q.state
     want = torch.tensor([[0.], [0.], [1.j], [0.]], dtype=torch.cfloat)
     assert(torch.equal(got, want))
@@ -83,20 +85,20 @@ def test_y_gate():
     # Checks whether the code checks index range
     q = qreg(2)
     with pytest.raises(IndexError):
-        q.y(2)
+        q[2].y()
 
 
 def test_z_gate():
     # Case 1: Apply Z gate on the first qubit
     q = qreg(2)
-    q.z(0)
+    q[0].z()
     got = q.state
     want = dirac.ket('00')
     assert(torch.equal(got, want))
 
     # Case 2: Apply Z gate on the second qubit
     q = qreg(2)
-    q.z(1)
+    q[1].z()
     got = q.state
     want = dirac.ket('00')
     assert(torch.equal(got, want))
@@ -104,13 +106,13 @@ def test_z_gate():
     # Checks whether the code checks index range
     q = qreg(2)
     with pytest.raises(IndexError):
-        q.z(2)
+        q[2].z()
 
 
 def test_h_gate():
     # Case 1: Apply H gate on the first qubit
     q = qreg(2)
-    q.h(0)
+    q[0].h()
     got = q.state
     want = torch.tensor(
         [[1. / np.sqrt(2)], [1. / np.sqrt(2)], [0.], [0.]], dtype=torch.cfloat)
@@ -118,7 +120,7 @@ def test_h_gate():
 
     # Case 2: Apply H gate on the second qubit
     q = qreg(2)
-    q.h(1)
+    q[1].h()
     got = q.state
     want = torch.tensor([[1. / np.sqrt(2)], [0.],
                          [1. / np.sqrt(2)], [0.]], dtype=torch.cfloat)
@@ -127,20 +129,20 @@ def test_h_gate():
     # Checks whether the code checks index range
     q = qreg(2)
     with pytest.raises(IndexError):
-        q.h(2)
+        q[2].h()
 
 
 def test_s_gate():
     # Case 1: Apply S gate on the first qubit
     q = qreg(2)
-    q.s(0)
+    q[0].s()
     got = q.state
     want = dirac.ket('00')
     assert(torch.equal(got, want))
 
     # Case 2: Apply S gate on the second qubit
     q = qreg(2)
-    q.s(1)
+    q[1].s()
     got = q.state
     want = dirac.ket('00')
     assert(torch.equal(q.state, torch.tensor(
@@ -149,20 +151,20 @@ def test_s_gate():
     # Checks whether the code checks index range
     q = qreg(2)
     with pytest.raises(IndexError):
-        q.z(2)
+        q[2].s()
 
 
 def test_t_gate():
     # Case 1: Apply S gate on the first qubit
     q = qreg(2)
-    q.t(0)
+    q[0].t()
     got = q.state
     want = dirac.ket('00')
     assert(torch.equal(got, want))
 
     # Case 2: Apply S gate on the second qubit
     q = qreg(2)
-    q.t(1)
+    q[1].t()
     got = q.state
     want = dirac.ket('00')
     assert(torch.equal(got, want))
@@ -170,20 +172,20 @@ def test_t_gate():
     # Checks whether the code checks index range
     q = qreg(2)
     with pytest.raises(IndexError):
-        q.z(2)
+        q[2].t()
 
 
 def test_phase_gate():
     # Test case 1 (pi/2, S gate)
     q = qreg(2)
-    q.x(0).phase(deg=90, idx=0)
+    q[0].x().phase(90)
     got = q.state
     want = torch.tensor([[0.], [1.j], [0.], [0.]], dtype=torch.cfloat)
     assert(torch.allclose(got, want))
 
     # Test case 2 (pi/4, T gate)
     q = qreg(2)
-    q.x(1).phase(deg=45, idx=1)
+    q[1].x().phase(45)
     got = q.state
     want = torch.tensor(
         [[0.], [0.], [np.exp(1.j * np.pi / 4)], [0.]], dtype=torch.cfloat)
@@ -193,21 +195,21 @@ def test_phase_gate():
 def test_dagger_gates():
     # Test case 1 (s dagger)
     q = qreg(2)
-    q.s(0).s_dg(0)
+    q[0].s().s_dg()
     got = q.state
     want = dirac.ket('00')
     assert(torch.equal(got, want))
 
     # Test case 2 (t dagger)
     q = qreg(2)
-    q.t(1).t_dg(1)
+    q[1].t().t_dg()
     got = q.state
     want = dirac.ket('00')
     assert(torch.equal(got, want))
 
     # Test case 3 (phase dagger)
     q = qreg(2)
-    q.phase(deg=30, idx=0).phase_dg(deg=30, idx=0)
+    q[0].phase(30).phase_dg(30)
     got = q.state
     want = dirac.ket('00')
     assert(torch.equal(got, want))
@@ -216,7 +218,7 @@ def test_dagger_gates():
 def test_cx():
     # Case 1: Test on the first qubit
     q = qreg(2)
-    q.h(0).cx(0, 1)
+    q[0].h().cx(q[1])
     got = q.state
     want = torch.tensor([[1. / np.sqrt(2)], [0.],
                          [0.], [1. / np.sqrt(2)]], dtype=torch.cfloat)
@@ -224,7 +226,7 @@ def test_cx():
 
     # Case 2: Test on the second qubit
     q = qreg(2)
-    q.h(1).cx(1, 0)
+    q[1].h().cx(q[0])
     got = q.state
     want = torch.tensor([[1. / np.sqrt(2)], [0.],
                          [0.], [1. / np.sqrt(2)]], dtype=torch.cfloat)
@@ -233,13 +235,15 @@ def test_cx():
     # Checks whether the code checks index range
     q = qreg(2)
     with pytest.raises(IndexError):
-        q.cx(2, 2)
+        q[2].cx(q[2])
 
 
 def test_cphase():
     # Case 1: Test on the first qubit
     q = qreg(2)
-    q.h(0).x(1).cphase(c=0, d=1, deg=90)
+    q[0].h()
+    q[1].x()
+    q[0].cphase(90, q[1])
     got = q.state
     want = torch.tensor(
         [[0.], [0.], [1. / np.sqrt(2)], [1.j / np.sqrt(2)]], dtype=torch.cfloat)
@@ -247,7 +251,9 @@ def test_cphase():
 
     # Case 2: Test on the second qubit
     q = qreg(2)
-    q.h(1).x(0).cphase(c=1, d=0, deg=45)
+    q[1].h()
+    q[0].x()
+    q[1].cphase(45, q[0])
     got = q.state
     want = torch.tensor([[0.], [1. / np.sqrt(2)], [0.],
                          [0.5 + 0.5j]], dtype=torch.cfloat)
@@ -256,20 +262,20 @@ def test_cphase():
     # Checks whether the code checks index range
     q = qreg(2)
     with pytest.raises(IndexError):
-        q.cphase(c=2, d=2, deg=180)
+        q[2].cphase(180, q[2])
 
 
 def test_swap():
     # Case 1: From qubit0 to qubit1
     q = qreg(2)
-    q.x(0).swap(c=0, d=1)
+    q[0].x().swap(q[1])
     got = q.state
     want = dirac.ket('10')
     assert(torch.equal(got, want))
 
     # Case 1: From qubit1 to qubit0
     q = qreg(2)
-    q.x(1).swap(c=0, d=1)
+    q[1].x().swap(q[0])
     got = q.state
     want = dirac.ket('01')
     assert(torch.equal(got, want))
@@ -277,63 +283,76 @@ def test_swap():
 
 def test_epr():
     q = qreg(2)
-    want = q.h(0).cx(0, 1).measure(0)
+    want = q[0].h().cx(q[1]).measure()
     for _ in range(100):
-        got = q.measure(1)
+        got = q[1].measure()
         assert(got == want)
 
     q = qreg(2)
-    want = q.h(1).cx(1, 0).measure(1)
+    want = q[1].h().cx(q[0]).measure()
     for _ in range(100):
-        got = q.measure(0)
+        got = q[0].measure()
         assert(got == want)
 
 
 def test_toffoli_gate():
     q = qreg(3)
-    q.toffoli(c1=0, c2=1, d=2)
+    q[0, 1].toffoli(q[2])
     got = q.state
     want = dirac.ket('000')
     assert(torch.equal(got, want))
 
     q = qreg(3)
-    q.x(2)
-    q.toffoli(c1=2, c2=1, d=0)
+    q[2].x()
+    q[2, 1].toffoli(q[0])
     got = q.state
     want = dirac.ket('100')
     assert(torch.equal(got, want))
 
     q = qreg(3)
-    q.x(1)
-    q.toffoli(c1=2, c2=1, d=0)
+    q[1].x()
+    q[2, 1].toffoli(q[0])
     got = q.state
     want = dirac.ket('010')
     assert(torch.equal(got, want))
 
     q = qreg(3)
-    q.x(0).x(2)
-    q.toffoli(c1=0, c2=2, d=1)
+    q[0].x()
+    q[2].x()
+    q[0, 2].toffoli(q[1])
     got = q.state
     want = dirac.ket('111')
     assert(torch.equal(got, want))
 
     with pytest.raises(IndexError):
-        q.toffoli(c1=0, c2=0, d=1)
+        q[0, 0].toffoli(q[1])
 
 
 def test_cphase_commutativity():
     q1 = qreg(3)
-    q1.h(0).x(2).cphase(c=0, d=2, deg=90)
+    q1[0].h()
+    q1[2].x()
+    q1[0].cphase(90, q1[2])
     q2 = qreg(3)
-    q2.h(0).x(2).cphase(c=2, d=0, deg=90)
+    q2[0].h()
+    q2[2].x()
+    q2[2].cphase(90, q2[0])
     assert(torch.allclose(q1.state, q2.state))
 
     q1 = qreg(3)
-    q1.h(1).x(2).cphase(c=1, d=2, deg=33)
+    q1[1].h()
+    q1[2].x()
+    q1[1].cphase(33, q1[2])
     q2 = qreg(3)
-    q2.h(1).x(2).cphase(c=2, d=1, deg=33)
+    q2[1].h()
+    q2[2].x()
+    q2[2].cphase(33, q2[1])
     assert(torch.allclose(q1.state, q2.state))
 
 
-def test_measure():
-    pytest.fail()
+# def test_measure():
+#     pytest.fail()
+
+
+# def test_len():
+#     pytest.fail()

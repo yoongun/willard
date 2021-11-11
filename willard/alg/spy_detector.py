@@ -2,20 +2,20 @@ from willard.type import qreg
 
 
 def _alice(q):
-    a1 = qreg(1).h(0).measure(0)
-    a2 = qreg(1).h(0).measure(0)
+    a1 = qreg(1)[0].h().measure()
+    a2 = qreg(1)[0].h().measure()
     if a1:
-        q.x(0)
+        q[0].x()
     if a2:
-        q.h(0)
+        q[0].h()
     return q, a1, a2
 
 
 def _bob(q):
-    b2 = qreg(1).h(0).measure(0)
+    b2 = qreg(1)[0].h().measure()
     if b2:
-        q.h(0)
-    b1 = q.measure(0)
+        q[0].h()
+    b1 = q[0].measure()
     return b1, b2
 
 
