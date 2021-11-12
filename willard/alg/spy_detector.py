@@ -2,8 +2,8 @@ from willard.type import qreg
 
 
 def _alice(q):
-    a1 = qreg(1)[0].h().measure()[0]
-    a2 = qreg(1)[0].h().measure()[0]
+    a1 = int(qreg(1)[0].h().measure())
+    a2 = int(qreg(1)[0].h().measure())
     if a1:
         q[0].x()
     if a2:
@@ -12,10 +12,10 @@ def _alice(q):
 
 
 def _bob(q):
-    b2 = qreg(1)[0].h().measure()[0]
+    b2 = int(qreg(1)[0].h().measure())
     if b2:
         q[0].h()
-    b1 = q[0].measure()[0]
+    b1 = int(q[0].measure())
     return b1, b2
 
 

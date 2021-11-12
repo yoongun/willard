@@ -4,7 +4,7 @@ from willard.type.interface import subscriptable
 
 class quint(subscriptable):
     def __init__(self, qr, size: int, offset: int, init_value: int) -> None:
-        super().__init__(qr, size, offset)
+        super(quint, self).__init__()
         self.qr = qr
         self.size = size
         self.offset = offset

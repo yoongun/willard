@@ -1,6 +1,5 @@
 import pytest
 import torch
-import numpy as np
 from willard.type import qreg
 from willard.const import dirac
 

@@ -3,11 +3,6 @@ from willard.type import qbits
 
 
 class subscriptable(metaclass=ABCMeta):
-    def __init__(self, qr, size, offset):
-        self.qr = qr
-        self.size = size
-        self.offset = offset
-
     def __len__(self) -> int:
         return self.size
 
@@ -23,11 +18,11 @@ class subscriptable(metaclass=ABCMeta):
                     indices |= set(range(idx.start, idx.stop, idx.step))
                 elif type(i) == int:
                     indices.add(i)
-        global_indicies = set()
+        global_indices = set()
         for i in indices:
             self.check_idx(i)
-            global_indicies.add(i + self.offset)
-        return qbits(self.qr, indices)
+            global_indices.add(i + self.offset)
+        return qbits(self.qr, global_indices)
 
     def check_idx(self, idx):
         if idx < 0 or idx >= self.size:

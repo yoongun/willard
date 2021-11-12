@@ -3,10 +3,19 @@ from willard.const import gate, GateBuilder
 
 
 class qbits:
-    def __init__(self, qr, global_idx_set: set) -> None:
+    def __init__(self, qr, global_idx_set: set, *, init_value: str = ''):
         self.global_idx_set = global_idx_set
         self.qr = qr
         self.gb = GateBuilder(qr.size)
+
+        if init_value:
+            if len(init_value) != len(global_idx_set):
+                raise ValueError(
+                    "init_value does not match the size of qbits.")
+            init_value_rev = init_value[::-1]
+            for i, elem in enumerate(init_value_rev):
+                if elem == '1':
+                    self.qr[list(global_idx_set)[i]].x()
 
     def __len__(self) -> int:
         return len(self.global_idx_set)
@@ -68,19 +77,19 @@ class qbits:
     def phase_dg(self, deg: int):
         return self.phase(deg=-deg)
 
-    def measure(self) -> list:
-        result = []
+    def measure(self) -> str:
+        result = ''
         for i in self.global_idx_set:
             prob_0 = self.qr.state.conj().T.mm(
                 self.gb.measure_0(i).mm(self.qr.state)).abs().item()
             if prob_0 >= np.random.rand():
                 self.qr.state = self.gb.measure_0(i).mm(
                     self.qr.state) / np.sqrt(prob_0)
-                result.append(0)
+                result += '0'
             else:
                 self.qr.state = self.gb.measure_1(i).mm(
                     self.qr.state) / np.sqrt(1. - prob_0)
-                result.append(1)
+                result += '1'
         return result
 
     def cu(self, target: 'qbits', u):
@@ -133,9 +142,13 @@ class qbits:
         if len(self) != 1:
             raise IndexError('cswap requires one control qbit')
 
-        self.qr[self.global_idx, d1.global_idx].toffoli(d2)
-        self.qr[self.global_idx, d2.global_idx].toffoli(d1)
-        return self.qr[self.global_idx, d1.global_idx].toffoli(d2)
+        self.qr[list(self.global_idx_set)[0], list(
+            d1.global_idx_set)[0]].toffoli(d2)
+        self.qr[list(self.global_idx_set)[0], list(
+            d2.global_idx_set)[0]].toffoli(d1)
+        self.qr[list(self.global_idx_set)[0], list(
+            d1.global_idx_set)[0]].toffoli(d2)
+        return self
 
     def equal(self, other: 'qbits', output: 'qbits'):
         self._check_qreg(other)
