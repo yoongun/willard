@@ -1,1 +1,1 @@
-from .gate_appliable import gate_appliable
+from .subscriptable import subscriptable

@@ -1,9 +1,10 @@
 from willard.const import gate
-from willard.type import qbits
+from willard.type.interface import subscriptable
 
 
-class quint:
+class quint(subscriptable):
     def __init__(self, qr, size: int, offset: int, init_value: int) -> None:
+        super().__init__(qr, size, offset)
         self.qr = qr
         self.size = size
         self.offset = offset
@@ -14,22 +15,6 @@ class quint:
         for i, elem in enumerate(b_rev):
             if elem == '1':
                 self[i].x()
-
-    def __getitem__(self, idx):
-        indices = set()
-        if type(idx) == int:
-            indices.add(idx)
-        elif type(idx) == slice:
-            indices |= set(range(idx.start, idx.stop, idx.step))
-        elif type(idx) == tuple or type(idx) == list:
-            for i in idx:
-                if type(i) == slice:
-                    indices |= set(range(idx.start, idx.stop, idx.step))
-                elif type(i) == int:
-                    indices.add(i)
-        for i in indices:
-            self._check_idx(i)
-        return qbits(self.qr, indices)
 
     def measure(self):
         result = ''
@@ -64,7 +49,3 @@ class quint:
                 cs.append(j)
             self[cs].cu(self[i], gate.x)
         return self
-
-    def _check_idx(self, idx):
-        if idx < 0 or idx >= self.size:
-            raise IndexError(f'Index {idx} is out of the range')

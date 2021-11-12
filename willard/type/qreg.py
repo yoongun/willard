@@ -9,7 +9,7 @@ class qreg:
                 f"size should be bigger than 0. Got {size}")
         self.size = size
         self.state = dirac.ket('0' * size)
-        self._offset = 0
+        self.cursor = 0
 
     def __getitem__(self, idx):
         indices = set()
@@ -31,26 +31,26 @@ class qreg:
         return self.size
 
     def uint(self, size, init_value) -> quint:
-        q = quint(self, size, self._offset, init_value)
+        q = quint(self, size, self.cursor, init_value)
         self._check_overflow(size)
         return q
 
-    def bit(self) -> qbits:
-        q = qbits(self, set([self._offset]))
+    def bits(self) -> qbits:
+        q = qbits(self, set([self.cursor]))
         self._check_overflow(1)
         return q
 
     def reset(self):
         self.state = dirac.ket('0' * self.size)
-        self._offset = 0
+        self.cursor = 0
         return self
 
     def _check_overflow(self, size: int):
-        if self._offset + size > self.size:
+        if self.cursor + size > self.size:
             raise ValueError(
                 "This register is already full. Please try creating another register with larger size")
         else:
-            self._offset += 1
+            self.cursor += 1
 
     def _check_idx(self, idx: int):
         if idx < 0 or idx >= self.size:

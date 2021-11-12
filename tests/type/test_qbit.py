@@ -11,9 +11,9 @@ from willard.const import dirac
 def test_equal():
     # case 1: return 1 when input1 and input2 contains same value
     qr = qreg(3)
-    in1 = qr.bit(0)
-    in2 = qr.bit(0)
-    out = qr.bit(0)
+    in1 = qr.bits('0')
+    in2 = qr.bits('0')
+    out = qr.bits('0')
     in1.equal(in2, out)
     got = out.measure()
     want = 1
@@ -26,9 +26,9 @@ def test_equal():
     want = 0
     for _ in range(100):
         qr.reset()
-        in1 = qr.bit(0)
-        in2 = qr.bit(1)
-        out = qr.bit(0)
+        in1 = qr.bits('0')
+        in2 = qr.bits('1')
+        out = qr.bits('0')
         in1.equal(in2, out)
         got &= out.measure()
     assert(got == want)
@@ -57,9 +57,9 @@ def test_teleportation():
     want = 1
 
     qr = qreg(3)
-    alice = qr.bit(want)
-    channel = qr.bit(0)
-    bob = qr.bit(0)
+    alice = qr.bits(want)
+    channel = qr.bits(0)
+    bob = qr.bits(0)
 
     alice.teleport(bob, channel)
     got = bob.measure()
