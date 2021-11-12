@@ -46,6 +46,7 @@ class qreg:
 
     def reset(self):
         self.state = dirac.ket('0' * self.size)
+        self._offset = 0
         return self
 
     def _check_idx(self, idx):

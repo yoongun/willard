@@ -54,7 +54,7 @@ def test_equal():
     input1 = qr.uint(1, 0)
     input2 = qr.uint(1, 0)
     output = qr.uint(1, 0)
-    input1.equal(input2, output)
+    input1[0].equal(input2[0], output[0])
     got = output[0].measure()
     want = 1
     assert(got == want)
@@ -69,7 +69,7 @@ def test_equal():
         input1 = qr.uint(1, 0)
         input2 = qr.uint(1, 1)
         output = qr.uint(1, 0)
-        input1.equal(input2, output)
+        input1[0].equal(input2[0], output[0])
         got &= output[0].measure()
     assert(got == want)
 
@@ -101,7 +101,7 @@ def test_teleportation():
     channel = qr.uint(1, 0)
     bob = qr.uint(1, 0)
 
-    alice.teleport(bob, channel)
+    alice[0].teleport(bob[0], channel[0])
     got = bob[0].measure()
 
     assert(got == want)

@@ -62,11 +62,34 @@ class qbit:
     def equal(self, other: 'qbit', output: 'qbit'):
         self._check_qreg(other)
         self._check_qreg(output)
-        output[0].h()
-        output[0].cswap(self, other)
-        output[0].h()
-        output[0].x()
+        output.h()
+        output.cswap(self, other)
+        output.h()
+        output.x()
         return self
+
+    def teleport(self, target: 'qbit', channel: 'qbit'):
+        self._check_qreg(target)
+        self._check_qreg(channel)
+
+        # Preparing payload
+        self.h().phase(45).h()
+
+        # Send
+        channel.h().cx(target)
+        self.cx(channel)
+        self.h()
+        a_result = self.measure()
+        ch_result = channel.measure()
+
+        # Resolve
+        if ch_result:
+            target.x()
+        if a_result:
+            target.phase(180)
+
+        # Verify
+        target.h().phase(-45).h()
 
     def cu(self, target: 'qbit', u):
         """
