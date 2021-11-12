@@ -59,6 +59,15 @@ class qbit:
             self.qr.state) / np.sqrt(1. - prob_0)
         return 1
 
+    def equal(self, other: 'qbit', output: 'qbit'):
+        self._check_qreg(other)
+        self._check_qreg(output)
+        output[0].h()
+        output[0].cswap(self, other)
+        output[0].h()
+        output[0].x()
+        return self
+
     def cu(self, target: 'qbit', u):
         """
         target: index of the target qubit
