@@ -1,1 +1,1 @@
-from .plot import qplot
+from .qplot import qplot
