@@ -1,5 +1,5 @@
 from willard.const import dirac
-from willard.type import quint, qbit, qbits
+from willard.type import quint, qbits
 
 
 class qreg:
@@ -12,36 +12,32 @@ class qreg:
         self._offset = 0
 
     def __getitem__(self, idx):
+        indices = set()
         if type(idx) == int:
-            self._check_idx(idx)
-            return qbit(self, idx)
+            indices.add(idx)
         elif type(idx) == slice:
-            indices = set(range(idx.start, idx.stop, idx.step))
-            for i in indices:
-                self._check_idx(i)
-            return qbits(self, indices)
+            indices |= set(range(idx.start, idx.stop, idx.step))
         elif type(idx) == tuple or type(idx) == list:
-            indices = set()
             for i in idx:
                 if type(i) == slice:
-                    indices = indices | set(
-                        range(idx.start, idx.stop, idx.step))
-                    for i_ in indices:
-                        self._check_idx(i_)
+                    indices |= set(range(idx.start, idx.stop, idx.step))
                 elif type(i) == int:
-                    self._check_idx(i)
                     indices.add(i)
-            return qbits(self, indices)
+        for i in indices:
+            self._check_idx(i)
+        return qbits(self, indices)
 
     def __len__(self) -> int:
         return self.size
 
     def uint(self, size, init_value) -> quint:
         q = quint(self, size, self._offset, init_value)
-        if self._offset + size > self.size:
-            raise ValueError(
-                "This register is already full. Please try creating another register with larger size")
-        self._offset += size
+        self._check_overflow(size)
+        return q
+
+    def bit(self) -> qbits:
+        q = qbits(self, set([self._offset]))
+        self._check_overflow(1)
         return q
 
     def reset(self):
@@ -49,6 +45,13 @@ class qreg:
         self._offset = 0
         return self
 
-    def _check_idx(self, idx):
+    def _check_overflow(self, size: int):
+        if self._offset + size > self.size:
+            raise ValueError(
+                "This register is already full. Please try creating another register with larger size")
+        else:
+            self._offset += 1
+
+    def _check_idx(self, idx: int):
         if idx < 0 or idx >= self.size:
             raise IndexError(f'Index {idx} is out of the range')

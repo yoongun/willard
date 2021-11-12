@@ -1,5 +1,5 @@
 from willard.const import gate
-from willard.type import qbit, qbits
+from willard.type import qbits
 
 
 class quint:
@@ -16,33 +16,25 @@ class quint:
                 self[i].x()
 
     def __getitem__(self, idx):
+        indices = set()
         if type(idx) == int:
-            self._check_idx(idx)
-            return qbit(self.qr, self.offset + idx)
+            indices.add(idx)
         elif type(idx) == slice:
-            indices = set(range(idx.start, idx.stop, idx.step))
-            for i in indices:
-                self._check_idx(i)
-            indices = set([i + self.offset for i in indices])
-            return qbits(self.qr, indices)
+            indices |= set(range(idx.start, idx.stop, idx.step))
         elif type(idx) == tuple or type(idx) == list:
-            indices = set()
             for i in idx:
                 if type(i) == slice:
-                    indices = indices | set(
-                        range(idx.start, idx.stop, idx.step))
-                    for i_ in indices:
-                        self._check_idx(i_)
+                    indices |= set(range(idx.start, idx.stop, idx.step))
                 elif type(i) == int:
-                    self._check_idx(i)
                     indices.add(i)
-            indices = set([i + self.offset for i in indices])
-            return qbits(self.qr, indices)
+        for i in indices:
+            self._check_idx(i)
+        return qbits(self.qr, indices)
 
     def measure(self):
         result = ''
         for i in range(self.size):
-            result = str(self[i].measure()) + result
+            result = str(self[i].measure()[0]) + result
         return int(result, 2)
 
     def swap_test(self, *, input1: int, input2: int, output: int):
