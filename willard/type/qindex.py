@@ -2,12 +2,14 @@ import numpy as np
 from willard.const import gate, GateBuilder, GateType
 
 
-def single_indexed(f):
-    def validity_checked(*args):
-        if len(args[0]) != 1:
-            raise IndexError('The size of selected indices should be 1')
-        return f(*args)
-    return validity_checked
+def index_size_fixed(size):
+    def decorator(f):
+        def wrapper(*args):
+            if len(args[0]) != size:
+                raise IndexError('The size of selected indices should be 1')
+            return f(*args)
+        return wrapper
+    return decorator
 
 
 def double_indexed(f):
@@ -133,7 +135,7 @@ class qindex:
         self.qr.state = self.gb.ncu(cs=cs, d=t, u=u).mm(self.qr.state)
         return self
 
-    @double_indexed
+    @index_size_fixed(2)
     @qbit_targeted
     def toffoli(self, target: 'qindex'):
         c1 = list(self.global_idx_set)[0]
@@ -155,7 +157,7 @@ class qindex:
         """
         return self.cu(target, gate.phase(deg))
 
-    @single_indexed
+    @index_size_fixed(1)
     @qbit_targeted
     def swap(self, target: 'qindex'):
         self.cx(target)
@@ -163,7 +165,7 @@ class qindex:
         self.cx(target)
         return self
 
-    @single_indexed
+    @index_size_fixed(1)
     @qbit_targeted
     def cswap(self, target1: 'qindex', target2: 'qindex'):
         c = list(self.global_idx_set)[0]
@@ -174,7 +176,7 @@ class qindex:
         self.qr[c, t1].toffoli(target2)
         return self
 
-    @single_indexed
+    @index_size_fixed(1)
     @qbit_targeted
     def equal(self, other: 'qindex', output: 'qindex'):
         """
@@ -189,7 +191,7 @@ class qindex:
         output.x()
         return self
 
-    @single_indexed
+    @index_size_fixed(1)
     @qbit_targeted
     def teleport(self, target: 'qindex', channel: 'qindex'):
         # Preparing payload
