@@ -151,13 +151,13 @@ class qindex:
 
     @single_indexed
     @qbit_targeted
-    def cswap(self, d1: 'qindex', d2: 'qindex'):
+    def cswap(self, target1: 'qindex', target2: 'qindex'):
         self.qr[list(self.global_idx_set)[0], list(
-            d1.global_idx_set)[0]].toffoli(d2)
+            target1.global_idx_set)[0]].toffoli(target2)
         self.qr[list(self.global_idx_set)[0], list(
-            d2.global_idx_set)[0]].toffoli(d1)
+            target2.global_idx_set)[0]].toffoli(target1)
         self.qr[list(self.global_idx_set)[0], list(
-            d1.global_idx_set)[0]].toffoli(d2)
+            target1.global_idx_set)[0]].toffoli(target2)
         return self
 
     @single_indexed
