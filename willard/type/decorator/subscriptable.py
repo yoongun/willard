@@ -14,7 +14,10 @@ def subscriptable(cls):
         if type(idx) == int:
             indices.add(idx)
         elif type(idx) == slice:
-            indices |= set(range(idx.start, idx.stop, idx.step))
+            indices |= set(range(
+                idx.start or 0,
+                idx.stop or len(self),
+                idx.step or 1))
         elif type(idx) == tuple or type(idx) == list:
             for i in idx:
                 if type(i) == slice:
