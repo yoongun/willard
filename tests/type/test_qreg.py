@@ -340,8 +340,25 @@ def test_cphase_commutativity():
     assert(torch.allclose(q1.state, q2.state))
 
 
-# def test_measure():
-#     pytest.fail()
+def test_measure():
+    # Test case 1 (on state [1, 0])
+    q = qreg(1)
+    got = int(q[0].measure())
+    want = 0
+    assert(got == want)
+
+    # Test case 2 (on state [0, 1])
+    q = qreg(1)
+    got = int(q[0].x().measure())
+    want = 1
+    assert(got == want)
+
+    # Test case 3 (on superposition)
+    q = qreg(1)
+    want = int(q[0].h().measure())
+    for _ in range(100):
+        got = int(q[0].measure())
+        assert(got == want)
 
 
 def test_equal():
