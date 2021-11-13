@@ -1,9 +1,8 @@
 from willard.const import gate
-from willard.type.decorator import subscriptable
+from willard.type import qtype
 
 
-@subscriptable
-class quint:
+class quint(qtype):
     def __init__(self, qr, size: int, offset: int, init_value: int) -> None:
         super(quint, self).__init__()
         self.qr = qr
