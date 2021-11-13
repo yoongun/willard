@@ -3,15 +3,23 @@ from willard.const import gate, GateBuilder, GateType
 
 
 def single_indexed(f):
-    def wrapper(*args):
+    def validity_checked(*args):
         if len(args[0]) != 1:
-            raise ValueError('The size of selected indices should be 1')
+            raise IndexError('The size of selected indices should be 1')
         return f(*args)
-    return wrapper
+    return validity_checked
+
+
+def double_indexed(f):
+    def validity_checked(*args):
+        if len(args[0]) != 2:
+            raise IndexError('The size of selected indices should be 2')
+        return f(*args)
+    return validity_checked
 
 
 def qbit_targeted(f):
-    def wrapper(*args):
+    def validity_checked(*args):
         self = args[0]
         for a in args[1:]:
             if type(a) == 'qindex':
@@ -23,7 +31,7 @@ def qbit_targeted(f):
                     raise IndexError(
                         'selected indicies contain target indices')
         return f(*args)
-    return wrapper
+    return validity_checked
 
 
 class qindex:
@@ -120,16 +128,18 @@ class qindex:
 
     @qbit_targeted
     def cu(self, target: 'qindex', u: GateType):
-        self.qr.state = self.gb.ncu(
-            cs=list(self.global_idx_set), d=list(target.global_idx_set)[0], u=u).mm(self.qr.state)
+        cs = list(self.global_idx_set)
+        t = list(target.global_idx_set)[0]
+        self.qr.state = self.gb.ncu(cs=cs, d=t, u=u).mm(self.qr.state)
         return self
 
+    @double_indexed
     @qbit_targeted
     def toffoli(self, target: 'qindex'):
-        if len(self) != 2:
-            raise IndexError('toffoli requires two control qbit')
-        self.qr.state = self.gb.toffoli(
-            c1=list(self.global_idx_set)[0], c2=list(self.global_idx_set)[1], d=list(target.global_idx_set)[0]).mm(self.qr.state)
+        c1 = list(self.global_idx_set)[0]
+        c2 = list(self.global_idx_set)[1]
+        t = list(target.global_idx_set)[0]
+        self.qr.state = self.gb.toffoli(c1=c1, c2=c2, d=t).mm(self.qr.state)
         return self
 
     def cx(self, target: 'qindex'):
@@ -140,7 +150,8 @@ class qindex:
 
     def cphase(self, deg: int, target: 'qindex'):
         """
-        d: index of the destination qubit
+        deg: degree of phase
+        target: index of the destination qubit
         """
         return self.cu(target, gate.phase(deg))
 
@@ -148,18 +159,19 @@ class qindex:
     @qbit_targeted
     def swap(self, target: 'qindex'):
         self.cx(target)
-        self.qr[list(target.global_idx_set)[0]].cx(self)
-        return self.cx(target)
+        target.cx(self)
+        self.cx(target)
+        return self
 
     @single_indexed
     @qbit_targeted
     def cswap(self, target1: 'qindex', target2: 'qindex'):
-        self.qr[list(self.global_idx_set)[0], list(
-            target1.global_idx_set)[0]].toffoli(target2)
-        self.qr[list(self.global_idx_set)[0], list(
-            target2.global_idx_set)[0]].toffoli(target1)
-        self.qr[list(self.global_idx_set)[0], list(
-            target1.global_idx_set)[0]].toffoli(target2)
+        c = list(self.global_idx_set)[0]
+        t1 = list(target1.global_idx_set)[0]
+        t2 = list(target2.global_idx_set)[0]
+        self.qr[c, t1].toffoli(target2)
+        self.qr[c, t2].toffoli(target1)
+        self.qr[c, t1].toffoli(target2)
         return self
 
     @single_indexed
