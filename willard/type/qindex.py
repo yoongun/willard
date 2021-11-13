@@ -2,7 +2,7 @@ import numpy as np
 from willard.const import gate, GateBuilder
 
 
-class qselected:
+class qindex:
     def __init__(self, qr, global_idx_set: set, *, init_value: str = ''):
         self.global_idx_set = global_idx_set
         self.qr = qr
@@ -92,7 +92,7 @@ class qselected:
                 result += '1'
         return result
 
-    def cu(self, target: 'qselected', u):
+    def cu(self, target: 'qindex', u):
         self._check_qreg(target)
         self._check_index(target)
         self._check_size(target, 1)
@@ -102,7 +102,7 @@ class qselected:
             cs=list(self.global_idx_set), d=list(target.global_idx_set)[0], u=u).mm(self.qr.state)
         return self
 
-    def toffoli(self, target: 'qselected'):
+    def toffoli(self, target: 'qindex'):
         self._check_qreg(target)
         self._check_index(target)
         self._check_size(target, 1)
@@ -112,19 +112,19 @@ class qselected:
             c1=list(self.global_idx_set)[0], c2=list(self.global_idx_set)[1], d=list(target.global_idx_set)[0]).mm(self.qr.state)
         return self
 
-    def cx(self, target: 'qselected'):
+    def cx(self, target: 'qindex'):
         """
         target: index of the target qubit
         """
         return self.cu(target, gate.x)
 
-    def cphase(self, deg: int, target: 'qselected'):
+    def cphase(self, deg: int, target: 'qindex'):
         """
         d: index of the destination qubit
         """
         return self.cu(target, u=gate.phase(deg))
 
-    def swap(self, target: 'qselected'):
+    def swap(self, target: 'qindex'):
         self._check_qreg(target)
         self._check_size(target, 1)
         if len(self) != 1:
@@ -134,7 +134,7 @@ class qselected:
         self.qr[list(target.global_idx_set)[0]].cx(self)
         return self.cx(target)
 
-    def cswap(self, d1: 'qselected', d2: 'qselected'):
+    def cswap(self, d1: 'qindex', d2: 'qindex'):
         self._check_qreg(d1)
         self._check_qreg(d2)
         self._check_size(d1, 1)
@@ -150,7 +150,7 @@ class qselected:
             d1.global_idx_set)[0]].toffoli(d2)
         return self
 
-    def equal(self, other: 'qselected', output: 'qselected'):
+    def equal(self, other: 'qindex', output: 'qindex'):
         """
         swap_test algorithm
         0 if input1 != input2
@@ -166,7 +166,7 @@ class qselected:
         output.x()
         return self
 
-    def teleport(self, target: 'qselected', channel: 'qselected'):
+    def teleport(self, target: 'qindex', channel: 'qindex'):
         self._check_qreg(target)
         self._check_qreg(channel)
 
@@ -188,14 +188,14 @@ class qselected:
         # Verify
         target.h().phase(-45).h()
 
-    def _check_qreg(self, other: 'qselected'):
+    def _check_qreg(self, other: 'qindex'):
         if self.qr != other.qr:
             raise ValueError('qbits are not on the same qreg')
 
-    def _check_index(self, other: 'qselected'):
+    def _check_index(self, other: 'qindex'):
         if other.global_idx_set & self.global_idx_set != set():
             raise IndexError('control qbits contain target qbit')
 
-    def _check_size(self, other: 'qselected', size):
+    def _check_size(self, other: 'qindex', size):
         if len(other) != size:
             raise ValueError(f'The size of qbits should be {size}')

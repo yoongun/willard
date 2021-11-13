@@ -1,4 +1,4 @@
-from willard.type import qselected
+from willard.type import qindex
 
 
 def subscriptable(cls):
@@ -25,7 +25,7 @@ def subscriptable(cls):
         for i in indices:
             self.check_idx(i)
             global_indices.add(i + self.offset)
-        return qselected(self.qr, global_indices)
+        return qindex(self.qr, global_indices)
 
     cls.__getitem__ = __getitem__
     cls.__len__ = __len__
