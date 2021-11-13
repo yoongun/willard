@@ -2,6 +2,30 @@ import numpy as np
 from willard.const import gate, GateBuilder
 
 
+def single_indexed(f):
+    def wrapper(*args):
+        if len(args[0]) != 1:
+            raise ValueError(f'The size of selected indices should be 1')
+        return f(*args)
+    return wrapper
+
+
+def qbit_targeted(f):
+    def wrapper(*args):
+        self = args[0]
+        for a in args[1:]:
+            if type(a) == 'qindex':
+                if len(a) != 1:
+                    raise ValueError(f'The size of target indices should be 1')
+                elif self.qr != a.qr:
+                    raise ValueError('qbits are not on the same qreg')
+                elif self.global_idx_set & a.global_idx_set != set():
+                    raise IndexError(
+                        'selected indicies contain target indices')
+        return f(*args)
+    return wrapper
+
+
 class qindex:
     def __init__(self, qr, global_idx_set: set, *, init_value: str = ''):
         self.global_idx_set = global_idx_set
@@ -92,20 +116,14 @@ class qindex:
                 result += '1'
         return result
 
+    @qbit_targeted
     def cu(self, target: 'qindex', u):
-        self._check_qreg(target)
-        self._check_index(target)
-        self._check_size(target, 1)
-        if len(target) != 1:
-            raise ValueError('The lenght of target qbits should be 1')
         self.qr.state = self.gb.ncu(
             cs=list(self.global_idx_set), d=list(target.global_idx_set)[0], u=u).mm(self.qr.state)
         return self
 
+    @qbit_targeted
     def toffoli(self, target: 'qindex'):
-        self._check_qreg(target)
-        self._check_index(target)
-        self._check_size(target, 1)
         if len(self) != 2:
             raise IndexError('toffoli requires two control qbit')
         self.qr.state = self.gb.toffoli(
@@ -122,26 +140,18 @@ class qindex:
         """
         d: index of the destination qubit
         """
-        return self.cu(target, u=gate.phase(deg))
+        return self.cu(target, gate.phase(deg))
 
+    @single_indexed
+    @qbit_targeted
     def swap(self, target: 'qindex'):
-        self._check_qreg(target)
-        self._check_size(target, 1)
-        if len(self) != 1:
-            raise IndexError('swap requires one control qbit')
-
         self.cx(target)
         self.qr[list(target.global_idx_set)[0]].cx(self)
         return self.cx(target)
 
+    @single_indexed
+    @qbit_targeted
     def cswap(self, d1: 'qindex', d2: 'qindex'):
-        self._check_qreg(d1)
-        self._check_qreg(d2)
-        self._check_size(d1, 1)
-        self._check_size(d2, 1)
-        if len(self) != 1:
-            raise IndexError('cswap requires one control qbit')
-
         self.qr[list(self.global_idx_set)[0], list(
             d1.global_idx_set)[0]].toffoli(d2)
         self.qr[list(self.global_idx_set)[0], list(
@@ -150,6 +160,8 @@ class qindex:
             d1.global_idx_set)[0]].toffoli(d2)
         return self
 
+    @single_indexed
+    @qbit_targeted
     def equal(self, other: 'qindex', output: 'qindex'):
         """
         swap_test algorithm
@@ -157,19 +169,15 @@ class qindex:
         1 if input1 == input2
         1 or 0 when input1 and input2 resembles
         """
-        self._check_qreg(other)
-        self._check_qreg(output)
-
         output.h()
         output.cswap(self, other)
         output.h()
         output.x()
         return self
 
+    @single_indexed
+    @qbit_targeted
     def teleport(self, target: 'qindex', channel: 'qindex'):
-        self._check_qreg(target)
-        self._check_qreg(channel)
-
         # Preparing payload
         self.h().phase(45).h()
 
@@ -187,15 +195,3 @@ class qindex:
 
         # Verify
         target.h().phase(-45).h()
-
-    def _check_qreg(self, other: 'qindex'):
-        if self.qr != other.qr:
-            raise ValueError('qbits are not on the same qreg')
-
-    def _check_index(self, other: 'qindex'):
-        if other.global_idx_set & self.global_idx_set != set():
-            raise IndexError('control qbits contain target qbit')
-
-    def _check_size(self, other: 'qindex', size):
-        if len(other) != size:
-            raise ValueError(f'The size of qbits should be {size}')

@@ -2,13 +2,9 @@ import pytest
 from willard.type import qreg
 
 
-@pytest.fixture
-def qr3():
-    return qreg(3)
-
-
-def test_inc(qr3):
-    q = qr3.uint(3, 0)
+def test_inc():
+    qr = qreg(3)
+    q = qr.uint(3, 0)
     q.inc()
     got = q.measure()
     want = 1
@@ -21,9 +17,9 @@ def test_inc(qr3):
     assert(got == want)
 
 
-def test_dec(qr3):
-    qr3 = qreg(3)
-    q = qr3.uint(3, 7)
+def test_dec():
+    qr = qreg(3)
+    q = qr.uint(3, 7)
     q.dec()
     got = q.measure()
     want = 6
