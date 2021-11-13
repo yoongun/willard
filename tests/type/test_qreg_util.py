@@ -4,22 +4,6 @@ from willard.type import qreg
 from willard.const import dirac
 
 
-def test_init_qreg():
-    got = qreg(1).state
-    want = dirac.ket('0')
-    assert(torch.equal(got, want))
-
-    got = qreg(2).state
-    want = dirac.ket('00')
-    assert(torch.equal(got, want))
-
-    with pytest.raises(ValueError):
-        qreg(0)
-
-    with pytest.raises(ValueError):
-        qreg(-1)
-
-
 def test_reset():
     q = qreg(2)
     q[0].x()

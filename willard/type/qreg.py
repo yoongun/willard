@@ -1,5 +1,5 @@
 from willard.const import dirac
-from willard.type import quint, qbits
+from willard.type import quint, qselected, qbits
 from willard.type.interface import subscriptable
 
 
@@ -20,12 +20,9 @@ class qreg(subscriptable):
         self._check_overflow(size)
         return q
 
-    def bits(self, init_value: str) -> qbits:
-        q = qbits(
-            self,
-            set([self.cursor + i for i in range(len(init_value))]),
-            init_value=init_value)
-        self._check_overflow(1)
+    def bits(self, init_value: str) -> qselected:
+        q = qbits(self, self.cursor, init_value)
+        self._check_overflow(len(init_value))
         return q
 
     def reset(self):

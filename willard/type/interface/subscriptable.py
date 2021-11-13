@@ -1,5 +1,5 @@
 from abc import ABCMeta
-from willard.type import qbits
+from willard.type import qselected
 
 
 class subscriptable(metaclass=ABCMeta):
@@ -22,7 +22,7 @@ class subscriptable(metaclass=ABCMeta):
         for i in indices:
             self.check_idx(i)
             global_indices.add(i + self.offset)
-        return qbits(self.qr, global_indices)
+        return qselected(self.qr, global_indices)
 
     def check_idx(self, idx):
         if idx < 0 or idx >= self.size:

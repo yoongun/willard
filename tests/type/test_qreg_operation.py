@@ -5,6 +5,22 @@ from willard.type import qreg
 from willard.const import dirac
 
 
+def test_init_qreg():
+    got = qreg(1).state
+    want = dirac.ket('0')
+    assert(torch.equal(got, want))
+
+    got = qreg(2).state
+    want = dirac.ket('00')
+    assert(torch.equal(got, want))
+
+    with pytest.raises(ValueError):
+        qreg(0)
+
+    with pytest.raises(ValueError):
+        qreg(-1)
+
+
 def test_x_gate():
     # Case 1: Apply X gate on the first qubit
     q = qreg(2)
@@ -334,8 +350,8 @@ def test_equal():
     in1 = qr.bits('0')
     in2 = qr.bits('0')
     out = qr.bits('0')
-    in1.equal(in2, out)
-    got = int(out.measure())
+    in1[0].equal(in2[0], out[0])
+    got = int(out[0].measure())
     want = 1
     assert(got == want)
 
@@ -349,7 +365,7 @@ def test_equal():
         in1 = qr.bits('0')
         in2 = qr.bits('1')
         out = qr.bits('0')
-        in1.equal(in2, out)
+        in1[0].equal(in2[0], out[0])
         got &= int(out.measure())
     assert(got == want)
 
@@ -380,8 +396,8 @@ def test_teleportation():
     channel = qr.bits('0')
     bob = qr.bits('0')
 
-    alice.teleport(bob, channel)
-    got = int(bob.measure())
+    alice[0].teleport(bob[0], channel[0])
+    got = int(bob[0].measure())
     want = 1
 
     assert(got == want)
