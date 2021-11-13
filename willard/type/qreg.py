@@ -1,11 +1,11 @@
 from willard.const import dirac
 from willard.type import quint, qselected, qbits
-from willard.type.interface import subscriptable
+from willard.type.decorator import subscriptable
 
 
-class qreg(subscriptable):
+@subscriptable
+class qreg:
     def __init__(self, size) -> None:
-        super(qreg, self).__init__()
         if size < 1:
             raise ValueError(f"size should be bigger than 0. Got {size}")
         self.size = size

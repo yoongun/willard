@@ -1,8 +1,11 @@
-from abc import ABCMeta, abstractmethod
 from willard.type import qselected
 
 
-class subscriptable(metaclass=ABCMeta):
+def subscriptable(cls):
+    def check_idx(self, idx):
+        if idx < 0 or idx >= self.size:
+            raise IndexError(f'Index {idx} is out of the range')
+
     def __len__(self) -> int:
         return self.size
 
@@ -24,21 +27,7 @@ class subscriptable(metaclass=ABCMeta):
             global_indices.add(i + self.offset)
         return qselected(self.qr, global_indices)
 
-    # @property
-    # @abstractmethod
-    # def size(self):
-    #     raise NotImplementedError("")
-
-    # @property
-    # @abstractmethod
-    # def offset(self):
-    #     raise NotImplementedError("")
-
-    # @property
-    # @abstractmethod
-    # def qr(self):
-    #     raise NotImplementedError("")
-
-    def check_idx(self, idx):
-        if idx < 0 or idx >= self.size:
-            raise IndexError(f'Index {idx} is out of the range')
+    cls.__getitem__ = __getitem__
+    cls.__len__ = __len__
+    cls.check_idx = check_idx
+    return cls
