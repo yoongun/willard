@@ -5,7 +5,7 @@ from willard.const import gate, GateBuilder
 def single_indexed(f):
     def wrapper(*args):
         if len(args[0]) != 1:
-            raise ValueError(f'The size of selected indices should be 1')
+            raise ValueError('The size of selected indices should be 1')
         return f(*args)
     return wrapper
 
@@ -16,7 +16,7 @@ def qbit_targeted(f):
         for a in args[1:]:
             if type(a) == 'qindex':
                 if len(a) != 1:
-                    raise ValueError(f'The size of target indices should be 1')
+                    raise ValueError('The size of target indices should be 1')
                 elif self.qr != a.qr:
                     raise ValueError('qbits are not on the same qreg')
                 elif self.global_idx_set & a.global_idx_set != set():
