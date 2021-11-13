@@ -1,5 +1,5 @@
 import numpy as np
-from willard.const import gate, GateBuilder
+from willard.const import gate, GateBuilder, GateType
 
 
 def single_indexed(f):
@@ -104,20 +104,22 @@ class qindex:
     def measure(self) -> str:
         result = ''
         for i in self.global_idx_set:
-            prob_0 = self.qr.state.conj().T.mm(
-                self.gb.measure_0(i).mm(self.qr.state)).abs().item()
-            if prob_0 >= np.random.rand():
-                self.qr.state = self.gb.measure_0(i).mm(
-                    self.qr.state) / np.sqrt(prob_0)
-                result += '0'
-            else:
-                self.qr.state = self.gb.measure_1(i).mm(
-                    self.qr.state) / np.sqrt(1. - prob_0)
-                result += '1'
+            result += self._measure_index(i)
         return result
 
+    def _measure_index(self, i):
+        prob_0 = self.qr.state.conj().T.mm(
+            self.gb.measure_0(i).mm(self.qr.state)).abs().item()
+        if prob_0 >= np.random.rand():
+            self.qr.state = self.gb.measure_0(i).mm(
+                self.qr.state) / np.sqrt(prob_0)
+            return '0'
+        self.qr.state = self.gb.measure_1(i).mm(
+            self.qr.state) / np.sqrt(1. - prob_0)
+        return '1'
+
     @qbit_targeted
-    def cu(self, target: 'qindex', u):
+    def cu(self, target: 'qindex', u: GateType):
         self.qr.state = self.gb.ncu(
             cs=list(self.global_idx_set), d=list(target.global_idx_set)[0], u=u).mm(self.qr.state)
         return self
