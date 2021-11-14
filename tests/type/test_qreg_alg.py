@@ -1,4 +1,6 @@
 
+import numpy as np
+import pytest
 from willard.type import qreg
 
 
@@ -51,7 +53,6 @@ def test_equal():
 
 
 def test_teleportation():
-
     qr = qreg(3)
     alice = qr.bits('1')
     channel = qr.bits('0')
@@ -62,3 +63,16 @@ def test_teleportation():
     want = 1
 
     assert(got == want)
+
+
+def test_flip():
+    qr = qreg(3)
+    qr[:].h()
+    qr[:].flip(1)
+    assert(qr.state.angle()[1] == np.pi)
+
+    qr[:].flip(3)
+    assert(qr.state.angle()[3] == np.pi)
+
+    qr[:].flip(7)
+    assert(qr.state.angle()[7] == np.pi)
