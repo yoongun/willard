@@ -13,28 +13,23 @@ def index_size_fixed(size):
     return decorator
 
 
-def double_indexed(f):
-    def validity_checked(*args):
-        if len(args[0]) != 2:
-            raise IndexError('The size of selected indices should be 2')
-        return f(*args)
-    return validity_checked
-
-
-def qbit_targeted(f):
-    def validity_checked(*args):
-        self = args[0]
-        for a in args[1:]:
-            if type(a) == 'qindex':
-                if len(a) != 1:
-                    raise ValueError('The size of target indices should be 1')
-                elif self.qr != a.qr:
-                    raise ValueError('qbits are not on the same qreg')
-                elif self.global_idx_set & a.global_idx_set != set():
-                    raise IndexError(
-                        'selected indicies contain target indices')
-        return f(*args)
-    return validity_checked
+def target_size_fixed(size):
+    def decorator(f):
+        def wrapper(*args):
+            self = args[0]
+            for a in args[1:]:
+                if type(a) == 'qindex':
+                    if len(a) != size:
+                        raise ValueError(
+                            'The size of target indices should be 1')
+                    elif self.qr != a.qr:
+                        raise ValueError('qbits are not on the same qreg')
+                    elif self.global_idx_set & a.global_idx_set != set():
+                        raise IndexError(
+                            'selected indicies contain target indices')
+            return f(*args)
+        return wrapper
+    return decorator
 
 
 class qindex:
@@ -124,7 +119,7 @@ class qindex:
             self.qr.state) / np.sqrt(1. - prob_0)
         return '1'
 
-    @qbit_targeted
+    @target_size_fixed(1)
     def cu(self, target: 'qindex', u: GateType):
         cs = self.global_idcs
         t = target.global_idcs[0]
@@ -132,7 +127,7 @@ class qindex:
         return self
 
     @index_size_fixed(2)
-    @qbit_targeted
+    @target_size_fixed(1)
     def toffoli(self, target: 'qindex'):
         c1 = self.global_idcs[0]
         c2 = self.global_idcs[1]
@@ -154,7 +149,7 @@ class qindex:
         return self.cu(target, gate.phase(deg))
 
     @index_size_fixed(1)
-    @qbit_targeted
+    @target_size_fixed(1)
     def swap(self, target: 'qindex'):
         self.cx(target)
         target.cx(self)
@@ -162,7 +157,7 @@ class qindex:
         return self
 
     @index_size_fixed(1)
-    @qbit_targeted
+    @target_size_fixed(1)
     def cswap(self, target1: 'qindex', target2: 'qindex'):
         c = self.global_idcs[0]
         t1 = target1.global_idcs[0]
@@ -173,7 +168,7 @@ class qindex:
         return self
 
     @index_size_fixed(1)
-    @qbit_targeted
+    @target_size_fixed(1)
     def equal(self, other: 'qindex', output: 'qindex'):
         """
         swap_test algorithm
@@ -188,7 +183,7 @@ class qindex:
         return self
 
     @index_size_fixed(1)
-    @qbit_targeted
+    @target_size_fixed(1)
     def teleport(self, target: 'qindex', channel: 'qindex'):
         # Entangle
         channel.h().cx(target)
@@ -211,7 +206,12 @@ class qindex:
         target.h().phase(-45).h()
 
     def flip(self, val):
+        if val < 0:
+            raise ValueError("cannot flip value smaller than 0.")
         val_bin = bin(val).replace("0b", "").zfill(len(self))
+        if len(val_bin) > len(self):
+            raise ValueError(
+                f"qindex object cannot contained given value val={val}.")
         val_bin_rev = val_bin[::-1]
         index_to_flip = []
         for i, val in enumerate(val_bin_rev):
