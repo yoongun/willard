@@ -233,7 +233,7 @@ def test_cphase():
     q = qreg(2)
     q[0].h()
     q[1].x()
-    q[0].cphase(90, q[1])
+    q[0].cphase(q[1], 90)
     got = q.state
     want = torch.tensor(
         [[0.], [0.], [1. / np.sqrt(2)], [1.j / np.sqrt(2)]], dtype=torch.cfloat)
@@ -243,7 +243,7 @@ def test_cphase():
     q = qreg(2)
     q[1].h()
     q[0].x()
-    q[1].cphase(45, q[0])
+    q[1].cphase(q[0], 45)
     got = q.state
     want = torch.tensor([[0.], [1. / np.sqrt(2)], [0.],
                          [0.5 + 0.5j]], dtype=torch.cfloat)
@@ -252,7 +252,7 @@ def test_cphase():
     # Checks whether the code checks index range
     q = qreg(2)
     with pytest.raises(IndexError):
-        q[2].cphase(180, q[2])
+        q[2].cphase(q[2], 180)
 
 
 def test_swap():
@@ -318,25 +318,25 @@ def test_toffoli_gate():
         q[0, 0].toffoli(q[1])
 
 
-def test_cphase_commutativity():
+def test_phase_kickback():
     q1 = qreg(3)
     q1[0].h()
     q1[2].x()
-    q1[0].cphase(90, q1[2])
+    q1[0].cphase(q1[2], 90)
     q2 = qreg(3)
     q2[0].h()
     q2[2].x()
-    q2[2].cphase(90, q2[0])
+    q2[2].cphase(q2[0], 90)
     assert(torch.allclose(q1.state, q2.state))
 
     q1 = qreg(3)
     q1[1].h()
     q1[2].x()
-    q1[1].cphase(33, q1[2])
+    q1[1].cphase(q1[2], 33)
     q2 = qreg(3)
     q2[1].h()
     q2[2].x()
-    q2[2].cphase(33, q2[1])
+    q2[2].cphase(q2[1], 33)
     assert(torch.allclose(q1.state, q2.state))
 
 
