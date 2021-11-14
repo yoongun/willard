@@ -38,22 +38,26 @@ def qbit_targeted(f):
 
 
 class qindex:
-    def __init__(self, qr, global_idx_set: set, *, init_value: str = ''):
+    def __init__(self, qr, global_idx_set: set):
         self.global_idx_set = global_idx_set
         self.qr = qr
         self.gb = GateBuilder(qr.size)
 
-        if init_value:
-            if len(init_value) != len(global_idx_set):
-                raise ValueError(
-                    "init_value does not match the size of qbits.")
-            init_value_rev = init_value[::-1]
-            for i, elem in enumerate(init_value_rev):
-                if elem == '1':
-                    self.qr[list(global_idx_set)[i]].x()
+        # if init_value:
+        #     if len(init_value) != len(global_idx_set):
+        #         raise ValueError(
+        #             "init_value does not match the size of qbits.")
+        #     init_value_rev = init_value[::-1]
+        #     for i, elem in enumerate(init_value_rev):
+        #         if elem == '1':
+        #             self.qr[list(global_idx_set)[i]].x()
 
     def __len__(self) -> int:
         return len(self.global_idx_set)
+
+    @cached_property
+    def global_idcs(self):
+        return sorted(list(self.global_idx_set))
 
     def x(self):
         gate = self.gb.i()
@@ -215,13 +219,16 @@ class qindex:
         # Verify
         target.h().phase(-45).h()
 
-    @cached_property
-    def global_idcs(self):
-        return sorted(list(self.global_idx_set))
-
     def flip(self, val):
         val_bin = bin(val).replace("0b", "")
         val_bin_rev = val_bin[::-1]
-        for i in val_bin_rev:
-            if i == '1':
-                continue
+        # for i, val in enumerate(val_bin_rev):
+        #     if val == '1':
+        #         continue
+        #     self[self.global_idcs[i]].x()
+        # self.cu
+        # for i, val in enumerate(val_bin_rev):
+        #     if val == '1':
+        #         continue
+        #     a = qindex(self.qr, )
+        #     self[self.global_idcs[i]].x()
