@@ -24,16 +24,10 @@ class quint(qtype):
 
     def inc(self):
         for i in reversed(range(self.size)):
-            cs = []
-            for j in reversed(range(i)):
-                cs.append(j)
-            self[cs].cu(self[i], gate.x)
+            self[:i].cu(self[i], gate.x)
         return self
 
     def dec(self):
         for i in range(self.size):
-            cs = []
-            for j in range(i):
-                cs.append(j)
-            self[cs].cu(self[i], gate.x)
+            self[:i].cu(self[i], gate.x)
         return self
