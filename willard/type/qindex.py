@@ -213,16 +213,16 @@ class qindex:
     def flip(self, val):
         val_bin = bin(val).replace("0b", "").zfill(len(self))
         val_bin_rev = val_bin[::-1]
-        index_to_flip = set()
+        index_to_flip = []
         for i, val in enumerate(val_bin_rev):
             if val == '1':
                 continue
-            index_to_flip.add(i)
-        qindex(self.qr, index_to_flip).x()
-        qindex(self.qr, set(self.global_idcs[:-1])).cu(
-            qindex(self.qr, set([self.global_idcs[-1]])),
+            index_to_flip.append(i)
+        self.qr[index_to_flip].x()
+        self.qr[self.global_idcs[:-1]].cu(
+            self.qr[self.global_idcs[-1]],
             gate.phase(180))
-        qindex(self.qr, index_to_flip).x()
+        self.qr[index_to_flip].x()
 
     def aa(self):
         self.h()
