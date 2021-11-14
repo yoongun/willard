@@ -150,7 +150,7 @@ class qindex:
         """
         return self.cu(target, gate.x)
 
-    def cphase(self, deg: int, target: 'qindex'):
+    def cphase(self, target: 'qindex', deg: int):
         """
         deg: degree of phase
         target: index of the destination qubit
@@ -194,16 +194,18 @@ class qindex:
     @index_size_fixed(1)
     @qbit_targeted
     def teleport(self, target: 'qindex', channel: 'qindex'):
+        # Entangle
+        channel.h().cx(target)
+
         # Preparing payload
         self.h().phase(45).h()
 
         # Send
-        channel.h().cx(target)
         self.cx(channel).h()
         a_result = int(self.measure())
         ch_result = int(channel.measure())
 
-        # Resolve
+        # Receive
         if ch_result:
             target.x()
         if a_result:
