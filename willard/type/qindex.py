@@ -130,17 +130,17 @@ class qindex:
 
     @qbit_targeted
     def cu(self, target: 'qindex', u: GateType):
-        cs = list(self.global_idx_set)
-        t = list(target.global_idx_set)[0]
+        cs = self.global_idcs
+        t = target.global_idcs[0]
         self.qr.state = self.gb.ncu(cs=cs, d=t, u=u).mm(self.qr.state)
         return self
 
     @index_size_fixed(2)
     @qbit_targeted
     def toffoli(self, target: 'qindex'):
-        c1 = list(self.global_idx_set)[0]
-        c2 = list(self.global_idx_set)[1]
-        t = list(target.global_idx_set)[0]
+        c1 = self.global_idcs[0]
+        c2 = self.global_idcs[1]
+        t = target.global_idcs[0]
         self.qr.state = self.gb.toffoli(c1=c1, c2=c2, d=t).mm(self.qr.state)
         return self
 
@@ -168,9 +168,9 @@ class qindex:
     @index_size_fixed(1)
     @qbit_targeted
     def cswap(self, target1: 'qindex', target2: 'qindex'):
-        c = list(self.global_idx_set)[0]
-        t1 = list(target1.global_idx_set)[0]
-        t2 = list(target2.global_idx_set)[0]
+        c = self.global_idcs[0]
+        t1 = target1.global_idcs[0]
+        t2 = target2.global_idcs[0]
         self.qr[c, t1].toffoli(target2)
         self.qr[c, t2].toffoli(target1)
         self.qr[c, t1].toffoli(target2)
@@ -213,3 +213,15 @@ class qindex:
 
         # Verify
         target.h().phase(-45).h()
+
+    @property
+    def global_idcs(self):
+        return sorted(list(self.global_idx_set))
+
+    def flip(self, val):
+        idcs = sorted(list(self.global_idx_set))
+        val_bin = bin(val).replace("0b", "")
+        val_bin_rev = val_bin[::-1]
+        for i in val_bin_rev:
+            if i == '1':
+                continue
