@@ -43,15 +43,6 @@ class qindex:
         self.qr = qr
         self.gb = GateBuilder(qr.size)
 
-        # if init_value:
-        #     if len(init_value) != len(global_idx_set):
-        #         raise ValueError(
-        #             "init_value does not match the size of qbits.")
-        #     init_value_rev = init_value[::-1]
-        #     for i, elem in enumerate(init_value_rev):
-        #         if elem == '1':
-        #             self.qr[list(global_idx_set)[i]].x()
-
     def __len__(self) -> int:
         return len(self.global_idx_set)
 
@@ -220,15 +211,15 @@ class qindex:
         target.h().phase(-45).h()
 
     def flip(self, val):
-        val_bin = bin(val).replace("0b", "")
+        val_bin = bin(val).replace("0b", "").zfill(len(self))
         val_bin_rev = val_bin[::-1]
-        # for i, val in enumerate(val_bin_rev):
-        #     if val == '1':
-        #         continue
-        #     self[self.global_idcs[i]].x()
-        # self.cu
-        # for i, val in enumerate(val_bin_rev):
-        #     if val == '1':
-        #         continue
-        #     a = qindex(self.qr, )
-        #     self[self.global_idcs[i]].x()
+        index_to_flip = set()
+        for i, val in enumerate(val_bin_rev):
+            if val == '1':
+                continue
+            index_to_flip.add(i)
+        qindex(self.qr, index_to_flip).x()
+        qindex(self.qr, set(self.global_idcs[:-1])).cu(
+            qindex(self.qr, set([self.global_idcs[-1]])),
+            gate.phase(180))
+        qindex(self.qr, index_to_flip).x()
