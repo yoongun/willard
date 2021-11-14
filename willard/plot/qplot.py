@@ -13,15 +13,17 @@ class qplot:
     def add(self, tag):
         y_probs = self.qr.state.abs().square().T.squeeze().numpy()
         y_phases = (self.qr.state.angle() + 2 * np.pi) % (2 * np.pi)
+        y_phases *= 180 / np.pi
         y_phases = y_phases.T.squeeze().numpy()
         x = [bin(i).replace("0b", "").zfill(len(self.qr))
              for i in range(2 ** len(self.qr))]
         self.tags.append(tag)
 
-        self.fig.add_trace(go.Scatter(
+        self.fig.add_trace(go.Bar(
             visible=False,
             x=x,
             y=y_probs,
+            width=0.5,
             name="Probability"),
             secondary_y=False,
         )
@@ -73,7 +75,7 @@ class qplot:
         self.fig.update_yaxes(title_text="<b>Probability</b>", secondary_y=False,
                               range=[0., 1.], linecolor='midnightblue', gridcolor='midnightblue')
         self.fig.update_yaxes(title_text="<b>Phase</b>", secondary_y=True,
-                              range=[0, 2 * np.pi], linecolor='maroon', gridcolor='maroon')
+                              range=[0, 360], linecolor='maroon', gridcolor='maroon')
         self.fig.show()
 
 
