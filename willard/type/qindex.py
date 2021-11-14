@@ -1,4 +1,5 @@
 import numpy as np
+from functools import cached_property
 from willard.const import gate, GateBuilder, GateType
 
 
@@ -214,12 +215,11 @@ class qindex:
         # Verify
         target.h().phase(-45).h()
 
-    @property
+    @cached_property
     def global_idcs(self):
         return sorted(list(self.global_idx_set))
 
     def flip(self, val):
-        idcs = sorted(list(self.global_idx_set))
         val_bin = bin(val).replace("0b", "")
         val_bin_rev = val_bin[::-1]
         for i in val_bin_rev:
