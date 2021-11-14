@@ -76,3 +76,15 @@ def test_flip():
 
     qr[:].flip(7)
     assert(qr.state.angle()[7] == np.pi)
+
+
+def test_amplitude_amplification():
+    # Prepare
+    qr = qreg(3)
+    qr[:].h()
+    qr[:].flip(1)
+
+    # Amplitude Amplification
+    qr[:].aa()
+    assert(qr.state[1].abs().square() > 0.7)
+    assert(all(qr.state.angle() == np.pi))

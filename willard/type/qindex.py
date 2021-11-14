@@ -223,3 +223,11 @@ class qindex:
             qindex(self.qr, set([self.global_idcs[-1]])),
             gate.phase(180))
         qindex(self.qr, index_to_flip).x()
+
+    def aa(self):
+        self.h()
+        self.x()
+        self.qr[:len(self) - 1].cphase(self.qr[len(self) - 1], 180)
+        self.x()
+        self.h()
+        return self
