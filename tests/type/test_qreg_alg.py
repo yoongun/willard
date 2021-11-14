@@ -88,3 +88,8 @@ def test_amplitude_amplification():
     qr[:].aa()
     assert(qr.state[1].abs().square() > 0.7)
     assert(all(qr.state.angle() == np.pi))
+
+
+def test_qft():
+    qr = qreg(3)
+    pass

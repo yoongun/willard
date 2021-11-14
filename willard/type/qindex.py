@@ -141,12 +141,14 @@ class qindex:
         """
         return self.cu(target, gate.x)
 
-    def cphase(self, target: 'qindex', deg: int):
+    def cphase(self, deg: int):
         """
         deg: degree of phase
-        target: index of the destination qubit
+        target: qindex of the destination qubit
         """
-        return self.cu(target, gate.phase(deg))
+        return self.qr[self.global_idcs[:-1]].cu(
+            self.qr[self.global_idcs[-1]],
+            gate.phase(deg))
 
     @index_size_fixed(1)
     @target_size_fixed(1)
@@ -219,15 +221,16 @@ class qindex:
                 continue
             index_to_flip.append(i)
         self.qr[index_to_flip].x()
-        self.qr[self.global_idcs[:-1]].cu(
-            self.qr[self.global_idcs[-1]],
-            gate.phase(180))
+        self.cphase(180)
         self.qr[index_to_flip].x()
 
     def aa(self):
         self.h()
         self.x()
-        self.qr[:len(self) - 1].cphase(self.qr[len(self) - 1], 180)
+        self.cphase(180)
         self.x()
         self.h()
         return self
+
+    def qft(self):
+        pass
