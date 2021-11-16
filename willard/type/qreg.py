@@ -32,7 +32,7 @@ class qreg:
 
     def _check_overflow(self, size: int):
         if self.cursor + size > self.size:
-            raise ValueError(
-                "This register is already full. Please try creating another register with larger size")
+            raise ValueError(("This register is already full."
+                              "Please try creating qreg with larger size"))
         else:
             self.cursor += size

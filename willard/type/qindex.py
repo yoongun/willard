@@ -18,15 +18,24 @@ def target_size_fixed(size):
         def wrapper(*args):
             self = args[0]
             for a in args[1:]:
-                if type(a) == 'qindex':
+                if type(a) == qindex:
                     if len(a) != size:
                         raise ValueError(
                             'The size of target indices should be 1')
                     elif self.qr != a.qr:
                         raise ValueError('qbits are not on the same qreg')
-                    elif self.global_idx_set & a.global_idx_set != set():
+                    if self.global_idx_set & a.global_idx_set != set():
                         raise IndexError(
                             'selected indicies contain target indices')
+                # if type(a) == qtype:
+                #     if len(a) != size:
+                #         raise ValueError(
+                #             'The size of target indices should be 1')
+                #     elif self.qr != a.qr:
+                #         raise ValueError('qbits are not on the same qreg')
+                #     if a is self:
+                #         raise IndexError(
+                #             'selected indicies contain target indices')
             return f(*args)
         return wrapper
     return decorator

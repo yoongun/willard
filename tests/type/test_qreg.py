@@ -236,7 +236,8 @@ def test_cphase():
     q[0, 1].cphase(90)
     got = q.state
     want = torch.tensor(
-        [[0.], [0.], [1. / np.sqrt(2)], [1.j / np.sqrt(2)]], dtype=torch.cfloat)
+        [[0.], [0.], [1. / np.sqrt(2)], [1.j / np.sqrt(2)]],
+        dtype=torch.cfloat)
     assert(torch.allclose(got, want))
 
     # Case 2: Test on the second qubit

@@ -1,5 +1,6 @@
 
 import numpy as np
+import torch
 import pytest
 from willard.type import qreg
 
@@ -13,8 +14,8 @@ def test_equal():
     in1 = qr.bits('0')
     in2 = qr.bits('0')
     out = qr.bits('0')
-    in1[0].equal(in2[0], out[0])
-    got = int(out[0].measure())
+    in1.equal(in2, out)
+    got = int(out.measure())
     want = 1
     assert(got == want)
 
@@ -28,28 +29,9 @@ def test_equal():
         in1 = qr.bits('0')
         in2 = qr.bits('1')
         out = qr.bits('0')
-        in1[0].equal(in2[0], out[0])
+        in1.equal(in2, out)
         got &= int(out.measure())
     assert(got == want)
-
-# def test_teleportation():
-#     q = qreg(3)
-#     q.x(0)
-#     q.h(0).phase(idx=0, deg=45).h(0)
-#     q.teleport(a=0, ch=1, b=2)
-#     q.h(2).phase(deg=-45, idx=2).h(2)
-#     got = q.measure(2)
-#     want = 1
-#     assert(got == want)
-
-#     q = qreg(3)
-#     q.x(1)
-#     q.h(1).phase(idx=1, deg=45).h(1)
-#     q.teleport(a=1, ch=2, b=0)
-#     q.h(0).phase(deg=-45, idx=0).h(0)
-#     got = q.measure(0)
-#     want = 1
-#     assert(got == want)
 
 
 def test_teleportation():
@@ -58,8 +40,8 @@ def test_teleportation():
     channel = qr.bits('0')
     bob = qr.bits('0')
 
-    alice[:].teleport(bob[:], channel[:])
-    got = int(bob[:].measure())
+    alice.teleport(bob, channel)
+    got = int(bob.measure())
     want = 1
 
     assert(got == want)
@@ -67,29 +49,75 @@ def test_teleportation():
 
 def test_flip():
     qr = qreg(3)
-    qr[:].h()
-    qr[:].flip(1)
-    assert(qr.state.angle()[1] == np.pi)
+    qr.h()
+    qr.flip(1)
 
-    qr[:].flip(3)
-    assert(qr.state.angle()[3] == np.pi)
+    got = qr.state.angle()[1]
+    want = pytest.approx(np.pi)
+    assert(got == want)
 
-    qr[:].flip(7)
-    assert(qr.state.angle()[7] == np.pi)
+    qr.flip(3)
+    got = qr.state.angle()[3]
+    want = pytest.approx(np.pi)
+    assert(got == want)
+
+    qr.flip(7)
+    got = qr.state.angle()[7]
+    want = pytest.approx(np.pi)
+    assert(got == want)
 
 
 def test_amplitude_amplification():
     # Prepare
     qr = qreg(3)
-    qr[:].h()
-    qr[:].flip(1)
+    qr.h()
+    qr.flip(1)
 
     # Amplitude Amplification
-    qr[:].aa()
-    assert(qr.state[1].abs().square() > 0.7)
-    assert(all(qr.state.angle() == np.pi))
+    qr.aa()
+    got = qr.state[1].abs().square()
+    want = 0.7
+    assert(got > want)
+
+    got = qr.state.angle()
+    want = torch.empty(len(qr)).fill_(np.pi)
+    assert(torch.isclose(got, want).all())
 
 
-def test_qft():
-    qr = qreg(3)
+@pytest.fixture
+def freq8():
+    qr = qreg(4)
+    qr.h()
+    qr[0].phase(180)
+    return qr
+
+
+def test_qft(freq8, ):
+    freq8.qft()
+    got = freq8.measure()
+    want = 8
+    assert(got == want)
+
+
+def test_qpe():
+    pass
+
+
+def test_grover():
+    pass
+
+
+def test_dj():
+    pass
+
+
+def test_bv():
+    pass
+
+
+def test_simon():
+    pass
+
+
+def test_superdense_coding():
     pass
