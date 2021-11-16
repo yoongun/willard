@@ -58,6 +58,7 @@ def subscriptable(cls):
     cls.teleport = lambda self, t, ch: self[:].teleport(t[:], ch[:])
     cls.flip = lambda self, val: self[:].flip(val)
     cls.aa = lambda self: self[:].aa()
+    cls.qft = lambda self: self[:].qft()
 
     cls.check_idx = check_idx
     return cls

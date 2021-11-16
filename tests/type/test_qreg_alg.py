@@ -87,12 +87,13 @@ def test_amplitude_amplification():
 @pytest.fixture
 def freq8():
     qr = qreg(4)
-    qr.h()
-    qr[0].phase(180)
-    return qr
+    q = qr.uint(4, 0)
+    q.h()
+    q[0].phase(180)
+    return q
 
 
-def test_qft(freq8, ):
+def test_qft(freq8):
     freq8.qft()
     got = freq8.measure()
     want = 8
