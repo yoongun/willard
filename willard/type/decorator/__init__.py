@@ -1,1 +1,1 @@
-from .index import subscriptable, default_as_select_all
+from .qindex import subscriptable, default_as_select_all
