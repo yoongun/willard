@@ -49,20 +49,21 @@ def test_teleportation():
 
 def test_flip():
     qr = qreg(3)
-    qr.h()
-    qr.flip(1)
+    q = qr.bits('000')
+    q.h()
+    q.flip(1)
 
-    got = qr.state.angle()[1]
+    got = q.global_state.angle()[1]
     want = pytest.approx(np.pi)
     assert(got == want)
 
-    qr.flip(3)
-    got = qr.state.angle()[3]
+    q.flip(3)
+    got = q.global_state.angle()[3]
     want = pytest.approx(np.pi)
     assert(got == want)
 
-    qr.flip(7)
-    got = qr.state.angle()[7]
+    q.flip(7)
+    got = q.global_state.angle()[7]
     want = pytest.approx(np.pi)
     assert(got == want)
 
@@ -70,16 +71,17 @@ def test_flip():
 def test_amplitude_amplification():
     # Prepare
     qr = qreg(3)
-    qr.h()
-    qr.flip(1)
+    q = qr.bits('000')
+    q.h()
+    q.flip(1)
 
     # Amplitude Amplification
-    qr.aa()
-    got = qr.state[1].abs().square()
+    q.aa()
+    got = q.global_state[1].abs().square()
     want = 0.7
     assert(got > want)
 
-    got = qr.state.angle()
+    got = q.global_state.angle()
     want = torch.empty(len(qr)).fill_(np.pi)
     assert(torch.isclose(got, want).all())
 
@@ -87,7 +89,7 @@ def test_amplitude_amplification():
 @pytest.fixture
 def f8():
     qr = qreg(4)
-    q = qr.uint(4, 0)
+    q = qr.bits('0000')
     q.h()
     q[0].phase(180)
     return q
@@ -96,7 +98,7 @@ def f8():
 @pytest.fixture
 def f2():
     qr = qreg(4)
-    q = qr.uint(4, 0)
+    q = qr.bits('0000')
     q.h()
     q[0].phase(45)
     q[1].phase(90)
@@ -107,7 +109,7 @@ def f2():
 @pytest.fixture
 def square():
     qr = qreg(4)
-    q = qr.uint(4, 0)
+    q = qr.bits('0000')
     q.h()
     q[1].phase(180)
     return q
@@ -115,36 +117,36 @@ def square():
 
 def test_qft(f8, square, f2):
     f8.qft()
-    got = f8.measure()
+    got = int(f8.measure(), 2)
     want = 8
     assert(got == want)
 
     square.qft()
-    got = square.measure()
+    got = int(square.measure(), 2)
     want1 = 4
     want2 = 12
     assert(got == want1 or got == want2)
 
     f2.qft()
-    got = f2.measure()
+    got = int(f2.measure(), 2)
     want = 2
     assert(got == want)
 
 
 def test_inv_qft(f8, square, f2):
-    want = f8.qr.state.clone()
+    want = f8.global_state.clone()
     f8.qft().invqft()
-    got = f8.qr.state
+    got = f8.global_state
     assert(torch.equal(got, want))
 
-    want = square.qr.state
+    want = square.global_state.clone()
     square.qft().invqft()
-    got = square.qr.state
+    got = square.global_state
     assert(torch.equal(got, want))
 
-    want = f2.qr.state
+    want = f2.global_state.clone()
     f2.qft().invqft()
-    got = f2.qr.state
+    got = f2.global_state
     assert(torch.equal(got, want))
 
 

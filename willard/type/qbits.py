@@ -20,3 +20,7 @@ class qbits(qtype):
         for i in range(self.size):
             result = str(self[i].measure()[0]) + result
         return result
+
+    @property
+    def global_state(self):
+        return super().global_state

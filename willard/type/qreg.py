@@ -3,7 +3,6 @@ from willard.type import quint, qbits
 from willard.type.decorator import subscriptable
 
 
-@subscriptable
 class qreg:
     def __init__(self, size) -> None:
         if size < 1:
@@ -14,6 +13,9 @@ class qreg:
 
         self.state = dirac.ket('0' * size)
         self.cursor = 0
+
+    def __len__(self) -> int:
+        return self.size
 
     def uint(self, size, init_value) -> quint:
         q = quint(self, size, self.cursor, init_value)

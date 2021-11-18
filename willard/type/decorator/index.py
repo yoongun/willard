@@ -38,20 +38,15 @@ def subscriptable(cls):
     cls.__len__ = __len__
 
     def __getitem__(self, idx):
-        def ifnone(a, b): return b if a is None else a
-
         indices = set()
         if type(idx) == int:
             indices.add(idx)
         elif type(idx) == slice:
-            indices |= set(range(
-                ifnone(idx.start, 0),
-                ifnone(idx.stop, len(self)),
-                ifnone(idx.step, 1)))
+            indices |= set(slice_to_range(idx, len(self)))
         elif type(idx) == tuple or type(idx) == list:
             for i in idx:
                 if type(i) != int:
-                    raise IndexError('Indices should be integer value.')
+                    raise IndexError('Indices should be an integer value.')
                 indices.add(i)
 
         global_indices = set()
@@ -68,6 +63,11 @@ def subscriptable(cls):
 
     cls.check_idx = check_idx
     return cls
+
+
+def slice_to_range(s: slice, max_size: int):
+    indices = s.indices(max_size)
+    return range(indices[0], indices[1], indices[2])
 
 
 def index_size_fixed(size):
@@ -117,6 +117,38 @@ class qindex:
     def __len__(self) -> int:
         return len(self.global_idx_set)
 
+    def __getitem__(self, idx) -> 'qindex':
+        indices = set()
+        if type(idx) == int:
+            indices.add(idx)
+        elif type(idx) == slice:
+            indices |= set(slice_to_range(idx, len(self)))
+        elif type(idx) == tuple or type(idx) == list:
+            for i in idx:
+                if type(i) != int:
+                    raise IndexError('Indices should be an integer value.')
+                indices.add(i)
+
+        global_indices = set()
+        for i in indices:
+            if i < 0:
+                i += len(self)
+            self.check_idx(i)
+            global_indices.add(self.global_idcs[i])
+        return qindex(self.qr, global_indices)
+
+    @property
+    def global_state(self):
+        return self.qr.state
+
+    @global_state.setter
+    def global_state(self, state):
+        self.qr.state = state
+
+    def check_idx(self, idx):
+        if idx < 0 or idx >= len(self):
+            raise IndexError(f'Index {idx} is out of the range')
+
     @cached_property
     def global_idcs(self):
         return sorted(list(self.global_idx_set))
@@ -125,35 +157,35 @@ class qindex:
         gate = self.gb.i()
         for i in self.global_idx_set:
             gate = self.gb.x(i).mm(gate)
-        self.qr.state = gate.mm(self.qr.state)
+        self.global_state = gate.mm(self.global_state)
         return self
 
     def rnot(self):
         gate = self.gb.i()
         for i in self.global_idx_set:
             gate = self.gb.rnot(i).mm(gate)
-        self.qr.state = gate.mm(self.qr.state)
+        self.global_state = gate.mm(self.global_state)
         return self
 
     def y(self):
         gate = self.gb.i()
         for i in self.global_idx_set:
             gate = self.gb.y(i).mm(gate)
-        self.qr.state = gate.mm(self.qr.state)
+        self.global_state = gate.mm(self.global_state)
         return self
 
     def z(self):
         gate = self.gb.i()
         for i in self.global_idx_set:
             gate = self.gb.z(i).mm(gate)
-        self.qr.state = gate.mm(self.qr.state)
+        self.global_state = gate.mm(self.global_state)
         return self
 
     def h(self):
         gate = self.gb.i()
         for i in self.global_idx_set:
             gate = self.gb.h(i).mm(gate)
-        self.qr.state = gate.mm(self.qr.state)
+        self.global_state = gate.mm(self.global_state)
         return self
 
     def s(self):
@@ -172,7 +204,7 @@ class qindex:
         gate = self.gb.i()
         for i in self.global_idx_set:
             gate = self.gb.phase(deg, i).mm(gate)
-        self.qr.state = gate.mm(self.qr.state)
+        self.global_state = gate.mm(self.global_state)
         return self
 
     def phase_dg(self, deg: int):
@@ -185,21 +217,21 @@ class qindex:
         return result
 
     def _measure_index(self, i):
-        prob_0 = self.qr.state.conj().T.mm(
-            self.gb.measure_0(i).mm(self.qr.state)).abs().item()
+        prob_0 = self.global_state.conj().T.mm(
+            self.gb.measure_0(i).mm(self.global_state)).abs().item()
         if prob_0 >= np.random.rand():
-            self.qr.state = self.gb.measure_0(i).mm(
-                self.qr.state) / np.sqrt(prob_0)
+            self.global_state = self.gb.measure_0(i).mm(
+                self.global_state) / np.sqrt(prob_0)
             return '0'
-        self.qr.state = self.gb.measure_1(i).mm(
-            self.qr.state) / np.sqrt(1. - prob_0)
+        self.global_state = self.gb.measure_1(i).mm(
+            self.global_state) / np.sqrt(1. - prob_0)
         return '1'
 
     @target_size_fixed(1)
     def cu(self, target: 'qindex', u: GateType):
         cs = self.global_idcs
         t = target.global_idcs[0]
-        self.qr.state = self.gb.ncu(cs=cs, d=t, u=u).mm(self.qr.state)
+        self.global_state = self.gb.ncu(cs=cs, d=t, u=u).mm(self.global_state)
         return self
 
     @index_size_fixed(2)
@@ -208,7 +240,8 @@ class qindex:
         c1 = self.global_idcs[0]
         c2 = self.global_idcs[1]
         t = target.global_idcs[0]
-        self.qr.state = self.gb.toffoli(c1=c1, c2=c2, d=t).mm(self.qr.state)
+        self.global_state = self.gb.toffoli(
+            c1=c1, c2=c2, d=t).mm(self.global_state)
         return self
 
     def cx(self, target: 'qindex'):
@@ -222,9 +255,7 @@ class qindex:
         deg: degree of phase
         target: qindex of the destination qubit
         """
-        return self.qr[self.global_idcs[:-1]].cu(
-            self.qr[self.global_idcs[-1]],
-            gate.phase(deg))
+        return self[:-1].cu(self[-1], gate.phase(deg))
 
     @index_size_fixed(1)
     @target_size_fixed(1)
@@ -240,9 +271,12 @@ class qindex:
         c = self.global_idcs[0]
         t1 = target1.global_idcs[0]
         t2 = target2.global_idcs[0]
-        self.qr[c, t1].toffoli(target2)
-        self.qr[c, t2].toffoli(target1)
-        self.qr[c, t1].toffoli(target2)
+        self.global_state = self.gb.toffoli(
+            c1=c, c2=t1, d=t2).mm(self.global_state)
+        self.global_state = self.gb.toffoli(
+            c1=c, c2=t2, d=t1).mm(self.global_state)
+        self.global_state = self.gb.toffoli(
+            c1=c, c2=t1, d=t2).mm(self.global_state)
         return self
 
     @index_size_fixed(1)
@@ -289,16 +323,16 @@ class qindex:
         val_bin = bin(val).replace("0b", "").zfill(len(self))
         if len(val_bin) > len(self):
             raise ValueError(
-                f"qindex object cannot contained given value val={val}.")
+                f"qindex object cannot contain given value val={val}.")
         val_bin_rev = val_bin[::-1]
         index_to_flip = []
         for i, val in enumerate(val_bin_rev):
             if val == '1':
                 continue
             index_to_flip.append(i)
-        self.qr[index_to_flip].x()
+        self[index_to_flip].x()
         self.cphase(180)
-        self.qr[index_to_flip].x()
+        self[index_to_flip].x()
 
     def aa(self):
         self.h()
@@ -310,14 +344,13 @@ class qindex:
 
     def qft(self):
         for i in reversed(range(len(self))):
-            self.qr[self.global_idcs[i]].h()
+            self[i].h()
             deg = -90.
             for j in reversed(range(i)):
-                self.qr[self.global_idcs[i], self.global_idcs[j]].cphase(deg)
+                self[i, j].cphase(deg)
                 deg /= 2.
         for i in range(len(self) // 2):
-            self.qr[self.global_idcs[i]].swap(
-                self.qr[self.global_idcs[len(self) - 1 - i]])
+            self[i].swap(self[len(self) - 1 - i])
         return self
 
     def invqft(self):

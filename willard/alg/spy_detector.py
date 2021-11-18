@@ -2,20 +2,20 @@ from willard.type import qreg
 
 
 def _alice(q):
-    a1 = int(qreg(1)[0].h().measure())
-    a2 = int(qreg(1)[0].h().measure())
+    a1 = int(qreg(1).bits('0').h().measure())
+    a2 = int(qreg(1).bits('0').h().measure())
     if a1:
-        q[0].x()
+        q.x()
     if a2:
-        q[0].h()
+        q.h()
     return q, a1, a2
 
 
 def _bob(q):
-    b2 = int(qreg(1)[0].h().measure())
+    b2 = int(qreg(1).bits('0').h().measure())
     if b2:
-        q[0].h()
-    b1 = int(q[0].measure())
+        q.h()
+    b1 = int(q.measure())
     return b1, b2
 
 
@@ -24,7 +24,7 @@ def detect_spy(might_spy):
     is_spy = False
 
     for _ in range(100):
-        q = qreg(1)
+        q = qreg(1).bits('0')
         q, a1, a2 = _alice(q)
         q = might_spy(q)
         b1, b2 = _bob(q)

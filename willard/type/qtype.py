@@ -9,3 +9,7 @@ class qtype(metaclass=ABCMeta):
     def measure(self):
         raise NotImplementedError(
             "qtype class should implement measure method.")
+
+    @property
+    def global_state(self):
+        return self.qr.state
