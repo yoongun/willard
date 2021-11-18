@@ -27,6 +27,7 @@ def default_as_select_all(cls):
     cls.flip = lambda self, val: self[:].flip(val)
     cls.aa = lambda self: self[:].aa()
     cls.qft = lambda self: self[:].qft()
+    cls.invqft = lambda self: self[:].invqft()
 
     return cls
 
@@ -257,12 +258,11 @@ class qindex:
         """
         return self[:-1].cu(self[-1], gate.phase(deg))
 
-    @index_size_fixed(1)
-    @target_size_fixed(1)
-    def swap(self, target: 'qindex'):
-        self.cx(target)
-        target.cx(self)
-        self.cx(target)
+    @index_size_fixed(2)
+    def swap(self):
+        self[0].cx(self[1])
+        self[1].cx(self[0])
+        self[0].cx(self[1])
         return self
 
     @index_size_fixed(1)
@@ -350,17 +350,16 @@ class qindex:
                 self[i, j].cphase(deg)
                 deg /= 2.
         for i in range(len(self) // 2):
-            self[i].swap(self[len(self) - 1 - i])
+            self[i, len(self) - 1 - i].swap()
         return self
 
     def invqft(self):
         for i in range(len(self) // 2):
-            self.qr[self.global_idcs[i]].swap(
-                self.qr[self.global_idcs[len(self) - 1 - i]])
+            self[i, len(self) - 1 - i].swap()
         for i in range(len(self)):
-            self.qr[self.global_idcs[i]].h()
-            deg = -90.
-            for j in range(i):
-                self.qr[self.global_idcs[i], self.global_idcs[j]].cphase(deg)
+            self[i].h()
+            deg = 90.
+            for j in range(i + 1, len(self)):
+                self[i, j].cphase(deg)
                 deg /= 2.
         return self

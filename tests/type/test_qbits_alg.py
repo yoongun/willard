@@ -142,7 +142,7 @@ def test_inv_qft(f8, square, f2):
     want = square.global_state.clone()
     square.qft().invqft()
     got = square.global_state
-    assert(torch.equal(got, want))
+    assert(torch.allclose(got, want))
 
     want = f2.global_state.clone()
     f2.qft().invqft()

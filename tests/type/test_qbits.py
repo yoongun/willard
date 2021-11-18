@@ -271,14 +271,16 @@ def test_swap():
     # Case 1: From qubit0 to qubit1
     qr = qreg(2)
     q = qr.bits('00')
-    q[0].x().swap(q[1])
+    q[0].x()
+    q[0, 1].swap()
     got = q.global_state
     want = dirac.ket('10')
     assert(torch.equal(got, want))
 
-    # Case 1: From qubit1 to qubit0
+    # Case 2: From qubit1 to qubit0
     qr.reset()
-    q[1].x().swap(q[0])
+    q[1].x()
+    q[1, 0].swap()
     got = q.global_state
     want = dirac.ket('01')
     assert(torch.equal(got, want))

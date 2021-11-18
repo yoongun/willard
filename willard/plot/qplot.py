@@ -31,6 +31,7 @@ class qplot:
             visible=False,
             x=x,
             y=y_phases,
+            line_shape='spline',
             name="Phase"),
             secondary_y=True,
         )
