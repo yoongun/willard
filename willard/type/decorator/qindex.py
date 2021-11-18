@@ -271,12 +271,8 @@ class qindex:
         c = self.global_idcs[0]
         t1 = target1.global_idcs[0]
         t2 = target2.global_idcs[0]
-        self.global_state = self.gb.toffoli(
-            c1=c, c2=t1, d=t2).mm(self.global_state)
-        self.global_state = self.gb.toffoli(
-            c1=c, c2=t2, d=t1).mm(self.global_state)
-        self.global_state = self.gb.toffoli(
-            c1=c, c2=t1, d=t2).mm(self.global_state)
+        self.global_state = self.gb.cswap(
+            c=c, d1=t1, d2=t2).mm(self.global_state)
         return self
 
     @index_size_fixed(1)
