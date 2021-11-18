@@ -1,3 +1,4 @@
+from functools import cached_property
 import torch
 import numpy as np
 from willard.const import dirac
@@ -53,11 +54,11 @@ class GateType:
     def i(self):
         return torch.eye(2)
 
-    @property
+    @cached_property
     def subspace_0(self):
         return torch.kron(dirac.ket('0').conj().T, dirac.ket('0'))
 
-    @property
+    @cached_property
     def subspace_1(self):
         return torch.kron(dirac.ket('1').conj().T, dirac.ket('1'))
 
