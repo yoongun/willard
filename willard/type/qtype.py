@@ -1,8 +1,9 @@
 from abc import ABCMeta, abstractmethod
-from willard.type.decorator import subscriptable
+from willard.type.decorator import subscriptable, default_as_select_all
 
 
 @subscriptable
+@default_as_select_all
 class qtype(metaclass=ABCMeta):
     @abstractmethod
     def measure(self):
