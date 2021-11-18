@@ -232,7 +232,7 @@ class qindex:
     def cu(self, target: 'qindex', u: GateType):
         cs = self.global_idcs
         t = target.global_idcs[0]
-        self.global_state = self.gb.ncu(cs=cs, d=t, u=u).mm(self.global_state)
+        self.global_state = self.gb.ncu(cs=cs, t=t, u=u).mm(self.global_state)
         return self
 
     @index_size_fixed(2)
@@ -242,7 +242,7 @@ class qindex:
         c2 = self.global_idcs[1]
         t = target.global_idcs[0]
         self.global_state = self.gb.toffoli(
-            c1=c1, c2=c2, d=t).mm(self.global_state)
+            c1=c1, c2=c2, t=t).mm(self.global_state)
         return self
 
     def cx(self, target: 'qindex'):

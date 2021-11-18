@@ -102,23 +102,23 @@ class GateBuilder:
             result = torch.kron(gate.i, result)
         return result
 
-    def cu(self, *, c, d, u: GateType):
+    def cu(self, *, c, t, u: GateType):
         """
         c: index of the condition qubit
-        d: index of the destination qubit
+        t: index of the target qubit
         u: gate to apply on destination qubit
         """
         self._check_idx(c)
-        self._check_idx(d)
-        if c == d:
-            raise IndexError(f'Index ({c},{d}) is not valid')
+        self._check_idx(t)
+        if c == t:
+            raise IndexError(f'Index ({c},{t}) is not valid')
         cu_0 = torch.tensor([[1]])
         cu_1 = torch.tensor([[1]])
         for i in range(self.num_bits):
             if i == c:
                 cu_0 = torch.kron(gate.subspace_0, cu_0)
                 cu_1 = torch.kron(gate.subspace_1, cu_1)
-            elif i == d:
+            elif i == t:
                 cu_0 = torch.kron(gate.i, cu_0)
                 cu_1 = torch.kron(u, cu_1)
             else:
@@ -126,7 +126,7 @@ class GateBuilder:
                 cu_1 = torch.kron(gate.i, cu_1)
         return cu_0 + cu_1
 
-    def ncu(self, cs: list, d: int, u: GateType):
+    def ncu(self, cs: list, t: int, u: GateType):
         """
         cs: list of index of control qubits
         d: index of destination qubit
@@ -134,9 +134,9 @@ class GateBuilder:
         """
         for c in cs:
             self._check_idx(c)
-        self._check_idx(d)
-        if len(cs) + 1 > len([*cs, d]):
-            raise IndexError(f'Index ({cs},{d}) is not valid')
+        self._check_idx(t)
+        if len(cs) + 1 > len([*cs, t]):
+            raise IndexError(f'Index ({cs},{t}) is not valid')
 
         submatrices = []
         for _ in range(2 ** len(cs)):
@@ -147,13 +147,13 @@ class GateBuilder:
             if i in cs:
                 targets = set([x | 2 ** cs.index(i) for x in values])
                 nontargets = values - targets
-                for t in targets:
-                    submatrices[t] = torch.kron(
-                        gate.subspace_1, submatrices[t])
+                for target in targets:
+                    submatrices[target] = torch.kron(
+                        gate.subspace_1, submatrices[target])
                 for nt in nontargets:
                     submatrices[nt] = torch.kron(
                         gate.subspace_0, submatrices[nt])
-            elif i == d:
+            elif i == t:
                 submatrices[-1] = torch.kron(u, submatrices[-1])
                 for j in range(2 ** len(cs) - 1):
                     submatrices[j] = torch.kron(gate.i, submatrices[j])
@@ -167,13 +167,13 @@ class GateBuilder:
         c: index of the condition qubit
         d: index of the destination qubit
         """
-        return self.cu(c=c, d=d, u=gate.x)
+        return self.cu(c=c, t=d, u=gate.x)
 
     def swap(self, *, d1, d2):
         return self.cnot(c=d1, d=d2).mm(self.cnot(c=d1, d=d2)).mm(self.cnot(c=d1, d=d2))
 
-    def toffoli(self, *, c1, c2, d):
-        return self.ncu([c1, c2], d, gate.x)
+    def toffoli(self, *, c1, c2, t):
+        return self.ncu([c1, c2], t, gate.x)
         # self._check_idx(c1)
         # self._check_idx(c2)
         # self._check_idx(d)
@@ -207,7 +207,7 @@ class GateBuilder:
         # return t00 + t01 + t10 + t11
 
     def cswap(self, *, c, d1, d2):
-        return self.toffoli(c1=c, c2=d1, d=d2).mm(self.toffoli(c1=c, c2=d2, d=d1)).mm(self.toffoli(c1=c, c2=d1, d=d2))
+        return self.toffoli(c1=c, c2=d1, t=d2).mm(self.toffoli(c1=c, c2=d2, t=d1)).mm(self.toffoli(c1=c, c2=d1, t=d2))
 
     def _check_idx(self, idx):
         if idx < 0 or idx >= self.num_bits:
