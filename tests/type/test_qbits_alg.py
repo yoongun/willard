@@ -131,6 +131,23 @@ def test_qft(f8, square, f2):
     assert(got == want)
 
 
+def test_inv_qft(f8, square, f2):
+    want = f8.qr.state.clone()
+    f8.qft().invqft()
+    got = f8.qr.state
+    assert(torch.equal(got, want))
+
+    want = square.qr.state
+    square.qft().invqft()
+    got = square.qr.state
+    assert(torch.equal(got, want))
+
+    want = f2.qr.state
+    f2.qft().invqft()
+    got = f2.qr.state
+    assert(torch.equal(got, want))
+
+
 def test_qpe():
     pass
 
