@@ -1,5 +1,5 @@
 import pytest
-from willard.alg.spy_detector import detect_spy
+from willard import alg
 
 
 def test_spy_detector():
@@ -9,8 +9,8 @@ def test_spy_detector():
         q = qreg(1).bits('0')
         q.x().h()
         return q
-    assert(detect_spy(spy))
+    assert(alg.detect_spy(spy))
 
     def no_spy(q):
         return q
-    assert(not detect_spy(no_spy))
+    assert(not alg.detect_spy(no_spy))

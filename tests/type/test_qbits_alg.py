@@ -1,4 +1,3 @@
-
 import numpy as np
 import torch
 import pytest
@@ -169,6 +168,12 @@ def test_qpe():
 
 
 def test_grover():
+    # qr = qreg(3)
+    # q = qr.bits('000')
+    # q.grover(oracle1)
+
+    # qr.reset()
+    # q.grover(oracle2)
     pass
 
 
@@ -181,6 +186,10 @@ def test_bv():
 
 
 def test_simon():
+    pass
+
+
+def test_shor():
     pass
 
 
