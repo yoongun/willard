@@ -34,19 +34,6 @@ def test_equal():
     assert(got == want)
 
 
-def test_teleportation():
-    qr = qreg(3)
-    alice = qr.bits('1')
-    channel = qr.bits('0')
-    bob = qr.bits('0')
-
-    alice.teleport(bob, channel)
-    got = int(bob.measure())
-    want = 1
-
-    assert(got == want)
-
-
 def test_flip():
     qr = qreg(3)
     q = qr.bits('000')
@@ -165,29 +152,3 @@ def test_qpe():
     got = int(output.measure(), 2) / (2 ** len(output))
     want = 1 / 4
     assert (got == want)
-
-
-def test_grover():
-    # qr = qreg(3)
-    # q = qr.bits('000')
-    # q.grover(oracle1)
-
-    # qr.reset()
-    # q.grover(oracle2)
-    pass
-
-
-def test_bv():
-    pass
-
-
-def test_simon():
-    pass
-
-
-def test_shor():
-    pass
-
-
-def test_superdense_coding():
-    pass
