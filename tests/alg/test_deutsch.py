@@ -59,3 +59,24 @@ def test_deutsch_jozsa():
         x = qr.bits('00')
         y = qr.bits('00')
         assert(alg.deutsch_jozsa(x, y, balanced))
+
+
+def test_bernstein_vazirani():
+    qr = qreg(4)
+    x = qr.bits('000')
+    y = qr.bits('0')
+
+    def s_011(x, y):
+        x[0].cx(y[0])
+        x[1].cx(y[0])
+    got = alg.bv(x, y, s_011)
+    want = '011'
+    assert(got == want)
+
+    def s_101(x, y):
+        x[0].cx(y[0])
+        x[2].cx(y[0])
+    qr.reset()
+    got = alg.bv(x, y, s_101)
+    want = '101'
+    assert(got == want)
