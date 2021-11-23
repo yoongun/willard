@@ -177,10 +177,6 @@ def test_grover():
     pass
 
 
-def test_dj():
-    pass
-
-
 def test_bv():
     pass
 
