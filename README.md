@@ -1,6 +1,6 @@
 # :smiley_cat: Willard
 
-Quantum programming library includes quantum computer simulator.
+Quantum programming library including quantum computer simulator.
 
 ## pip
 
