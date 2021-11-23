@@ -342,7 +342,7 @@ class qindex:
     def qft(self):
         for i in reversed(range(len(self))):
             self[i].h()
-            deg = -90.
+            deg = 90.
             for j in reversed(range(i)):
                 self[i, j].cphase(deg)
                 deg /= 2.
@@ -355,7 +355,7 @@ class qindex:
             self[i, len(self) - 1 - i].swap()
         for i in range(len(self)):
             self[i].h()
-            deg = 90.
+            deg = -90.
             for j in range(i + 1, len(self)):
                 self[i, j].cphase(deg)
                 deg /= 2.
@@ -367,3 +367,5 @@ class qindex:
         for i in range(len(self)):
             for _ in range(2 ** i):
                 self[i].cu(input[0], u)
+        self.invqft()
+        return self

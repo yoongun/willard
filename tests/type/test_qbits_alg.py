@@ -101,9 +101,9 @@ def f2():
     qr = qreg(4)
     q = qr.bits('0000')
     q.h()
-    q[0].phase(45)
-    q[1].phase(90)
-    q[2].phase(180)
+    q[0].phase(-45)
+    q[1].phase(-90)
+    q[2].phase(-180)
     return q
 
 
@@ -148,17 +148,23 @@ def test_inv_qft(f8, square, f2):
     want = f2.global_state.clone()
     f2.qft().invqft()
     got = f2.global_state
-    assert(torch.equal(got, want))
+    assert(torch.allclose(got, want))
 
 
 def test_qpe():
     qr = qreg(4)
     output = qr.bits('000')
     input = qr.bits('1')
-
     output.qpe(input, gate.t)
     got = int(output.measure(), 2) / (2 ** len(output))
     want = 1 / 8
+    assert (got == want)
+
+    qr.reset()
+    input.x()
+    output.qpe(input, gate.s)
+    got = int(output.measure(), 2) / (2 ** len(output))
+    want = 1 / 4
     assert (got == want)
 
 
