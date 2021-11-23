@@ -102,10 +102,18 @@ def test_shor():
 
 
 def test_grover():
-    # qr = qreg(3)
-    # q = qr.bits('000')
-    # q.grover(oracle1)
+    qr = qreg(4)
+    q = qr.bits('0000')
 
-    # qr.reset()
-    # q.grover(oracle2)
-    pass
+    def flip3(x):
+        x.flip(3)
+    got = alg.grover(q, flip3)
+    want = 3
+    assert(got == want)
+
+    def flip6(x):
+        x.flip(6)
+    qr.reset()
+    got = alg.grover(q, flip6)
+    want = 6
+    assert(got == want)

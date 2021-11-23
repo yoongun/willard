@@ -1,5 +1,6 @@
 from willard.type import qbits
 from willard.const import GateType
+import numpy as np
 
 
 def deutsch(x: qbits, y: qbits, f):
@@ -43,3 +44,13 @@ def simon(x: qbits, y: qbits, f: GateType):
     f(x, y)
     y.measure()
     x.h()
+
+
+def grover(x: qbits, f: GateType):
+    x.h()
+    rep = round(np.sqrt(len(x)) * np.pi / 4)
+
+    for _ in range(rep):
+        f(x)
+        x.aa()
+    return int(x.measure(), 2)
