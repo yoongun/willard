@@ -2,6 +2,7 @@
 import numpy as np
 import torch
 import pytest
+from willard.const import gate
 from willard.type import qreg
 
 
@@ -151,7 +152,14 @@ def test_inv_qft(f8, square, f2):
 
 
 def test_qpe():
-    pass
+    qr = qreg(4)
+    output = qr.bits('000')
+    input = qr.bits('1')
+
+    output.qpe(input, gate.t)
+    got = int(output.measure(), 2) / (2 ** len(output))
+    want = 1 / 8
+    assert (got == want)
 
 
 def test_grover():

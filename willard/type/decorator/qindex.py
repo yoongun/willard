@@ -28,6 +28,7 @@ def default_as_select_all(cls):
     cls.aa = lambda self: self[:].aa()
     cls.qft = lambda self: self[:].qft()
     cls.invqft = lambda self: self[:].invqft()
+    cls.qpe = lambda self, input, u: self[:].qpe(input, u)
 
     return cls
 
@@ -359,3 +360,10 @@ class qindex:
                 self[i, j].cphase(deg)
                 deg /= 2.
         return self
+
+    @target_size_fixed(1)
+    def qpe(self, input: 'qindex', u: GateType):
+        self.h()
+        for i in range(len(self)):
+            for _ in range(2 ** i):
+                self[i].cu(input[0], u)
