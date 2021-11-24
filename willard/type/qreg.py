@@ -8,6 +8,7 @@ class qreg:
         self.size = 0
         self.qr = self
         self.state = torch.tensor([[1.]], dtype=torch.cfloat)
+        self.objs = []
 
     def __len__(self) -> int:
         return self.size
@@ -17,6 +18,7 @@ class qreg:
             init_value = 0
         q = quint(self, size, init_value)
         self.size += size
+        self.objs.append(q)
         return q
 
     def bits(self, size: int, init_value: str = None) -> qbits:
@@ -27,9 +29,13 @@ class qreg:
                 f"size {size} does not match the length of init_value {init_value}.")
         q = qbits(self, init_value)
         self.size += len(init_value)
+        self.objs.append(q)
         return q
 
     def reset(self):
         self.size = 0
         self.state = torch.tensor([[1.]], dtype=torch.cfloat)
+        for o in self.objs:
+            o.qr = None
+        self.objs = []
         return self

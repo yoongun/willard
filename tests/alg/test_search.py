@@ -15,12 +15,18 @@ def test_deutsch():
 
     # Case 2: Constant-1
     qr.reset()
+    x = qr.bits(1)
+    y = qr.bits(1)
 
     def constant1(x, y):
         y.x()
     assert(not alg.deutsch(x, y, constant1))
 
     # Case 3: Constant-2
+    qr.reset()
+    x = qr.bits(1)
+    y = qr.bits(1)
+
     def constant2(x, y):
         x.x()
     assert(not alg.deutsch(x, y, constant2))
@@ -44,12 +50,18 @@ def test_deutsch_jozsa():
 
     # Case 2: Constant-1
     qr.reset()
+    x = qr.bits(3)
+    y = qr.bits(1)
 
     def constant1(x, y):
         y.x()
     assert(not alg.deutsch_jozsa(x, y, constant1))
 
     # Case 3: Constant-2
+    qr.reset()
+    x = qr.bits(3)
+    y = qr.bits(1)
+
     def constant2(x, y):
         y.h().z()
     assert(not alg.deutsch_jozsa(x, y, constant2))

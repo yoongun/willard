@@ -31,6 +31,15 @@ def test_reset(modified):
     want = qreg().state
     assert(torch.equal(got, want))
 
+    qr = qreg()
+    q1 = qr.bits(3)
+    q2 = qr.bits(1)
+    qr.reset()
+    with pytest.raises(AttributeError):
+        q1.x()
+    with pytest.raises(AttributeError):
+        q2.x()
+
 
 def test_len():
     q = qreg()

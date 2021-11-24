@@ -357,6 +357,7 @@ def test_toffoli_gate():
     assert(torch.equal(got, want))
 
     qr.reset()
+    q = qr.bits(3)
     with pytest.raises(IndexError):
         q[0, 0].toffoli(q[1])
 
