@@ -4,9 +4,9 @@ from willard import alg
 
 
 def test_deutsch():
-    qr = qreg(2)
-    x = qr.bits('0')
-    y = qr.bits('0')
+    qr = qreg()
+    x = qr.bits(1)
+    y = qr.bits(1)
 
     # Case 1: Balanced
     def balanced(x, y):
@@ -26,16 +26,16 @@ def test_deutsch():
     assert(not alg.deutsch(x, y, constant2))
 
     with pytest.raises(AttributeError):
-        qr = qreg(4)
-        x = qr.bits('00')
-        y = qr.bits('00')
+        qr = qreg()
+        x = qr.bits(2)
+        y = qr.bits(2)
         assert(alg.deutsch(x, y, balanced))
 
 
 def test_deutsch_jozsa():
-    qr = qreg(4)
-    x = qr.bits('000')
-    y = qr.bits('0')
+    qr = qreg()
+    x = qr.bits(3)
+    y = qr.bits(1)
 
     # Case 1: Balanced
     def balanced(x, y):
@@ -55,16 +55,16 @@ def test_deutsch_jozsa():
     assert(not alg.deutsch_jozsa(x, y, constant2))
 
     with pytest.raises(AttributeError):
-        qr = qreg(4)
-        x = qr.bits('00')
-        y = qr.bits('00')
+        qr = qreg()
+        x = qr.bits(2)
+        y = qr.bits(2)
         assert(alg.deutsch_jozsa(x, y, balanced))
 
 
 def test_bernstein_vazirani():
-    qr = qreg(4)
-    x = qr.bits('000')
-    y = qr.bits('0')
+    qr = qreg()
+    x = qr.bits(3)
+    y = qr.bits(1)
 
     def s_011(x, y):
         x[0].cx(y[0])
@@ -77,15 +77,17 @@ def test_bernstein_vazirani():
         x[0].cx(y[0])
         x[2].cx(y[0])
     qr.reset()
+    x = qr.bits(3)
+    y = qr.bits(1)
     got = alg.bv(x, y, s_101)
     want = '101'
     assert(got == want)
 
 
 def test_simon():
-    qr = qreg(4)
-    x = qr.bits('00')
-    y = qr.bits('00')
+    qr = qreg()
+    x = qr.bits(2)
+    y = qr.bits(2)
 
     def period_11(x, y):
         x[0].cx(y[0]).cx(y[1])
@@ -102,8 +104,8 @@ def test_shor():
 
 
 def test_grover():
-    qr = qreg(4)
-    q = qr.bits('0000')
+    qr = qreg()
+    q = qr.bits(4)
 
     def flip3(x):
         x.flip(3)
@@ -114,6 +116,7 @@ def test_grover():
     def flip6(x):
         x.flip(6)
     qr.reset()
+    q = qr.bits(4)
     got = alg.grover(q, flip6)
     want = 6
     assert(got == want)

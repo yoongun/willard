@@ -10,10 +10,10 @@ def test_equal():
     Testing swap test
     """
     # case 1: return 1 when input1 and input2 contains same value
-    qr = qreg(3)
-    in1 = qr.bits('0')
-    in2 = qr.bits('0')
-    out = qr.bits('0')
+    qr = qreg()
+    in1 = qr.bits(1)
+    in2 = qr.bits(1)
+    out = qr.bits(1)
     in1.equal(in2, out)
     got = int(out.measure())
     want = 1
@@ -21,22 +21,22 @@ def test_equal():
 
     # case 2: return 0 with 50% chance
     # when input1 and input2 contains different value
-    qr = qreg(3)
+    qr = qreg()
     got = 1
     want = 0
     for _ in range(100):
         qr.reset()
-        in1 = qr.bits('0')
-        in2 = qr.bits('1')
-        out = qr.bits('0')
+        in1 = qr.bits(1)
+        in2 = qr.bits(1, '1')
+        out = qr.bits(1)
         in1.equal(in2, out)
         got &= int(out.measure())
     assert(got == want)
 
 
 def test_flip():
-    qr = qreg(3)
-    q = qr.bits('000')
+    qr = qreg()
+    q = qr.bits(3)
     q.h()
     q.flip(1)
 
@@ -57,8 +57,8 @@ def test_flip():
 
 def test_amplitude_amplification():
     # Prepare
-    qr = qreg(3)
-    q = qr.bits('000')
+    qr = qreg()
+    q = qr.bits(3)
     q.h()
     q.flip(1)
 
@@ -75,8 +75,8 @@ def test_amplitude_amplification():
 
 @pytest.fixture
 def f8():
-    qr = qreg(4)
-    q = qr.bits('0000')
+    qr = qreg()
+    q = qr.bits(4)
     q.h()
     q[0].phase(180)
     return q
@@ -84,8 +84,8 @@ def f8():
 
 @pytest.fixture
 def f2():
-    qr = qreg(4)
-    q = qr.bits('0000')
+    qr = qreg()
+    q = qr.bits(4)
     q.h()
     q[0].phase(-45)
     q[1].phase(-90)
@@ -95,8 +95,8 @@ def f2():
 
 @pytest.fixture
 def square():
-    qr = qreg(4)
-    q = qr.bits('0000')
+    qr = qreg()
+    q = qr.bits(4)
     q.h()
     q[1].phase(180)
     return q
@@ -138,16 +138,17 @@ def test_inv_qft(f8, square, f2):
 
 
 def test_qpe():
-    qr = qreg(4)
-    output = qr.bits('000')
-    input = qr.bits('1')
+    qr = qreg()
+    output = qr.bits(3)
+    input = qr.bits(1, '1')
     output.qpe(input, gate.t)
     got = int(output.measure(), 2) / (2 ** len(output))
     want = 1 / 8
     assert (got == want)
 
     qr.reset()
-    input.x()
+    output = qr.bits(3)
+    input = qr.bits(1, '1')
     output.qpe(input, gate.s)
     got = int(output.measure(), 2) / (2 ** len(output))
     want = 1 / 4

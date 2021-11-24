@@ -1,40 +1,35 @@
+import torch
 from willard.const import dirac
 from willard.type import quint, qbits
-from willard.type.decorator import subscriptable
 
 
 class qreg:
-    def __init__(self, size) -> None:
-        if size < 1:
-            raise ValueError(f"size should be bigger than 0. Got {size}")
-        self.size = size
-        self.offset = 0
+    def __init__(self) -> None:
+        self.size = 0
         self.qr = self
-
-        self.state = dirac.ket('0' * size)
-        self.cursor = 0
+        self.state = torch.tensor([[1.]], dtype=torch.cfloat)
 
     def __len__(self) -> int:
         return self.size
 
-    def uint(self, size, init_value) -> quint:
-        q = quint(self, size, self.cursor, init_value)
-        self._check_overflow(size)
+    def uint(self, size: int, init_value: int = None) -> quint:
+        if init_value is None:
+            init_value = 0
+        q = quint(self, size, init_value)
+        self.size += size
         return q
 
-    def bits(self, init_value: str) -> qbits:
-        q = qbits(self, self.cursor, init_value)
-        self._check_overflow(len(init_value))
+    def bits(self, size: int, init_value: str = None) -> qbits:
+        if init_value is None:
+            init_value = '0' * size
+        elif len(init_value) != size:
+            raise AttributeError(
+                f"size {size} does not match the length of init_value {init_value}.")
+        q = qbits(self, init_value)
+        self.size += len(init_value)
         return q
 
     def reset(self):
-        self.state = dirac.ket('0' * self.size)
-        self.cursor = 0
+        self.size = 0
+        self.state = torch.tensor([[1.]], dtype=torch.cfloat)
         return self
-
-    def _check_overflow(self, size: int):
-        if self.cursor + size > self.size:
-            raise ValueError(("This register is already full."
-                              "Please try creating qreg with larger size"))
-        else:
-            self.cursor += size

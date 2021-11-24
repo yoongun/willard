@@ -7,7 +7,7 @@ def test_spy_detector():
     def spy(q):
         from willard.type import qreg
         q.h().measure()
-        q = qreg(1).bits('0')
+        q = qreg().bits(1)
         q.x().h()
         return q
     assert(alg.detect_spy(spy))
@@ -18,10 +18,10 @@ def test_spy_detector():
 
 
 def test_teleportation():
-    qr = qreg(3)
-    alice = qr.bits('1')
-    channel = qr.bits('0')
-    bob = qr.bits('0')
+    qr = qreg()
+    alice = qr.bits(1, '1')
+    channel = qr.bits(1)
+    bob = qr.bits(1)
 
     alice.teleport(bob, channel)
     got = int(bob.measure())
