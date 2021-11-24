@@ -32,11 +32,3 @@ def test_teleportation():
 
 def test_superdense_coding():
     pass
-
-
-def test_qkd():
-    pass
-
-
-def test_ckd():
-    pass
