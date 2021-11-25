@@ -20,12 +20,26 @@ class quint(qtype):
             result = str(self[i].measure()[0]) + result
         return int(result, 2)
 
-    def inc(self):
-        for i in reversed(range(self.size)):
-            self[:i].cu(self[i], gate.x)
+    def inc(self, val=1):
+        bs = format(val, 'b').zfill(self.size)
+        for i, b in enumerate(bs[::-1]):
+            if b == '0':
+                continue
+            for j in reversed(range(i, self.size)):
+                self[i:j].cu(self[j], gate.x)
         return self
 
-    def dec(self):
-        for i in range(self.size):
-            self[:i].cu(self[i], gate.x)
+    def dec(self, val=1):
+        bs = format(val, 'b').zfill(self.size)
+        for i, b in enumerate(bs[::-1]):
+            if b == '0':
+                continue
+            for j in range(i, self.size):
+                self[i:j].cu(self[j], gate.x)
         return self
+
+    def add(self):
+        pass
+
+    def sub(self):
+        pass

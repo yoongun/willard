@@ -14,8 +14,7 @@ def test_inc(qr):
     want = 1
     assert(got == want)
 
-    q.inc()
-    q.inc()
+    q.inc(2)
     got = q.measure()
     want = 3
     assert(got == want)
@@ -28,26 +27,24 @@ def test_dec(qr):
     want = 6
     assert(got == want)
 
-    q.dec()
-    q.dec()
+    q.dec(2)
     got = q.measure()
     want = 4
     assert(got == want)
 
 
-# def test_add():
-#     qr = qreg(6)
-#     q1 = qr.int(3, 3)
-#     q2 = qr.int(3, 4)
+# def test_add(qr):
+#     q1 = qr.uint(3, 3)
+#     q2 = qr.uint(3, 4)
 #     q1.add(q2)
-#     got = q1.measure_all()
+#     got = q1.measure()
 #     want = 7
 #     assert(got == want)
 
-#     qr = qreg(6)
-#     q1 = qr.int(3, 4)
-#     q2 = qr.int(3, 1)
+#     qr.reset()
+#     q1 = qr.uint(3, 4)
+#     q2 = qr.uint(3, 1)
 #     q1.add(q2)
-#     got = q1.measure_all()
+#     got = q1.measure()
 #     want = 5
 #     assert(got == want)
