@@ -1,3 +1,6 @@
+import math
+import random
+from willard.type import qreg
 from willard.type import qbits
 from willard.const import GateType
 import numpy as np
@@ -44,6 +47,46 @@ def simon(x: qbits, y: qbits, f: GateType):
     f(x, y)
     y.measure()
     x.h()
+
+
+def shor2(N):
+    attempts = 0
+    while attempts < 100:
+        a = 2
+        # a = random.randint(2, N - 1)
+        # k = math.gcd(a, N)
+        # if k != 1:
+        #     return k
+
+        # Period finding
+        qr = qreg()
+        x = qr.uint(4)
+        y = qr.bits(4, '0001')
+        x.h()
+        for i in range(len(x)):
+            for _ in range(2 ** i):
+                x[i].cswap(y[2], y[3])
+                x[i].cswap(y[1], y[2])
+                x[i].cswap(y[0], y[1])
+        x.invqft()
+        r = x.measure()
+
+        if r % 2 != 0:
+            attempts += 1
+            continue
+        if (a ** (r // 2)) % N == N - 1:
+            attempts += 1
+            continue
+        if r == 0:
+            attempts += 1
+            continue
+        r = r // 2
+        cand1 = math.gcd(a ** r - 1, N)
+        cand2 = math.gcd(a ** r + 1, N)
+        if cand1 == 1 or cand2 == 1:
+            attempts += 1
+            continue
+        return cand1, cand2
 
 
 def grover(x: qbits, f: GateType):

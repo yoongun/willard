@@ -112,7 +112,10 @@ def test_simon():
 
 
 def test_shor():
-    pass
+    got = alg.shor2(15)
+    want = (3, 5)
+
+    assert(got == want)
 
 
 def test_grover():
