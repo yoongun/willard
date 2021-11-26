@@ -346,6 +346,8 @@ class qindex:
             for j in reversed(range(i)):
                 self[i, j].cphase(deg)
                 deg /= 2.
+            # for j in range(i):
+            #     self[i, j].cphase(180. / 2 ** (i - j))
         for i in range(len(self) // 2):
             self[i, len(self) - 1 - i].swap()
         return self

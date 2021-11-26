@@ -1,6 +1,7 @@
 import torch
 from willard.const import gate, dirac
 from willard.type import qtype
+from willard.type.decorator import qindex
 
 
 class quint(qtype):
@@ -42,10 +43,19 @@ class quint(qtype):
         return self
 
     def add(self, other: 'quint'):
-        for i in range(len(other)):
-            # other[i].cu
-
-            pass
+        # Draper adder
+        if len(self) != len(other):
+            raise AttributeError("The length of operands should be equal.")
+        self.qft()
+        for i in reversed(range(len(other))):
+            for j in range(i, len(self)):
+                self[i].cu(other[j], gate.phase(360. / (2. ** j)))
+        self.invqft()
+        # for i in range(len(other)):
+        #     for j in reversed(range(i, len(self))):
+        #         qindex(self.qr, self[:j].global_idx_set |
+        #                other[i].global_idx_set).cx(self[j])
+        return self
 
     def sub(self):
         pass

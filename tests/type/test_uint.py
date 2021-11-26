@@ -33,21 +33,21 @@ def test_dec(qr):
     assert(got == wanted)
 
 
-# def test_add(qr):
-#     q1 = qr.uint(3, 3)
-#     q2 = qr.uint(3, 4)
-#     q1.add(q2)
-#     got = q1.measure()
-#     wanted = 7
-#     assert(got == wanted)
+def test_add(qr):
+    q1 = qr.uint(4, 3)
+    q2 = qr.uint(4, 4)
+    q1.add(q2)
+    got = q1.measure()
+    wanted = 7
+    assert(got == wanted)
 
-#     qr.reset()
-#     q1 = qr.uint(3, 4)
-#     q2 = qr.uint(3, 1)
-#     q1.add(q2)
-#     got = q1.measure()
-#     wanted = 5
-#     assert(got == wanted)
+    qr.reset()
+    q1 = qr.uint(3, 4)
+    q2 = qr.uint(3, 1)
+    q1.add(q2)
+    got = q1.measure()
+    wanted = 5
+    assert(got == wanted)
 
 
 # def test_sub(qr):

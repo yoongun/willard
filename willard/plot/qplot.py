@@ -11,10 +11,10 @@ class qplot:
         self.tags = []
 
     def add(self, tag):
-        y_probs = self.qr.state.abs().square().T.squeeze().numpy()
+        y_probs = self.qr.state.abs().square().T.squeeze().cpu().numpy()
         y_phases = (self.qr.state.angle() + 2 * np.pi) % (2 * np.pi)
         y_phases *= 180 / np.pi
-        y_phases = y_phases.T.squeeze().numpy()
+        y_phases = y_phases.T.squeeze().cpu().numpy()
         x = [bin(i).replace("0b", "").zfill(len(self.qr))
              for i in range(2 ** len(self.qr))]
         self.tags.append(tag)
