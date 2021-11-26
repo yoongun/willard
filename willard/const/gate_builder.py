@@ -4,10 +4,11 @@ import torch
 
 class GateBuilder:
     def __init__(self, num_bits: int) -> None:
+        self.dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.num_bits = num_bits
 
     def x(self, idx):
-        result = torch.tensor([[1]], dtype=torch.cfloat)
+        result = torch.tensor([[1]], dtype=torch.cfloat).to(self.dev)
         for i in range(self.num_bits):
             if i == idx:
                 result = torch.kron(gate.x, result)
@@ -16,7 +17,7 @@ class GateBuilder:
         return result
 
     def rnot(self, idx):
-        result = torch.tensor([[1]], dtype=torch.cfloat)
+        result = torch.tensor([[1]], dtype=torch.cfloat).to(self.dev)
         for i in range(self.num_bits):
             if i == idx:
                 result = torch.kron(gate.rnot, result)
@@ -25,7 +26,7 @@ class GateBuilder:
         return result
 
     def y(self, idx):
-        result = torch.tensor([[1]], dtype=torch.cfloat)
+        result = torch.tensor([[1]], dtype=torch.cfloat).to(self.dev)
         for i in range(self.num_bits):
             if i == idx:
                 result = torch.kron(gate.y, result)
@@ -34,7 +35,7 @@ class GateBuilder:
         return result
 
     def z(self, idx):
-        result = torch.tensor([[1]], dtype=torch.cfloat)
+        result = torch.tensor([[1]], dtype=torch.cfloat).to(self.dev)
         for i in range(self.num_bits):
             if i == idx:
                 result = torch.kron(gate.z, result)
@@ -43,7 +44,7 @@ class GateBuilder:
         return result
 
     def h(self, idx):
-        result = torch.tensor([[1]], dtype=torch.cfloat)
+        result = torch.tensor([[1]], dtype=torch.cfloat).to(self.dev)
         for i in range(self.num_bits):
             if i == idx:
                 result = torch.kron(gate.h, result)
@@ -52,7 +53,7 @@ class GateBuilder:
         return result
 
     def s(self, idx):
-        result = torch.tensor([[1]], dtype=torch.cfloat)
+        result = torch.tensor([[1]], dtype=torch.cfloat).to(self.dev)
         for i in range(self.num_bits):
             if i == idx:
                 result = torch.kron(gate.s, result)
@@ -61,7 +62,7 @@ class GateBuilder:
         return result
 
     def t(self, idx):
-        result = torch.tensor([[1]], dtype=torch.cfloat)
+        result = torch.tensor([[1]], dtype=torch.cfloat).to(self.dev)
         for i in range(self.num_bits):
             if i == idx:
                 result = torch.kron(gate.t, result)
@@ -70,7 +71,7 @@ class GateBuilder:
         return result
 
     def phase(self, deg, idx):
-        result = torch.tensor([[1]], dtype=torch.cfloat)
+        result = torch.tensor([[1]], dtype=torch.cfloat).to(self.dev)
         for i in range(self.num_bits):
             if i == idx:
                 result = torch.kron(gate.phase(deg), result)
@@ -79,7 +80,7 @@ class GateBuilder:
         return result
 
     def measure_0(self, idx):
-        result = torch.tensor([[1]], dtype=torch.cfloat)
+        result = torch.tensor([[1]], dtype=torch.cfloat).to(self.dev)
         for i in range(self.num_bits):
             if i == idx:
                 result = torch.kron(gate.subspace_0, result)
@@ -88,7 +89,7 @@ class GateBuilder:
         return result
 
     def measure_1(self, idx):
-        result = torch.tensor([[1]], dtype=torch.cfloat)
+        result = torch.tensor([[1]], dtype=torch.cfloat).to(self.dev)
         for i in range(self.num_bits):
             if i == idx:
                 result = torch.kron(gate.subspace_1, result)
@@ -97,7 +98,7 @@ class GateBuilder:
         return result
 
     def i(self):
-        result = torch.tensor([[1]], dtype=torch.cfloat)
+        result = torch.tensor([[1]], dtype=torch.cfloat).to(self.dev)
         for _ in range(self.num_bits):
             result = torch.kron(gate.i, result)
         return result
@@ -112,8 +113,8 @@ class GateBuilder:
         self._check_idx(t)
         if c == t:
             raise IndexError(f'Index ({c},{t}) is not valid')
-        cu_0 = torch.tensor([[1]])
-        cu_1 = torch.tensor([[1]])
+        cu_0 = torch.tensor([[1]]).to(self.dev)
+        cu_1 = torch.tensor([[1]]).to(self.dev)
         for i in range(self.num_bits):
             if i == c:
                 cu_0 = torch.kron(gate.subspace_0, cu_0)
@@ -140,7 +141,8 @@ class GateBuilder:
 
         submatrices = []
         for _ in range(2 ** len(cs)):
-            submatrices.append(torch.tensor([[1]], dtype=torch.cfloat))
+            submatrices.append(torch.tensor(
+                [[1]], dtype=torch.cfloat).to(self.dev))
         values = set(range(2 ** len(cs)))
 
         for i in range(self.num_bits):

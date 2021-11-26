@@ -1,5 +1,4 @@
 import torch
-from willard.const import dirac
 from willard.type import quint, qbits
 
 
@@ -7,7 +6,9 @@ class qreg:
     def __init__(self) -> None:
         self.size = 0
         self.qr = self
-        self.state = torch.tensor([[1.]], dtype=torch.cfloat)
+
+        dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.state = torch.tensor([[1.]], dtype=torch.cfloat).to(dev)
         self.objs = []
 
     def __len__(self) -> int:
@@ -34,7 +35,8 @@ class qreg:
 
     def reset(self):
         self.size = 0
-        self.state = torch.tensor([[1.]], dtype=torch.cfloat)
+        dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.state = torch.tensor([[1.]], dtype=torch.cfloat).to(dev)
         for o in self.objs:
             o.qr = None
         self.objs = []

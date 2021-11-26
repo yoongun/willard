@@ -82,8 +82,8 @@ def test_bernstein_vazirani():
         x[0].cx(y[0])
         x[1].cx(y[0])
     got = alg.bv(x, y, s_011)
-    want = '011'
-    assert(got == want)
+    wanted = '011'
+    assert(got == wanted)
 
     def s_101(x, y):
         x[0].cx(y[0])
@@ -92,8 +92,8 @@ def test_bernstein_vazirani():
     x = qr.bits(3)
     y = qr.bits(1)
     got = alg.bv(x, y, s_101)
-    want = '101'
-    assert(got == want)
+    wanted = '101'
+    assert(got == wanted)
 
 
 def test_simon():
@@ -113,9 +113,8 @@ def test_simon():
 
 def test_shor():
     got = alg.shor2(15)
-    want = (3, 5)
-
-    assert(got == want)
+    wanted = [3, 5]
+    assert(got == wanted)
 
 
 def test_grover():
@@ -125,13 +124,13 @@ def test_grover():
     def flip3(x):
         x.flip(3)
     got = alg.grover(q, flip3)
-    want = 3
-    assert(got == want)
+    wanted = 3
+    assert(got == wanted)
 
     def flip6(x):
         x.flip(6)
     qr.reset()
     q = qr.bits(4)
     got = alg.grover(q, flip6)
-    want = 6
-    assert(got == want)
+    wanted = 6
+    assert(got == wanted)

@@ -5,3 +5,7 @@ def test_qkd():
 
 def test_ckd():
     pass
+
+
+def crack_rsa():
+    pass

@@ -8,13 +8,13 @@ def test_init_qreg():
     qr = qreg()
     qr.bits(1)
     got = qr.state
-    want = dirac.ket('0')
-    assert(torch.equal(got, want))
+    wanted = dirac.ket('0')
+    assert(torch.equal(got, wanted))
 
     qr.bits(1)
     got = qr.state
-    want = dirac.ket('00')
-    assert(torch.equal(got, want))
+    wanted = dirac.ket('00')
+    assert(torch.equal(got, wanted))
 
 
 @pytest.fixture
@@ -28,8 +28,8 @@ def modified():
 def test_reset(modified):
     modified.reset()
     got = modified.state
-    want = qreg().state
-    assert(torch.equal(got, want))
+    wanted = qreg().state
+    assert(torch.equal(got, wanted))
 
     qr = qreg()
     q1 = qr.bits(3)
@@ -44,17 +44,17 @@ def test_reset(modified):
 def test_len():
     q = qreg()
     got = len(q)
-    want = 0
-    assert(got == want)
+    wanted = 0
+    assert(got == wanted)
 
     q = qreg()
     q.bits(5)
     got = len(q)
-    want = 5
-    assert(got == want)
+    wanted = 5
+    assert(got == wanted)
 
     q = qreg()
     q.bits(1)
     got = len(q)
-    want = 1
-    assert(got == want)
+    wanted = 1
+    assert(got == wanted)

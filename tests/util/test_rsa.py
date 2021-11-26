@@ -6,8 +6,8 @@ def test_rsa():
     crypto = rsa(p=13, q=17)
     encrypted = crypto.encrypt("Message.")
     got = crypto.decrypt(encrypted)
-    want = "Message."
-    assert(got == want)
+    wanted = "Message."
+    assert(got == wanted)
 
     with pytest.raises(ValueError):
         crypto = rsa(p=15, q=18)

@@ -7,16 +7,16 @@ from willard.const import dirac
 def test_init_qucrumb():
     q = qucrumb()
     got = q.state
-    want = dirac.ket('00')
-    assert(torch.equal(got, want))
+    wanted = dirac.ket('00')
+    assert(torch.equal(got, wanted))
 
 
 def test_reset():
     q = qucrumb()
     q.x(0).x(1).reset()
     got = q.state
-    want = dirac.ket('00')
-    assert(torch.equal(got, want))
+    wanted = dirac.ket('00')
+    assert(torch.equal(got, wanted))
 
 
 def test_x_gate():
@@ -24,14 +24,14 @@ def test_x_gate():
     q = qucrumb()
     q.x(0)
     got = q.state
-    want = dirac.ket('01')
-    assert(torch.equal(got, want))
+    wanted = dirac.ket('01')
+    assert(torch.equal(got, wanted))
 
     # Case 2: Apply X gate on the second qubit
     q = qucrumb()
     q.x(1)
     got = q.state
-    want = dirac.ket('10')
+    wanted = dirac.ket('10')
     assert(torch.equal(q.state, torch.tensor([[0.], [0.], [1.], [0.]])))
 
     # Checks whether the code checks index range
@@ -44,14 +44,14 @@ def test_rnot_gate():
     q = qucrumb()
     q.rnot(0).rnot(0)
     got = q.state
-    want = dirac.ket('01')
-    assert(torch.equal(got, want))
+    wanted = dirac.ket('01')
+    assert(torch.equal(got, wanted))
 
     q = qucrumb()
     q.rnot(1).rnot(1)
     got = q.state
-    want = dirac.ket('10')
-    assert(torch.equal(got, want))
+    wanted = dirac.ket('10')
+    assert(torch.equal(got, wanted))
 
 
 def test_y_gate():
@@ -59,15 +59,15 @@ def test_y_gate():
     q = qucrumb()
     q.y(0)
     got = q.state
-    want = torch.tensor([[0.], [1.j], [0.], [0.]])
-    assert(torch.equal(got, want))
+    wanted = torch.tensor([[0.], [1.j], [0.], [0.]])
+    assert(torch.equal(got, wanted))
 
     # Case 2: Apply Y gate on the second qubit
     q = qucrumb()
     q.y(1)
     got = q.state
-    want = torch.tensor([[0.], [0.], [1.j], [0.]])
-    assert(torch.equal(got, want))
+    wanted = torch.tensor([[0.], [0.], [1.j], [0.]])
+    assert(torch.equal(got, wanted))
 
     # Checks whether the code checks index range
     q = qucrumb()
@@ -80,15 +80,15 @@ def test_z_gate():
     q = qucrumb()
     q.z(0)
     got = q.state
-    want = dirac.ket('00')
-    assert(torch.equal(got, want))
+    wanted = dirac.ket('00')
+    assert(torch.equal(got, wanted))
 
     # Case 2: Apply Z gate on the second qubit
     q = qucrumb()
     q.z(1)
     got = q.state
-    want = dirac.ket('00')
-    assert(torch.equal(got, want))
+    wanted = dirac.ket('00')
+    assert(torch.equal(got, wanted))
 
     # Checks whether the code checks index range
     q = qucrumb()
@@ -101,17 +101,17 @@ def test_h_gate():
     q = qucrumb()
     q.h(0)
     got = q.state
-    want = torch.tensor(
+    wanted = torch.tensor(
         [[1. / math.sqrt(2)], [1. / math.sqrt(2)], [0.], [0.]])
-    assert(torch.equal(got, want))
+    assert(torch.equal(got, wanted))
 
     # Case 2: Apply H gate on the second qubit
     q = qucrumb()
     q.h(1)
     got = q.state
-    want = torch.tensor([[1. / math.sqrt(2)], [0.],
-                         [1. / math.sqrt(2)], [0.]])
-    assert(torch.equal(got, want))
+    wanted = torch.tensor([[1. / math.sqrt(2)], [0.],
+                           [1. / math.sqrt(2)], [0.]])
+    assert(torch.equal(got, wanted))
 
     # Checks whether the code checks index range
     q = qucrumb()
@@ -124,14 +124,14 @@ def test_s_gate():
     q = qucrumb()
     q.s(0)
     got = q.state
-    want = dirac.ket('00')
-    assert(torch.equal(got, want))
+    wanted = dirac.ket('00')
+    assert(torch.equal(got, wanted))
 
     # Case 2: Apply S gate on the second qubit
     q = qucrumb()
     q.s(1)
     got = q.state
-    want = dirac.ket('00')
+    wanted = dirac.ket('00')
     assert(torch.equal(q.state, torch.tensor([[1.], [0.], [0.], [0.]])))
 
     # Checks whether the code checks index range
@@ -145,15 +145,15 @@ def test_t_gate():
     q = qucrumb()
     q.t(0)
     got = q.state
-    want = dirac.ket('00')
-    assert(torch.equal(got, want))
+    wanted = dirac.ket('00')
+    assert(torch.equal(got, wanted))
 
     # Case 2: Apply S gate on the second qubit
     q = qucrumb()
     q.t(1)
     got = q.state
-    want = dirac.ket('00')
-    assert(torch.equal(got, want))
+    wanted = dirac.ket('00')
+    assert(torch.equal(got, wanted))
 
     # Checks whether the code checks index range
     q = qucrumb()
@@ -166,15 +166,15 @@ def test_phase_gate():
     q = qucrumb()
     q.x(0).phase(deg=90, idx=0)
     got = q.state
-    want = torch.tensor([[0.], [1.j], [0.], [0.]])
-    assert(torch.allclose(got, want))
+    wanted = torch.tensor([[0.], [1.j], [0.], [0.]])
+    assert(torch.allclose(got, wanted))
 
     # Test case 2 (pi/4, T gate)
     q = qucrumb()
     q.x(1).phase(deg=45, idx=1)
     got = q.state
-    want = torch.tensor([[0.], [0.], [torch.exp(1.j * torch.pi / 4)], [0.]])
-    assert(torch.equal(got, want))
+    wanted = torch.tensor([[0.], [0.], [torch.exp(1.j * torch.pi / 4)], [0.]])
+    assert(torch.equal(got, wanted))
 
 
 def test_dagger_gates():
@@ -182,22 +182,22 @@ def test_dagger_gates():
     q = qucrumb()
     q.s(0).s_dg(0)
     got = q.state
-    want = dirac.ket('00')
-    assert(torch.equal(got, want))
+    wanted = dirac.ket('00')
+    assert(torch.equal(got, wanted))
 
     # Test case 2 (t dagger)
     q = qucrumb()
     q.t(1).t_dg(1)
     got = q.state
-    want = dirac.ket('00')
-    assert(torch.equal(got, want))
+    wanted = dirac.ket('00')
+    assert(torch.equal(got, wanted))
 
     # Test case 3 (phase dagger)
     q = qucrumb()
     q.phase(deg=30, idx=0).phase_dg(deg=30, idx=0)
     got = q.state
-    want = dirac.ket('00')
-    assert(torch.equal(got, want))
+    wanted = dirac.ket('00')
+    assert(torch.equal(got, wanted))
 
 
 def test_cnot():
@@ -205,17 +205,17 @@ def test_cnot():
     q = qucrumb()
     q.h(0).cnot(c=0, d=1)
     got = q.state
-    want = torch.tensor([[1. / math.sqrt(2)], [0.],
-                         [0.], [1. / math.sqrt(2)]])
-    assert(torch.equal(got, want))
+    wanted = torch.tensor([[1. / math.sqrt(2)], [0.],
+                           [0.], [1. / math.sqrt(2)]])
+    assert(torch.equal(got, wanted))
 
     # Case 2: Test on the second qubit
     q = qucrumb()
     q.h(1).cnot(c=1, d=0)
     got = q.state
-    want = torch.tensor([[1. / math.sqrt(2)], [0.],
-                         [0.], [1. / math.sqrt(2)]])
-    assert(torch.equal(got, want))
+    wanted = torch.tensor([[1. / math.sqrt(2)], [0.],
+                           [0.], [1. / math.sqrt(2)]])
+    assert(torch.equal(got, wanted))
 
     # Checks whether the code checks index range
     q = qucrumb()
@@ -228,16 +228,16 @@ def test_cphase():
     q = qucrumb()
     q.h(0).x(1).cphase(c=0, d=1, deg=90)
     got = q.state
-    want = torch.tensor(
+    wanted = torch.tensor(
         [[0.], [0.], [1. / math.sqrt(2)], [1.j / math.sqrt(2)]])
-    assert(torch.allclose(got, want))
+    assert(torch.allclose(got, wanted))
 
     # Case 2: Test on the second qubit
     q = qucrumb()
     q.h(1).x(0).cphase(c=1, d=0, deg=45)
     got = q.state
-    want = torch.tensor([[0.], [1. / math.sqrt(2)], [0.], [0.5 + 0.5j]])
-    assert(torch.allclose(got, want))
+    wanted = torch.tensor([[0.], [1. / math.sqrt(2)], [0.], [0.5 + 0.5j]])
+    assert(torch.allclose(got, wanted))
 
     # Checks whether the code checks index range
     q = qucrumb()
@@ -250,26 +250,26 @@ def test_swap():
     q = qucrumb()
     q.x(0).swap(c=0, d=1)
     got = q.state
-    want = dirac.ket('10')
-    assert(torch.equal(got, want))
+    wanted = dirac.ket('10')
+    assert(torch.equal(got, wanted))
 
     # Case 1: From qubit1 to qubit0
     q = qucrumb()
     q.x(1).swap(c=0, d=1)
     got = q.state
-    want = dirac.ket('01')
-    assert(torch.equal(got, want))
+    wanted = dirac.ket('01')
+    assert(torch.equal(got, wanted))
 
 
 def test_epr():
     q = qucrumb()
-    want = q.h(0).cnot(c=0, d=1).measure(0)
+    wanted = q.h(0).cnot(c=0, d=1).measure(0)
     for _ in range(100):
         got = q.measure(1)
-        assert(got == want)
+        assert(got == wanted)
 
     q = qucrumb()
-    want = q.h(1).cnot(c=1, d=0).measure(1)
+    wanted = q.h(1).cnot(c=1, d=0).measure(1)
     for _ in range(100):
         got = q.measure(0)
-        assert(got == want)
+        assert(got == wanted)

@@ -86,7 +86,7 @@ def shor2(N):
         if cand1 == 1 or cand2 == 1:
             attempts += 1
             continue
-        return cand1, cand2
+        return sorted((cand1, cand2))
 
 
 def grover(x: qbits, f: GateType):

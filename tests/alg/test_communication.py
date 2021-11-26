@@ -25,9 +25,9 @@ def test_teleportation():
 
     alice.teleport(bob, channel)
     got = int(bob.measure())
-    want = 1
+    wanted = 1
 
-    assert(got == want)
+    assert(got == wanted)
 
 
 def test_superdense_coding():

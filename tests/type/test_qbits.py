@@ -6,6 +6,11 @@ from willard.const import dirac
 
 
 @pytest.fixture
+def dev():
+    return torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+
+@pytest.fixture
 def qr():
     return qreg()
 
@@ -14,13 +19,13 @@ def test_init_qbits():
     qr = qreg()
     q = qr.bits(1)
     got = q.measure()
-    want = '0'
-    assert(got == want)
+    wanted = '0'
+    assert(got == wanted)
 
     q = qr.bits(1, '1')
     got = q.measure()
-    want = '1'
-    assert(got == want)
+    wanted = '1'
+    assert(got == wanted)
 
 
 def test_x_gate():
@@ -30,16 +35,16 @@ def test_x_gate():
     # Case 1: Apply X gate on the first qubit
     q[0].x()
     got = q.global_state
-    want = dirac.ket('01')
-    assert(torch.equal(got, want))
+    wanted = dirac.ket('01')
+    assert(torch.equal(got, wanted))
 
     # Case 2: Apply X gate on the second qubit
     qr.reset()
     q = qr.bits(2)
     q[1].x()
     got = q.global_state
-    want = dirac.ket('10')
-    assert(torch.equal(got, want))
+    wanted = dirac.ket('10')
+    assert(torch.equal(got, wanted))
 
     # Checks whether the code checks index range
     qr.reset()
@@ -52,33 +57,35 @@ def test_rnot_gate():
     q = qr.bits(2)
     q[0].rnot().rnot()
     got = q.global_state
-    want = dirac.ket('01')
-    assert(torch.equal(got, want))
+    wanted = dirac.ket('01')
+    assert(torch.equal(got, wanted))
 
     qr.reset()
     q = qr.bits(2)
     q[1].rnot().rnot()
     got = q.global_state
-    want = dirac.ket('10')
-    assert(torch.equal(got, want))
+    wanted = dirac.ket('10')
+    assert(torch.equal(got, wanted))
 
 
-def test_y_gate():
+def test_y_gate(dev):
     # Case 1: Apply Y gate on the first qubit
     qr = qreg()
     q = qr.bits(2)
     q[0].y()
     got = q.global_state
-    want = torch.tensor([[0.], [1.j], [0.], [0.]], dtype=torch.cfloat)
-    assert(torch.equal(got, want))
+    wanted = torch.tensor([[0.], [1.j], [0.], [0.]],
+                          dtype=torch.cfloat).to(dev)
+    assert(torch.equal(got, wanted))
 
     # Case 2: Apply Y gate on the second qubit
     qr.reset()
     q = qr.bits(2)
     q[1].y()
     got = q.global_state
-    want = torch.tensor([[0.], [0.], [1.j], [0.]], dtype=torch.cfloat)
-    assert(torch.equal(got, want))
+    wanted = torch.tensor([[0.], [0.], [1.j], [0.]],
+                          dtype=torch.cfloat).to(dev)
+    assert(torch.equal(got, wanted))
 
     # Checks whether the code checks index range
     qr.reset()
@@ -93,16 +100,16 @@ def test_z_gate():
     q = qr.bits(2)
     q[0].z()
     got = q.global_state
-    want = dirac.ket('00')
-    assert(torch.equal(got, want))
+    wanted = dirac.ket('00')
+    assert(torch.equal(got, wanted))
 
     # Case 2: Apply Z gate on the second qubit
     qr.reset()
     q = qr.bits(2)
     q[1].z()
     got = q.global_state
-    want = dirac.ket('00')
-    assert(torch.equal(got, want))
+    wanted = dirac.ket('00')
+    assert(torch.equal(got, wanted))
 
     # Checks whether the code checks index range
     qr.reset()
@@ -111,24 +118,24 @@ def test_z_gate():
         q[2].z()
 
 
-def test_h_gate():
+def test_h_gate(dev):
     # Case 1: Apply H gate on the first qubit
     qr = qreg()
     q = qr.bits(2)
     q[0].h()
     got = q.global_state
-    want = torch.tensor(
-        [[1. / np.sqrt(2)], [1. / np.sqrt(2)], [0.], [0.]], dtype=torch.cfloat)
-    assert(torch.equal(got, want))
+    wanted = torch.tensor(
+        [[1. / np.sqrt(2)], [1. / np.sqrt(2)], [0.], [0.]], dtype=torch.cfloat).to(dev)
+    assert(torch.equal(got, wanted))
 
     # Case 2: Apply H gate on the second qubit
     qr.reset()
     q = qr.bits(2)
     q[1].h()
     got = q.global_state
-    want = torch.tensor([[1. / np.sqrt(2)], [0.],
-                         [1. / np.sqrt(2)], [0.]], dtype=torch.cfloat)
-    assert(torch.equal(got, want))
+    wanted = torch.tensor([[1. / np.sqrt(2)], [0.],
+                           [1. / np.sqrt(2)], [0.]], dtype=torch.cfloat).to(dev)
+    assert(torch.equal(got, wanted))
 
     # Checks whether the code checks index range
     qr.reset()
@@ -143,16 +150,16 @@ def test_s_gate():
     q = qr.bits(2)
     q[0].s()
     got = q.global_state
-    want = dirac.ket('00')
-    assert(torch.equal(got, want))
+    wanted = dirac.ket('00')
+    assert(torch.equal(got, wanted))
 
     # Case 2: Apply S gate on the second qubit
     qr.reset()
     q = qr.bits(2)
     q[1].s()
     got = q.global_state
-    want = dirac.ket('00')
-    assert(torch.equal(got, want))
+    wanted = dirac.ket('00')
+    assert(torch.equal(got, wanted))
 
     # Checks whether the code checks index range
     qr.reset()
@@ -167,16 +174,16 @@ def test_t_gate():
     q = qr.bits(2)
     q[0].t()
     got = q.global_state
-    want = dirac.ket('00')
-    assert(torch.equal(got, want))
+    wanted = dirac.ket('00')
+    assert(torch.equal(got, wanted))
 
     # Case 2: Apply S gate on the second qubit
     qr.reset()
     q = qr.bits(2)
     q[1].t()
     got = q.global_state
-    want = dirac.ket('00')
-    assert(torch.equal(got, want))
+    wanted = dirac.ket('00')
+    assert(torch.equal(got, wanted))
 
     # Checks whether the code checks index range
     qr.reset()
@@ -185,23 +192,24 @@ def test_t_gate():
         q[2].t()
 
 
-def test_phase_gate():
+def test_phase_gate(dev):
     # Test case 1 (pi/2, S gate)
     qr = qreg()
     q = qr.bits(2)
     q[0].x().phase(90)
     got = q.global_state
-    want = torch.tensor([[0.], [1.j], [0.], [0.]], dtype=torch.cfloat)
-    assert(torch.allclose(got, want))
+    wanted = torch.tensor([[0.], [1.j], [0.], [0.]],
+                          dtype=torch.cfloat).to(dev)
+    assert(torch.allclose(got, wanted))
 
     # Test case 2 (pi/4, T gate)
     qr.reset()
     q = qr.bits(2)
     q[1].x().phase(45)
     got = q.global_state
-    want = torch.tensor(
-        [[0.], [0.], [np.exp(1.j * np.pi / 4)], [0.]], dtype=torch.cfloat)
-    assert(torch.equal(got, want))
+    wanted = torch.tensor(
+        [[0.], [0.], [np.exp(1.j * np.pi / 4)], [0.]], dtype=torch.cfloat).to(dev)
+    assert(torch.equal(got, wanted))
 
 
 def test_dagger_gates():
@@ -210,44 +218,44 @@ def test_dagger_gates():
     q = qr.bits(2)
     q[0].s().s_dg()
     got = q.global_state
-    want = dirac.ket('00')
-    assert(torch.equal(got, want))
+    wanted = dirac.ket('00')
+    assert(torch.equal(got, wanted))
 
     # Test case 2 (t dagger)
     qr.reset()
     q = qr.bits(2)
     q[1].t().t_dg()
     got = q.global_state
-    want = dirac.ket('00')
-    assert(torch.equal(got, want))
+    wanted = dirac.ket('00')
+    assert(torch.equal(got, wanted))
 
     # Test case 3 (phase dagger)
     qr.reset()
     q = qr.bits(2)
     q[0].phase(30).phase_dg(30)
     got = q.global_state
-    want = dirac.ket('00')
-    assert(torch.equal(got, want))
+    wanted = dirac.ket('00')
+    assert(torch.equal(got, wanted))
 
 
-def test_cx():
+def test_cx(dev):
     # Case 1: Test on the first qubit
     qr = qreg()
     q = qr.bits(2)
     q[0].h().cx(q[1])
     got = q.global_state
-    want = torch.tensor([[1. / np.sqrt(2)], [0.],
-                         [0.], [1. / np.sqrt(2)]], dtype=torch.cfloat)
-    assert(torch.equal(got, want))
+    wanted = torch.tensor([[1. / np.sqrt(2)], [0.],
+                           [0.], [1. / np.sqrt(2)]], dtype=torch.cfloat).to(dev)
+    assert(torch.equal(got, wanted))
 
     # Case 2: Test on the second qubit
     qr.reset()
     q = qr.bits(2)
     q[1].h().cx(q[0])
     got = q.global_state
-    want = torch.tensor([[1. / np.sqrt(2)], [0.],
-                         [0.], [1. / np.sqrt(2)]], dtype=torch.cfloat)
-    assert(torch.equal(got, want))
+    wanted = torch.tensor([[1. / np.sqrt(2)], [0.],
+                           [0.], [1. / np.sqrt(2)]], dtype=torch.cfloat).to(dev)
+    assert(torch.equal(got, wanted))
 
     # Checks whether the code checks index range
     qr.reset()
@@ -256,7 +264,7 @@ def test_cx():
         q[2].cx(q[2])
 
 
-def test_cphase():
+def test_cphase(dev):
     # Case 1: Test on the first qubit
     qr = qreg()
     q = qr.bits(2)
@@ -264,10 +272,10 @@ def test_cphase():
     q[1].x()
     q[0, 1].cphase(90)
     got = q.global_state
-    want = torch.tensor(
+    wanted = torch.tensor(
         [[0.], [0.], [1. / np.sqrt(2)], [1.j / np.sqrt(2)]],
-        dtype=torch.cfloat)
-    assert(torch.allclose(got, want))
+        dtype=torch.cfloat).to(dev)
+    assert(torch.allclose(got, wanted))
 
     # Case 2: Test on the second qubit
     qr.reset()
@@ -276,9 +284,9 @@ def test_cphase():
     q[0].x()
     q[1, 0].cphase(45)
     got = q.global_state
-    want = torch.tensor([[0.], [1. / np.sqrt(2)], [0.],
-                         [0.5 + 0.5j]], dtype=torch.cfloat)
-    assert(torch.allclose(got, want))
+    wanted = torch.tensor([[0.], [1. / np.sqrt(2)], [0.],
+                           [0.5 + 0.5j]], dtype=torch.cfloat).to(dev)
+    assert(torch.allclose(got, wanted))
 
     # Checks whether the code checks index range
     qr.reset()
@@ -294,8 +302,8 @@ def test_swap():
     q[0].x()
     q[0, 1].swap()
     got = q.global_state
-    want = dirac.ket('10')
-    assert(torch.equal(got, want))
+    wanted = dirac.ket('10')
+    assert(torch.equal(got, wanted))
 
     # Case 2: From qubit1 to qubit0
     qr.reset()
@@ -303,24 +311,24 @@ def test_swap():
     q[1].x()
     q[1, 0].swap()
     got = q.global_state
-    want = dirac.ket('01')
-    assert(torch.equal(got, want))
+    wanted = dirac.ket('01')
+    assert(torch.equal(got, wanted))
 
 
 def test_epr():
     qr = qreg()
     q = qr.bits(2)
-    want = q[0].h().cx(q[1]).measure()
+    wanted = q[0].h().cx(q[1]).measure()
     for _ in range(100):
         got = q[1].measure()
-        assert(got == want)
+        assert(got == wanted)
 
     qr.reset()
     q = qr.bits(2)
-    want = q[1].h().cx(q[0]).measure()
+    wanted = q[1].h().cx(q[0]).measure()
     for _ in range(100):
         got = q[0].measure()
-        assert(got == want)
+        assert(got == wanted)
 
 
 def test_toffoli_gate():
@@ -328,24 +336,24 @@ def test_toffoli_gate():
     q = qr.bits(3)
     q[0, 1].toffoli(q[2])
     got = q.global_state
-    want = dirac.ket('000')
-    assert(torch.equal(got, want))
+    wanted = dirac.ket('000')
+    assert(torch.equal(got, wanted))
 
     qr.reset()
     q = qr.bits(3)
     q[2].x()
     q[2, 1].toffoli(q[0])
     got = q.global_state
-    want = dirac.ket('100')
-    assert(torch.equal(got, want))
+    wanted = dirac.ket('100')
+    assert(torch.equal(got, wanted))
 
     qr.reset()
     q = qr.bits(3)
     q[1].x()
     q[2, 1].toffoli(q[0])
     got = q.global_state
-    want = dirac.ket('010')
-    assert(torch.equal(got, want))
+    wanted = dirac.ket('010')
+    assert(torch.equal(got, wanted))
 
     qr.reset()
     q = qr.bits(3)
@@ -353,8 +361,8 @@ def test_toffoli_gate():
     q[2].x()
     q[0, 2].toffoli(q[1])
     got = q.global_state
-    want = dirac.ket('111')
-    assert(torch.equal(got, want))
+    wanted = dirac.ket('111')
+    assert(torch.equal(got, wanted))
 
     qr.reset()
     q = qr.bits(3)
@@ -374,8 +382,8 @@ def test_phase_kickback():
     q2[2].x()
     q2[2, 0].cphase(90)
     got = q2.global_state
-    want = q1.global_state
-    assert(torch.allclose(got, want))
+    wanted = q1.global_state
+    assert(torch.allclose(got, wanted))
 
     qr1.reset()
     qr2.reset()
@@ -388,8 +396,8 @@ def test_phase_kickback():
     q2[2].x()
     q2[2, 1].cphase(33)
     got = q2.global_state
-    want = q1.global_state
-    assert(torch.allclose(got, want))
+    wanted = q1.global_state
+    assert(torch.allclose(got, wanted))
 
 
 def test_measure():
@@ -397,20 +405,20 @@ def test_measure():
     qr = qreg()
     q = qr.bits(1)
     got = q.measure()
-    want = '0'
-    assert(got == want)
+    wanted = '0'
+    assert(got == wanted)
 
     # Test case 2 (on state [0, 1])
     qr.reset()
     q = qr.bits(1)
     got = q.x().measure()
-    want = '1'
-    assert(got == want)
+    wanted = '1'
+    assert(got == wanted)
 
     # Test case 3 (on superposition)
     qr.reset()
     q = qr.bits(1)
-    want = q.h().measure()
+    wanted = q.h().measure()
     for _ in range(100):
         got = q.measure()
-        assert(got == want)
+        assert(got == wanted)
