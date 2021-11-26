@@ -35,7 +35,7 @@ def test_build_rnot(gb2, dev):
     wanted = gb2.x(0)
     assert(torch.equal(got, wanted))
 
-    got = torch.mm(gb2.rnot(0), gb2.rnot(0))
+    got = torch.mm(gb2.rnot(1), gb2.rnot(1))
     wanted = gb2.x(1)
     assert(torch.equal(got, wanted))
 
