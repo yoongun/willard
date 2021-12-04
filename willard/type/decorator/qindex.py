@@ -139,6 +139,9 @@ class qindex:
             global_indices.add(self.global_idcs[i])
         return qindex(self.qr, global_indices)
 
+    def w(self, other):
+        return qindex(self.qr, self.global_idx_set | other.global_idx_set)
+
     @property
     def global_state(self):
         return self.qr.state
