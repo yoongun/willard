@@ -12,7 +12,7 @@ class qplot:
 
     def add(self, tag):
         y_probs = self.qr.state.abs().square().T.squeeze().cpu().numpy()
-        y_phases = (self.qr.state.angle() + 2 * np.pi) % (2 * np.pi)
+        y_phases = self.qr.state.angle() % (2 * np.pi)
         y_phases *= 180 / np.pi
         y_phases = y_phases.T.squeeze().cpu().numpy()
         x = [bin(i).replace("0b", "").zfill(len(self.qr))
@@ -78,43 +78,3 @@ class qplot:
         self.fig.update_yaxes(title_text="<b>Phase</b>", secondary_y=True,
                               range=[0, 360], linecolor='maroon', gridcolor='maroon')
         self.fig.show()
-
-
-def plot_qreg(qr: qreg) -> None:
-    y_probs = qr.state.abs().square().T.squeeze().numpy()
-    y_phases = (qr.state.angle() + 2 * np.pi) % (2 * np.pi)
-    y_phases = y_phases.T.squeeze().numpy()
-    x = [bin(i).replace("0b", "").zfill(qr.size)
-         for i in range(2 ** qr.size)]
-
-    fig = make_subplots(specs=[[{"secondary_y": True}]])
-    fig.add_trace(go.Scatter(
-        x=x,
-        y=y_probs,
-        name="Probability",
-        smoothing=1.3,),
-        secondary_y=False,
-    )
-    fig.add_trace(go.Scatter(
-        x=x,
-        y=y_phases,
-        name="Phase"),
-        secondary_y=True,
-    )
-
-    # Add figure title
-    fig.update_layout(
-        title_text="<b>Qreg visualization</b>",
-        template="plotly_dark"
-    )
-
-    # Set x-axis title
-    fig.update_xaxes(title_text="<b>Binary Value</b>")
-
-    # Set y-axes titles
-    fig.update_yaxes(title_text="<b>Probability</b>", secondary_y=False,
-                     range=[0., 1.], linecolor='midnightblue', gridcolor='midnightblue')
-    fig.update_yaxes(title_text="<b>Phase</b>", secondary_y=True,
-                     range=[0, 2 * np.pi], linecolor='maroon', gridcolor='maroon')
-
-    fig.show()
