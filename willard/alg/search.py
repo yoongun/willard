@@ -68,7 +68,7 @@ def shor2(N):
                 x[i].cswap(y[2], y[3])
                 x[i].cswap(y[1], y[2])
                 x[i].cswap(y[0], y[1])
-        x.invqft()
+        x.iqft()
         r = x.measure()
 
         if r % 2 != 0:

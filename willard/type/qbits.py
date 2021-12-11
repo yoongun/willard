@@ -1,6 +1,6 @@
+import torch
 from willard.type import qtype
 from willard.const import dirac
-import torch
 
 
 class qbits(qtype):

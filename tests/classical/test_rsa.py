@@ -1,5 +1,5 @@
 import pytest
-from willard.util import rsa
+from willard.classical import rsa
 
 
 def test_rsa():

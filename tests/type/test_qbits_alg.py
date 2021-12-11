@@ -125,19 +125,19 @@ def test_qft(f8, square, f2):
     assert(got == wanted)
 
 
-def test_inv_qft(f8, square, f2):
+def test_iqft(f8, square, f2):
     wanted = f8.global_state.clone()
-    f8.qft().invqft()
+    f8.qft().iqft()
     got = f8.global_state
     assert(torch.equal(got, wanted))
 
     wanted = square.global_state.clone()
-    square.qft().invqft()
+    square.qft().iqft()
     got = square.global_state
     assert(torch.allclose(got, wanted))
 
     wanted = f2.global_state.clone()
-    f2.qft().invqft()
+    f2.qft().iqft()
     got = f2.global_state
     assert(torch.allclose(got, wanted))
 

@@ -1,75 +1,7 @@
+from functools import cached_property
 import numpy as np
 from willard.const import gate, GateBuilder, GateType
-from functools import cached_property
-
-
-def default_as_select_all(cls):
-    cls.x = lambda self: self[:].x()
-    cls.rnot = lambda self: self[:].rnot()
-    cls.y = lambda self: self[:].y()
-    cls.z = lambda self: self[:].z()
-    cls.h = lambda self: self[:].h()
-    cls.s = lambda self: self[:].s()
-    cls.s_dg = lambda self: self[:].s_dg()
-    cls.t = lambda self: self[:].t()
-    cls.t_dg = lambda self: self[:].t_dg()
-    cls.phase = lambda self, deg: self[:].phase(deg)
-    cls.phase_dg = lambda self, deg: self[:].phase_dg(deg)
-    cls.measure = lambda self: self[:].measure()
-    cls.cu = lambda self, t, u: self[:].cu(t[:], u)
-    cls.toffoli = lambda self, t: self[:].toffoli(t[:])
-    cls.cx = lambda self, t: self[:].cx(t[:])
-    cls.cphase = lambda self, deg: self[:].cphase(deg)
-    cls.swap = lambda self, t: self[:].swap(t[:])
-    cls.cswap = lambda self, t1, t2: self[:].cswap(t1[:], t2[:])
-    cls.equal = lambda self, other, output: self[:].equal(other[:], output[:])
-    cls.teleport = lambda self, t, ch: self[:].teleport(t[:], ch[:])
-    cls.flip = lambda self, val: self[:].flip(val)
-    cls.aa = lambda self: self[:].aa()
-    cls.qft = lambda self: self[:].qft()
-    cls.invqft = lambda self: self[:].invqft()
-    cls.qpe = lambda self, input, u: self[:].qpe(input, u)
-
-    return cls
-
-
-def subscriptable(cls):
-    def __len__(self) -> int:
-        return self.size
-
-    cls.__len__ = __len__
-
-    def __getitem__(self, idx):
-        indices = set()
-        if type(idx) == int:
-            indices.add(idx)
-        elif type(idx) == slice:
-            indices |= set(slice_to_range(idx, len(self)))
-        elif type(idx) == tuple or type(idx) == list:
-            for i in idx:
-                if type(i) != int:
-                    raise IndexError('Indices should be an integer value.')
-                indices.add(i)
-
-        global_indices = set()
-        for i in indices:
-            self.check_idx(i)
-            global_indices.add(i + self.offset)
-        return qindex(self.qr, global_indices)
-
-    cls.__getitem__ = __getitem__
-
-    def check_idx(self, idx):
-        if idx < 0 or idx >= self.size:
-            raise IndexError(f'Index {idx} is out of the range')
-
-    cls.check_idx = check_idx
-    return cls
-
-
-def slice_to_range(s: slice, max_size: int):
-    indices = s.indices(max_size)
-    return range(indices[0], indices[1], indices[2])
+from willard.util import slice_to_range
 
 
 def index_size_fixed(size):
@@ -355,7 +287,7 @@ class qindex:
             self[i, len(self) - 1 - i].swap()
         return self
 
-    def invqft(self):
+    def iqft(self):
         for i in range(len(self) // 2):
             self[i, len(self) - 1 - i].swap()
         for i in range(len(self)):
@@ -372,5 +304,5 @@ class qindex:
         for i in range(len(self)):
             for _ in range(2 ** i):
                 self[i].cu(input[0], u)
-        self.invqft()
+        self.iqft()
         return self

@@ -1,7 +1,6 @@
 import torch
 from willard.const import gate, dirac
 from willard.type import qtype
-from willard.type.decorator import qindex
 
 
 class quint(qtype):
