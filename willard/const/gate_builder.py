@@ -79,7 +79,7 @@ class GateBuilder:
                 result = torch.kron(gate.i, result)
         return result
 
-    def measure_0(self, idx):
+    def m0(self, idx):
         result = torch.tensor([[1]], dtype=torch.cfloat).to(self.dev)
         for i in range(self.num_bits):
             if i == idx:
@@ -88,7 +88,7 @@ class GateBuilder:
                 result = torch.kron(gate.i, result)
         return result
 
-    def measure_1(self, idx):
+    def m1(self, idx):
         result = torch.tensor([[1]], dtype=torch.cfloat).to(self.dev)
         for i in range(self.num_bits):
             if i == idx:

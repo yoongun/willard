@@ -156,12 +156,12 @@ class qindex:
 
     def _measure_idx(self, i):
         prob_0 = self.global_state.conj().T.mm(
-            self.gb.measure_0(i).mm(self.global_state)).abs().item()
+            self.gb.m0(i).mm(self.global_state)).abs().item()
         if prob_0 >= np.random.rand():
-            self.global_state = self.gb.measure_0(i).mm(
+            self.global_state = self.gb.m0(i).mm(
                 self.global_state) / np.sqrt(prob_0)
             return '0'
-        self.global_state = self.gb.measure_1(i).mm(
+        self.global_state = self.gb.m1(i).mm(
             self.global_state) / np.sqrt(1. - prob_0)
         return '1'
 
