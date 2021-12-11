@@ -8,7 +8,8 @@ def index_size_fixed(size):
     def decorator(f):
         def wrapper(*args):
             if len(args[0]) != size:
-                raise IndexError('The size of selected indices should be 1')
+                raise IndexError(
+                    f'The size of selected indices should be {size}')
             return f(*args)
         return wrapper
     return decorator
@@ -22,7 +23,7 @@ def target_size_fixed(size):
                 if type(a) == qindex:
                     if len(a) != size:
                         raise ValueError(
-                            'The size of target indices should be 1')
+                            f'The size of target indices should be {size}')
                     elif self.qr != a.qr:
                         raise ValueError('qbits are not on the same qreg')
                     if self.global_idx_set & a.global_idx_set != set():
@@ -71,7 +72,7 @@ class qindex:
             global_indices.add(self.global_idcs[i])
         return qindex(self.qr, global_indices)
 
-    def w(self, other):
+    def c(self, other):
         return qindex(self.qr, self.global_idx_set | other.global_idx_set)
 
     @property
@@ -150,10 +151,10 @@ class qindex:
     def measure(self) -> str:
         result = ''
         for i in self.global_idx_set:
-            result += self._measure_index(i)
+            result += self._measure_idx(i)
         return result
 
-    def _measure_index(self, i):
+    def _measure_idx(self, i):
         prob_0 = self.global_state.conj().T.mm(
             self.gb.measure_0(i).mm(self.global_state)).abs().item()
         if prob_0 >= np.random.rand():

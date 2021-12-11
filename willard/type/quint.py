@@ -42,18 +42,22 @@ class quint(qtype):
         return self
 
     def add(self, other: 'quint'):
-        # # Draper adder
-        # if len(self) != len(other):
-        #     raise AttributeError("The length of operands should be equal.")
-        # self.qft()
-        # for i in reversed(range(len(other))):
-        #     for j in range(i, len(self)):
-        #         self[i].cu(other[j], gate.phase(360. / (2. ** j)))
-        # self.invqft()
-
         for i in range(len(other)):
             for j in reversed(range(i, len(self))):
-                self[:j].w(other[i]).cx(self[j])
+                self[:j].c(other[i]).cx(self[j])
+        return self
+
+    def dadd(self, other: 'quint'):
+        # Draper adder
+        if len(self) != len(other):
+            raise AttributeError("The length of operands should be equal.")
+        self.qft(swap=False)
+        for i in reversed(range(len(self))):
+            deg = 180.
+            for j in reversed(range(i+1)):
+                self[i].c(other[j]).cphase(deg)
+                deg /= 2.
+        self.iqft(swap=False)
         return self
 
     def sub(self):

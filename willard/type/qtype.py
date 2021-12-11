@@ -26,8 +26,8 @@ def default_as_select_all(cls):
     cls.teleport = lambda self, t, ch: self[:].teleport(t[:], ch[:])
     cls.flip = lambda self, val: self[:].flip(val)
     cls.aa = lambda self: self[:].aa()
-    cls.qft = lambda self: self[:].qft()
-    cls.iqft = lambda self: self[:].iqft()
+    cls.qft = lambda self, swap=True: self[:].qft(swap)
+    cls.iqft = lambda self, swap=True: self[:].iqft(swap)
     cls.qpe = lambda self, input, u: self[:].qpe(input, u)
     return cls
 

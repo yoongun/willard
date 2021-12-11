@@ -49,6 +49,15 @@ def test_add(qr):
     wanted = 5
     assert(got == wanted)
 
+    # Case 3: Draper adder
+    qr.reset()
+    q1 = qr.uint(3, 4)
+    q2 = qr.uint(3, 1)
+    q1.dadd(q2)
+    got = q1.measure()
+    wanted = 5
+    assert(got == wanted)
+
 
 # def test_sub(qr):
 #     q1 = qr.uint(3, 5)
