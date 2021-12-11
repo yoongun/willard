@@ -58,12 +58,12 @@ class GateType:
         return torch.eye(2).to(self.dev)
 
     @cached_property
-    def subspace_0(self):
-        return torch.kron(dirac.ket('0').conj().T, dirac.ket('0')).to(self.dev)
+    def m0(self):
+        return torch.kron(dirac.bra('0'), dirac.ket('0')).to(self.dev)
 
     @cached_property
-    def subspace_1(self):
-        return torch.kron(dirac.ket('1').conj().T, dirac.ket('1')).to(self.dev)
+    def m1(self):
+        return torch.kron(dirac.bra('1'), dirac.ket('1')).to(self.dev)
 
 
 gate = GateType()

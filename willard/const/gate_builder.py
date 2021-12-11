@@ -83,7 +83,7 @@ class GateBuilder:
         result = torch.tensor([[1]], dtype=torch.cfloat).to(self.dev)
         for i in range(self.num_bits):
             if i == idx:
-                result = torch.kron(gate.subspace_0, result)
+                result = torch.kron(gate.m0, result)
             else:
                 result = torch.kron(gate.i, result)
         return result
@@ -92,7 +92,7 @@ class GateBuilder:
         result = torch.tensor([[1]], dtype=torch.cfloat).to(self.dev)
         for i in range(self.num_bits):
             if i == idx:
-                result = torch.kron(gate.subspace_1, result)
+                result = torch.kron(gate.m1, result)
             else:
                 result = torch.kron(gate.i, result)
         return result
@@ -117,8 +117,8 @@ class GateBuilder:
         cu_1 = torch.tensor([[1]]).to(self.dev)
         for i in range(self.num_bits):
             if i == c:
-                cu_0 = torch.kron(gate.subspace_0, cu_0)
-                cu_1 = torch.kron(gate.subspace_1, cu_1)
+                cu_0 = torch.kron(gate.m0, cu_0)
+                cu_1 = torch.kron(gate.m1, cu_1)
             elif i == t:
                 cu_0 = torch.kron(gate.i, cu_0)
                 cu_1 = torch.kron(u, cu_1)
@@ -151,10 +151,10 @@ class GateBuilder:
                 nontargets = values - targets
                 for target in targets:
                     submatrices[target] = torch.kron(
-                        gate.subspace_1, submatrices[target])
+                        gate.m1, submatrices[target])
                 for nt in nontargets:
                     submatrices[nt] = torch.kron(
-                        gate.subspace_0, submatrices[nt])
+                        gate.m0, submatrices[nt])
             elif i == t:
                 submatrices[-1] = torch.kron(u, submatrices[-1])
                 for j in range(2 ** len(cs) - 1):
