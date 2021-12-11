@@ -274,28 +274,24 @@ class qindex:
         self.h()
         return self
 
-    def qft(self):
+    def qft(self, swap=True):
         for i in reversed(range(len(self))):
             self[i].h()
-            deg = 90.
-            for j in reversed(range(i)):
-                self[i, j].cphase(deg)
-                deg /= 2.
-            # for j in range(i):
-            #     self[i, j].cphase(180. / 2 ** (i - j))
-        for i in range(len(self) // 2):
-            self[i, len(self) - 1 - i].swap()
+            for j in range(i):
+                self[i, j].cphase(180. / 2 ** (i - j))
+        if swap:
+            for i in range(len(self) // 2):
+                self[i, len(self) - 1 - i].swap()
         return self
 
-    def iqft(self):
-        for i in range(len(self) // 2):
-            self[i, len(self) - 1 - i].swap()
+    def iqft(self, swap=True):
+        if swap:
+            for i in range(len(self) // 2):
+                self[i, len(self) - 1 - i].swap()
         for i in range(len(self)):
             self[i].h()
-            deg = -90.
             for j in range(i + 1, len(self)):
-                self[i, j].cphase(deg)
-                deg /= 2.
+                self[i, j].cphase(-180. / 2 ** (j - i))
         return self
 
     @target_size_fixed(1)

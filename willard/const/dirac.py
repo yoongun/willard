@@ -2,19 +2,22 @@ import torch
 
 
 class DiracType:
-    def ket(self, bit_array: str):
+    def bra(self, bits: str):
+        return self.ket(bits).conj().T
+
+    def ket(self, bits: str):
         dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         state = torch.tensor([[1.]], dtype=torch.cfloat).to(dev)
-        for bit in bit_array:
-            if bit == '0':
+        for b in bits:
+            if b == '0':
                 state = torch.kron(state, torch.tensor(
                     [[1.], [0.]], dtype=torch.cfloat).to(dev))
-            elif bit == '1':
+            elif b == '1':
                 state = torch.kron(state, torch.tensor(
                     [[0.], [1.]], dtype=torch.cfloat).to(dev))
             else:
                 raise ValueError(
-                    f"bit_array should contain either '0' or '1', but {bit} has found")
+                    f"Bit array should contain either '0' or '1', but {b} has found")
         return state
 
 
