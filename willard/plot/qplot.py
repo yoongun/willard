@@ -15,7 +15,7 @@ class qplot:
         y_phases = self.qr.state.angle() % (2 * np.pi)
         y_phases *= 180 / np.pi
         y_phases = y_phases.T.squeeze().cpu().numpy()
-        x = [bin(i).replace("0b", "").zfill(len(self.qr))
+        x = [format(i, 'b').zfill(len(self.qr))
              for i in range(2 ** len(self.qr))]
         self.tags.append(tag)
 
