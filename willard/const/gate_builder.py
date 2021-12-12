@@ -176,37 +176,6 @@ class GateBuilder:
 
     def toffoli(self, *, c1, c2, t):
         return self.ncu([c1, c2], t, gate.x)
-        # self._check_idx(c1)
-        # self._check_idx(c2)
-        # self._check_idx(d)
-        # if 3 > len(set([c1, c2, d])):
-        #     raise IndexError(f'Index ({c1},{c2},{d}) is not valid')
-        # t00 = [[1]]
-        # t01 = [[1]]
-        # t10 = [[1]]
-        # t11 = [[1]]
-        # for i in range(self.num_bits):
-        #     if i == c1:
-        #         t00 = torch.kron(gate.subspace_0, t00)
-        #         t01 = torch.kron(gate.subspace_1, t01)
-        #         t10 = torch.kron(gate.subspace_0, t10)
-        #         t11 = torch.kron(gate.subspace_1, t11)
-        #     elif i == c2:
-        #         t00 = torch.kron(gate.subspace_0, t00)
-        #         t01 = torch.kron(gate.subspace_0, t01)
-        #         t10 = torch.kron(gate.subspace_1, t10)
-        #         t11 = torch.kron(gate.subspace_1, t11)
-        #     elif i == d:
-        #         t00 = torch.kron(gate.i, t00)
-        #         t01 = torch.kron(gate.i, t01)
-        #         t10 = torch.kron(gate.i, t10)
-        #         t11 = torch.kron(gate.x, t11)
-        #     else:
-        #         t00 = torch.kron(gate.i, t00)
-        #         t01 = torch.kron(gate.i, t01)
-        #         t10 = torch.kron(gate.i, t10)
-        #         t11 = torch.kron(gate.i, t11)
-        # return t00 + t01 + t10 + t11
 
     def cswap(self, *, c, d1, d2):
         return self.toffoli(c1=c, c2=d1, t=d2).mm(self.toffoli(c1=c, c2=d2, t=d1)).mm(self.toffoli(c1=c, c2=d1, t=d2))

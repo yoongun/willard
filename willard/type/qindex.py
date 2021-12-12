@@ -29,15 +29,6 @@ def target_size_fixed(size):
                     if self.global_idx_set & a.global_idx_set != set():
                         raise IndexError(
                             'selected indicies contain target indices')
-                # if type(a) == qtype:
-                #     if len(a) != size:
-                #         raise ValueError(
-                #             'The size of target indices should be 1')
-                #     elif self.qr != a.qr:
-                #         raise ValueError('qbits are not on the same qreg')
-                #     if a is self:
-                #         raise IndexError(
-                #             'selected indicies contain target indices')
             return f(*args)
         return wrapper
     return decorator
@@ -47,7 +38,6 @@ class qindex:
     def __init__(self, qr, global_idx_set: set):
         self.global_idx_set = global_idx_set
         self.qr = qr
-        self.gb = GateBuilder(qr.size)
 
     def __len__(self) -> int:
         return len(self.global_idx_set)
@@ -74,6 +64,10 @@ class qindex:
 
     def c(self, other):
         return qindex(self.qr, self.global_idx_set | other.global_idx_set)
+
+    @property
+    def gb(self):
+        return GateBuilder(self.qr.size)
 
     @property
     def global_state(self):
@@ -250,6 +244,8 @@ class qindex:
         # Verify
         target.h().phase(-45).h()
 
+        return self
+
     def flip(self, val):
         if val < 0:
             raise ValueError("cannot flip value smaller than 0.")
@@ -258,14 +254,15 @@ class qindex:
             raise ValueError(
                 f"qindex object cannot contain given value val={val}.")
         val_bin_rev = val_bin[::-1]
-        index_to_flip = []
+        idcs_to_flip = []
         for i, val in enumerate(val_bin_rev):
             if val == '1':
                 continue
-            index_to_flip.append(i)
-        self[index_to_flip].x()
+            idcs_to_flip.append(i)
+        self[idcs_to_flip].x()
         self.cphase(180)
-        self[index_to_flip].x()
+        self[idcs_to_flip].x()
+        return self
 
     def aa(self):
         self.h()

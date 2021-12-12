@@ -1,15 +1,15 @@
 import torch
 from willard.const import gate, dirac
-from willard.type import qtype
+from willard.type import qindex
 
 
-class quint(qtype):
+class quint(qindex):
     def __init__(self, qr, size: int, init_value: int = 0) -> None:
-        super(quint, self).__init__()
         self.qr = qr
         self.offset = qr.size
         self.size = size
         b = format(init_value, 'b').zfill(size)
+        super(quint, self).__init__(qr, set(range(qr.size, qr.size+len(b))))
         if len(b) > size:
             raise ValueError("init_value is bigger than the size of qint.")
         qr.state = torch.kron(dirac.ket(b), qr.state)
