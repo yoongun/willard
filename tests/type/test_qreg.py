@@ -35,9 +35,9 @@ def test_reset(modified):
     q1 = qr.bits(3)
     q2 = qr.bits(1)
     qr.reset()
-    with pytest.raises(AttributeError):
+    with pytest.raises(TypeError):
         q1.x()
-    with pytest.raises(AttributeError):
+    with pytest.raises(TypeError):
         q2.x()
 
 

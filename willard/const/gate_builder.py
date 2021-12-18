@@ -1,5 +1,6 @@
-from willard.const import gate, GateType
+from typing import List
 import torch
+from willard.const import gate
 
 
 class GateBuilder:
@@ -7,179 +8,77 @@ class GateBuilder:
         self.dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.num_bits = num_bits
 
-    def x(self, idx):
-        result = torch.tensor([[1]], dtype=torch.cfloat).to(self.dev)
-        for i in range(self.num_bits):
-            if i == idx:
-                result = torch.kron(gate.x, result)
-            else:
-                result = torch.kron(gate.i, result)
-        return result
-
-    def rnot(self, idx):
-        result = torch.tensor([[1]], dtype=torch.cfloat).to(self.dev)
-        for i in range(self.num_bits):
-            if i == idx:
-                result = torch.kron(gate.rnot, result)
-            else:
-                result = torch.kron(gate.i, result)
-        return result
-
-    def y(self, idx):
-        result = torch.tensor([[1]], dtype=torch.cfloat).to(self.dev)
-        for i in range(self.num_bits):
-            if i == idx:
-                result = torch.kron(gate.y, result)
-            else:
-                result = torch.kron(gate.i, result)
-        return result
-
-    def z(self, idx):
-        result = torch.tensor([[1]], dtype=torch.cfloat).to(self.dev)
-        for i in range(self.num_bits):
-            if i == idx:
-                result = torch.kron(gate.z, result)
-            else:
-                result = torch.kron(gate.i, result)
-        return result
-
-    def h(self, idx):
-        result = torch.tensor([[1]], dtype=torch.cfloat).to(self.dev)
-        for i in range(self.num_bits):
-            if i == idx:
-                result = torch.kron(gate.h, result)
-            else:
-                result = torch.kron(gate.i, result)
-        return result
-
-    def s(self, idx):
-        result = torch.tensor([[1]], dtype=torch.cfloat).to(self.dev)
-        for i in range(self.num_bits):
-            if i == idx:
-                result = torch.kron(gate.s, result)
-            else:
-                result = torch.kron(gate.i, result)
-        return result
-
-    def t(self, idx):
-        result = torch.tensor([[1]], dtype=torch.cfloat).to(self.dev)
-        for i in range(self.num_bits):
-            if i == idx:
-                result = torch.kron(gate.t, result)
-            else:
-                result = torch.kron(gate.i, result)
-        return result
-
-    def phase(self, deg, idx):
-        result = torch.tensor([[1]], dtype=torch.cfloat).to(self.dev)
-        for i in range(self.num_bits):
-            if i == idx:
-                result = torch.kron(gate.phase(deg), result)
-            else:
-                result = torch.kron(gate.i, result)
-        return result
-
-    def m0(self, idx):
-        result = torch.tensor([[1]], dtype=torch.cfloat).to(self.dev)
-        for i in range(self.num_bits):
-            if i == idx:
-                result = torch.kron(gate.m0, result)
-            else:
-                result = torch.kron(gate.i, result)
-        return result
-
-    def m1(self, idx):
-        result = torch.tensor([[1]], dtype=torch.cfloat).to(self.dev)
-        for i in range(self.num_bits):
-            if i == idx:
-                result = torch.kron(gate.m1, result)
-            else:
-                result = torch.kron(gate.i, result)
-        return result
-
-    def i(self):
-        result = torch.tensor([[1]], dtype=torch.cfloat).to(self.dev)
-        for _ in range(self.num_bits):
-            result = torch.kron(gate.i, result)
-        return result
-
-    def cu(self, *, c, t, u: GateType):
-        """
-        c: index of the condition qubit
-        t: index of the target qubit
-        u: gate to apply on destination qubit
-        """
-        self._check_idx(c)
-        self._check_idx(t)
-        if c == t:
-            raise IndexError(f'Index ({c},{t}) is not valid')
-        cu_0 = torch.tensor([[1]]).to(self.dev)
-        cu_1 = torch.tensor([[1]]).to(self.dev)
-        for i in range(self.num_bits):
-            if i == c:
-                cu_0 = torch.kron(gate.m0, cu_0)
-                cu_1 = torch.kron(gate.m1, cu_1)
-            elif i == t:
-                cu_0 = torch.kron(gate.i, cu_0)
-                cu_1 = torch.kron(u, cu_1)
-            else:
-                cu_0 = torch.kron(gate.i, cu_0)
-                cu_1 = torch.kron(gate.i, cu_1)
-        return cu_0 + cu_1
-
-    def ncu(self, cs: list, t: int, u: GateType):
-        """
-        cs: list of index of control qubits
-        d: index of destination qubit
-        u: gate to apply on destination qubit
-        """
-        for c in cs:
-            self._check_idx(c)
-        self._check_idx(t)
-        if len(cs) + 1 > len([*cs, t]):
-            raise IndexError(f'Index ({cs},{t}) is not valid')
-
-        submatrices = []
-        for _ in range(2 ** len(cs)):
-            submatrices.append(torch.tensor(
-                [[1]], dtype=torch.cfloat).to(self.dev))
-        values = set(range(2 ** len(cs)))
-
-        for i in range(self.num_bits):
-            if i in cs:
-                targets = set([x | 2 ** cs.index(i) for x in values])
-                nontargets = values - targets
-                for target in targets:
-                    submatrices[target] = torch.kron(
-                        gate.m1, submatrices[target])
-                for nt in nontargets:
-                    submatrices[nt] = torch.kron(
-                        gate.m0, submatrices[nt])
-            elif i == t:
-                submatrices[-1] = torch.kron(u, submatrices[-1])
-                for j in range(2 ** len(cs) - 1):
-                    submatrices[j] = torch.kron(gate.i, submatrices[j])
-            else:
-                for j in range(2 ** len(cs)):
-                    submatrices[j] = torch.kron(gate.i, submatrices[j])
-        return sum(submatrices)
-
-    def cnot(self, *, c, d):
-        """
-        c: index of the condition qubit
-        d: index of the destination qubit
-        """
-        return self.cu(c=c, t=d, u=gate.x)
-
-    def swap(self, *, d1, d2):
-        return self.cnot(c=d1, d=d2).mm(self.cnot(c=d1, d=d2)).mm(self.cnot(c=d1, d=d2))
-
-    def toffoli(self, *, c1, c2, t):
-        return self.ncu([c1, c2], t, gate.x)
-
-    def cswap(self, *, c, d1, d2):
-        return self.toffoli(c1=c, c2=d1, t=d2).mm(self.toffoli(c1=c, c2=d2, t=d1)).mm(self.toffoli(c1=c, c2=d1, t=d2))
-
-    def _check_idx(self, idx):
+    def u(self, idx: int, u: torch.Tensor) -> torch.Tensor:
+        if type(idx) != int:
+            raise IndexError("Index value should be an integer value.")
         if idx < 0 or idx >= self.num_bits:
-            raise IndexError(f'Index {idx} is out of the range')
+            raise IndexError(f"Index out of range: {idx}")
+        g = torch.tensor([[1.]], dtype=torch.cfloat).to(self.dev)
+        for i in range(self.num_bits):
+            if i == idx:
+                g = torch.kron(u, g)
+            else:
+                g = torch.kron(gate.i, g)
+        return g
+
+    def i(self) -> torch.Tensor:
+        return self.u(0, gate.i)
+
+    def x(self, idx: int) -> torch.Tensor:
+        return self.u(idx, gate.x)
+
+    def rnot(self, idx: int) -> torch.Tensor:
+        return self.u(idx, gate.rnot)
+
+    def y(self, idx: int) -> torch.Tensor:
+        return self.u(idx, gate.y)
+
+    def z(self, idx: int) -> torch.Tensor:
+        return self.u(idx, gate.z)
+
+    def h(self, idx: int) -> torch.Tensor:
+        return self.u(idx, gate.h)
+
+    def s(self, idx: int) -> torch.Tensor:
+        return self.u(idx, gate.s)
+
+    def s_dg(self, idx: int) -> torch.Tensor:
+        return self.u(idx, gate.s_dg)
+
+    def t(self, idx: int) -> torch.Tensor:
+        return self.u(idx, gate.t)
+
+    def t_dg(self, idx: int) -> torch.Tensor:
+        return self.u(idx, gate.t_dg)
+
+    def phase(self, idx: int, deg: int) -> torch.Tensor:
+        return self.u(idx, gate.phase(deg))
+
+    def phase_dg(self, idx: int, deg: int) -> torch.Tensor:
+        return self.u(idx, gate.phase_dg(deg))
+
+    def m0(self, idx: int) -> torch.Tensor:
+        return self.u(idx, gate.m0)
+
+    def m1(self, idx: int) -> torch.Tensor:
+        return self.u(idx, gate.m1)
+
+    def cu(self, cs: List[int], u: torch.Tensor) -> torch.Tensor:
+        if len(cs) == 0:
+            return u
+        g1 = self.m1(cs[0])
+        for i in cs[1:]:
+            g1 = self.m1(i).mm(g1)
+        g0 = self.i() - g1
+        g1 = g1.mm(u)
+        g = g0 + g1
+        return g
+
+    def cx(self, c: int, t: int) -> torch.Tensor:
+        return self.cu([c], self.x(t))
+
+    def swap(self, idx1: int, idx2) -> torch.Tensor:
+        g = self.cx(idx1, idx2)
+        g = self.cx(idx2, idx1).mm(g)
+        g = self.cx(idx1, idx2).mm(g)
+        return g

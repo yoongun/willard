@@ -32,7 +32,7 @@ def test_equal():
     for _ in range(100):
         qr.reset()
         in1 = qr.bits(1)
-        in2 = qr.bits(1, '1')
+        in2 = qr.bits('1')
         out = qr.bits(1)
         in1.equal(in2, out)
         got &= int(out.measure())
@@ -45,17 +45,17 @@ def test_flip():
     q.h()
     q.flip(1)
 
-    got = q.global_state.angle()[1].cpu()
+    got = q.state.angle()[1].cpu()
     wanted = pytest.approx(np.pi)
     assert(got == wanted)
 
     q.flip(3)
-    got = q.global_state.angle()[3].cpu()
+    got = q.state.angle()[3].cpu()
     wanted = pytest.approx(np.pi)
     assert(got == wanted)
 
     q.flip(7)
-    got = q.global_state.angle()[7].cpu()
+    got = q.state.angle()[7].cpu()
     wanted = pytest.approx(np.pi)
     assert(got == wanted)
 
@@ -69,11 +69,11 @@ def test_amplitude_amplification(dev):
 
     # Amplitude Amplification
     q.aa()
-    got = q.global_state[1].abs().square()
+    got = q.state[1].abs().square()
     wanted = 0.7
     assert(got > wanted)
 
-    got = q.global_state.angle()
+    got = q.state.angle()
     wanted = torch.empty(len(qr)).fill_(np.pi).to(dev)
     assert(torch.isclose(got, wanted).all())
 
@@ -126,26 +126,26 @@ def test_qft(f8, square, f2):
 
 
 def test_iqft(f8, square, f2):
-    wanted = f8.global_state.clone()
+    wanted = f8.state.clone()
     f8.qft().iqft()
-    got = f8.global_state
+    got = f8.state
     assert(torch.equal(got, wanted))
 
-    wanted = square.global_state.clone()
+    wanted = square.state.clone()
     square.qft().iqft()
-    got = square.global_state
+    got = square.state
     assert(torch.allclose(got, wanted))
 
-    wanted = f2.global_state.clone()
+    wanted = f2.state.clone()
     f2.qft().iqft()
-    got = f2.global_state
+    got = f2.state
     assert(torch.allclose(got, wanted))
 
 
 def test_qpe():
     qr = qreg()
     output = qr.bits(3)
-    input = qr.bits(1, '1')
+    input = qr.bits('1')
     output.qpe(input, gate.t)
     got = int(output.measure(), 2) / (2 ** len(output))
     wanted = 1 / 8
@@ -153,7 +153,7 @@ def test_qpe():
 
     qr.reset()
     output = qr.bits(3)
-    input = qr.bits(1, '1')
+    input = qr.bits('1')
     output.qpe(input, gate.s)
     got = int(output.measure(), 2) / (2 ** len(output))
     wanted = 1 / 4

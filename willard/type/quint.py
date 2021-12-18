@@ -1,15 +1,19 @@
+from typing import TypeVar
 import torch
 from willard.const import gate, dirac
 from willard.type import qindex
 
 
+qreg = TypeVar('qreg')
+
+
 class quint(qindex):
-    def __init__(self, qr, size: int, init_value: int = 0) -> None:
+    def __init__(self, qr: qreg, offset: int,  size: int, init_value: int = 0) -> None:
         self.qr = qr
-        self.offset = qr.size
+        self.offset = offset
         self.size = size
         b = format(init_value, 'b').zfill(size)
-        super(quint, self).__init__(qr, set(range(qr.size, qr.size+len(b))))
+        super(quint, self).__init__(qr, tuple(range(offset, offset+len(b))))
         if len(b) > size:
             raise ValueError("init_value is bigger than the size of qint.")
         qr.state = torch.kron(dirac.ket(b), qr.state)
@@ -29,7 +33,7 @@ class quint(qindex):
             if b == '0':
                 continue
             for j in reversed(range(i, len(self))):
-                self[i:j].cu(self[j], gate.x)
+                self[i:j].cx(self[j])
         return self
 
     def dec(self, val=1):
@@ -38,7 +42,7 @@ class quint(qindex):
             if b == '0':
                 continue
             for j in range(i, len(self)):
-                self[i:j].cu(self[j], gate.x)
+                self[i:j].cx(self[j])
         return self
 
     def add(self, other: 'quint'):

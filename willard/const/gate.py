@@ -9,6 +9,10 @@ class GateType:
         self.dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     @property
+    def i(self):
+        return torch.eye(2).to(self.dev)
+
+    @property
     def x(self):
         return torch.tensor([[0., 1.], [1., 0.]], dtype=torch.cfloat).to(self.dev)
 
@@ -52,10 +56,6 @@ class GateType:
 
     def phase_dg(self, deg):
         return self.phase(-deg)
-
-    @property
-    def i(self):
-        return torch.eye(2).to(self.dev)
 
     @cached_property
     def m0(self):

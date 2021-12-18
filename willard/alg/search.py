@@ -1,9 +1,8 @@
 import math
-import random
+import torch
+import numpy as np
 from willard.type import qreg
 from willard.type import qbits
-from willard.const import GateType
-import numpy as np
 
 
 def deutsch(x: qbits, y: qbits, f):
@@ -28,7 +27,7 @@ def deutsch_jozsa(x: qbits, y: qbits, f):
     return bool(int(x.measure(), 2))
 
 
-def bv(x: qbits, y: qbits, f: GateType):
+def bv(x: qbits, y: qbits, f: torch.Tensor):
     """
     bernstein vazirani
     """
@@ -39,7 +38,7 @@ def bv(x: qbits, y: qbits, f: GateType):
     return x.measure()
 
 
-def simon(x: qbits, y: qbits, f: GateType):
+def simon(x: qbits, y: qbits, f: torch.Tensor):
     if len(x) != len(y):
         raise AttributeError(
             f"The length of x and y should be equal. Got x: {len(x)}, y: {len(y)}.")
@@ -61,7 +60,7 @@ def shor2(N):
         # Period finding
         qr = qreg()
         x = qr.uint(4)
-        y = qr.bits(4, '0001')
+        y = qr.bits('0001')
         x.h()
         for i in range(len(x)):
             for _ in range(2 ** i):
@@ -89,7 +88,7 @@ def shor2(N):
         return sorted((cand1, cand2))
 
 
-def grover(x: qbits, f: GateType):
+def grover(x: qbits, f: torch.Tensor):
     x.h()
     rep = round(np.sqrt(len(x)) * np.pi / 4)
 

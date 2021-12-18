@@ -19,7 +19,7 @@ def test_spy_detector():
 
 def test_teleportation():
     qr = qreg()
-    alice = qr.bits(1, '1')
+    alice = qr.bits('1')
     channel = qr.bits(1)
     bob = qr.bits(1)
 
