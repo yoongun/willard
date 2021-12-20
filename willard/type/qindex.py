@@ -306,11 +306,11 @@ class qindex:
 
     @target_size_fixed(1)
     def qpe(self, input: 'qindex', u: torch.Tensor):
-        # u = self.gb.u(input[0], )
+        u = self.gb.u(input.g_idcs[0], u)
 
         self.h()
         for i in range(len(self)):
             for _ in range(2 ** i):
-                self[i].cu(input[0], u)
+                self[i].cu(u)
         self.iqft()
         return self
