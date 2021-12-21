@@ -1,6 +1,7 @@
 import pytest
 from willard import alg
 from willard.type import qreg
+from willard.network import SuperdenseChannel
 
 
 def test_spy_detector():
@@ -30,5 +31,13 @@ def test_teleportation():
     assert(got == wanted)
 
 
-def test_superdense_coding():
-    pass
+@pytest.mark.parametrize(
+    "data",
+    [(format(i, 'b').zfill(2)) for i in range(4)]
+)
+def test_superdense_coding(data):
+    sd = SuperdenseChannel()
+    q = sd.encode(data)
+    got = sd.decode(q)
+    wanted = data
+    assert(got == wanted)
